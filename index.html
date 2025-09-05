@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sharné's Recipes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+      .font-fancy {
+        font-family: 'Playfair Display', serif;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.1.1/client",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-900 text-gray-200">
+    <div id="root"></div>
+    <script type="module">
+      import React, { useState, useEffect, useMemo, useRef } from 'react';
+      import ReactDOM from 'react-dom/client';
+
+      // --- Start of inlined types.ts ---
+      const Unit = {
+        GRAM: 'GRAM',
+        KILOGRAM: 'KILOGRAM',
+        MILLILITER: 'MILLILITER',
+        LITER: 'LITER',
+        TEASPOON: 'TEASPOON',
+        TABLESPOON: 'TABLESPOON',
+        CUP: 'CUP',
+        FLUID_OUNCE: 'FLUID_OUNCE',
+        OUNCE: 'OUNCE',
+        POUND: 'POUND',
+        PINT: 'PINT',
+        QUART: 'QUART',
+        GALLON: 'GALLON',
+        PINCH: 'PINCH',
+        PIECE: 'PIECE',
+        CLOVE: 'CLOVE',
+        TO_TASTE: 'TO_TASTE',
+      };
+
+      // --- Start of inlined constants.ts ---
+      const UNITS = [
+        { value: Unit.GRAM, label: 'Gram(s)' },
+        { value: Unit.KILOGRAM, label: 'Kilogram(s)' },
+        { value: Unit.MILLILITER, label: 'Milliliter(s)' },
+        { value: Unit.LITER, label: 'Liter(s)' },
+        { value: Unit.TEASPOON, label: 'Teaspoon(s)' },
+        { value: Unit.TABLESPOON, label: 'Tablespoon(s)' },
+        { value: Unit.CUP, label: 'Cup(s)' },
+        { value: Unit.FLUID_OUNCE, label: 'Fluid Ounce(s)' },
+        { value: Unit.OUNCE, label: 'Ounce(s)' },
+        { value: Unit.POUND, label: 'Pound(s)' },
+        { value: Unit.PINT, label: 'Pint(s)' },
+        { value: Unit.QUART, label: 'Quart(s)' },
+        { value: Unit.GALLON, label: 'Gallon(s)' },
+        { value: Unit.PINCH, label: 'Pinch(es)' },
+        { value: Unit.PIECE, label: 'Piece(s)' },
+        { value: Unit.CLOVE, label: 'Clove(s)' },
+        { value: Unit.TO_TASTE, label: 'To Taste' },
+      ];
+
+      const FOOD_EMOJIS = [
+        '🌶️', '🍪', '🍗', '🍕', '🍔', '🍟', '🍜', '🍣', '🍰', '🍩', '🎂',
+        '🥑', '🥦', '🥕', '🌽', '🍇', '🍉', '🍓', '🍑', '🥝', '🍍', '🥥',
+        '🥩', '🥓', '🥚', '🧀', '🍞', '🥐', '🥨', '🥞', '🧇', '🍿', '🥣',
+        '🥗', '🌮', '🌯', '🥘', '🍲', '🍛', '🍙', '🍤', '🍦', '🍫', '🍬',
+        '☕', '🍵', '🍷', '🍺', '🍹', '🍴', '🥄', '🔪', '🧂'
+      ].filter((v, i, a) => a.indexOf(v) === i); // Ensure no duplicates
+
+      // --- Start of inlined hooks/useLocalStorage.ts ---
+      function useLocalStorage(key, initialValue) {
+        const [storedValue, setStoredValue] = useState(() => {
+          try {
+            const item = window.localStorage.getItem(key);
+            return item ? JSON.parse(item) : initialValue;
+          } catch (error) {
+            console.error(error);
+            return initialValue;
+          }
+        });
+
+        useEffect(() => {
+          try {
+            const valueToStore = JSON.stringify(storedValue);
+            window.localStorage.setItem(key, valueToStore);
+          } catch (error) {
+            console.error(error);
+          }
+        }, [key, storedValue]);
+
+        return [storedValue, setStoredValue];
+      }
+
+      // --- Start of inlined components/icons.tsx ---
+      const PlusIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 4.5v15m7.5-7.5h-15" })
+          )
+      );
+
+      const TrashIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.067-2.09 1.02-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" })
+          )
+      );
+
+      const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.75 19.5 8.25 12l7.5-7.5" })
+          )
+      );
+
+      const PencilIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" })
+          )
+      );
+
+      const SearchIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" })
+          )
+      );
+
+      const ChevronDownIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m19.5 8.25-7.5 7.5-7.5-7.5" })
+          )
+      );
+
+      const CloudUploadIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" })
+          )
+      );
+
+      const CloudDownloadIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" })
+          )
+      );
+      
+      // --- Start of inlined components/ImportConfirmation.tsx ---
+      const ImportConfirmation = ({ data, onConfirm, onCancel }) => {
+          const [selectedRecipeIds, setSelectedRecipeIds] = useState(() => new Set(data.recipes.map(r => r.id)));
+          const [selectedSectionIds, setSelectedSectionIds] = useState(() => new Set(data.sections.map(s => s.id)));
+
+          const handleRecipeToggle = (id) => {
+              setSelectedRecipeIds(prev => {
+                  const newSet = new Set(prev);
+                  if (newSet.has(id)) {
+                      newSet.delete(id);
+                  } else {
+                      newSet.add(id);
+                  }
+                  return newSet;
+              });
+          };
+
+          const handleSectionToggle = (id) => {
+              setSelectedSectionIds(prev => {
+                  const newSet = new Set(prev);
+                  if (newSet.has(id)) {
+                      newSet.delete(id);
+                  } else {
+                      newSet.add(id);
+                  }
+                  return newSet;
+              });
+          };
+          
+          const handleSelectAllRecipes = (select) => {
+              if (select) {
+                  setSelectedRecipeIds(new Set(data.recipes.map(r => r.id)));
+              } else {
+                  setSelectedRecipeIds(new Set());
+              }
+          };
+          
+          const handleSelectAllSections = (select) => {
+              if (select) {
+                  setSelectedSectionIds(new Set(data.sections.map(s => s.id)));
+              } else {
+                  setSelectedSectionIds(new Set());
+              }
+          };
+
+          const handleConfirm = () => {
+              const selectedRecipes = data.recipes.filter(r => selectedRecipeIds.has(r.id));
+              const selectedSections = data.sections.filter(s => selectedSectionIds.has(s.id));
+              onConfirm(selectedRecipes, selectedSections);
+          };
+
+          return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-6" }, "Confirm Import"),
+              React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 space-y-8" },
+                  React.createElement('div', null,
+                      React.createElement('div', { className: "flex justify-between items-center mb-4" },
+                          React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `Sections (${selectedSectionIds.size}/${data.sections.length})`),
+                          React.createElement('div', { className: "flex gap-2 text-sm" },
+                              React.createElement('button', { onClick: () => handleSelectAllSections(true), className: "text-blue-400 hover:underline" }, "All"),
+                              React.createElement('button', { onClick: () => handleSelectAllSections(false), className: "text-blue-400 hover:underline" }, "None")
+                          )
+                      ),
+                      React.createElement('div', { className: "max-h-60 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
+                          data.sections.length > 0 ? data.sections.map(section => (
+                              React.createElement('label', { key: section.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
+                                  React.createElement('input', {
+                                      type: "checkbox",
+                                      checked: selectedSectionIds.has(section.id),
+                                      onChange: () => handleSectionToggle(section.id),
+                                      className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                                  }),
+                                  React.createElement('span', { className: "ml-3 text-gray-200" }, section.name)
+                              )
+                          )) : React.createElement('p', { className: "text-gray-500 text-center" }, "No sections found in file.")
+                      )
+                  ),
+                  React.createElement('div', null,
+                      React.createElement('div', { className: "flex justify-between items-center mb-4" },
+                          React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `Recipes (${selectedRecipeIds.size}/${data.recipes.length})`),
+                           React.createElement('div', { className: "flex gap-2 text-sm" },
+                              React.createElement('button', { onClick: () => handleSelectAllRecipes(true), className: "text-blue-400 hover:underline" }, "All"),
+                              React.createElement('button', { onClick: () => handleSelectAllRecipes(false), className: "text-blue-400 hover:underline" }, "None")
+                          )
+                      ),
+                       React.createElement('div', { className: "max-h-96 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
+                          data.recipes.length > 0 ? data.recipes.map(recipe => (
+                               React.createElement('label', { key: recipe.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
+                                  React.createElement('input', {
+                                      type: "checkbox",
+                                      checked: selectedRecipeIds.has(recipe.id),
+                                      onChange: () => handleRecipeToggle(recipe.id),
+                                      className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                                  }),
+                                  React.createElement('span', { className: "ml-3 text-gray-200" }, recipe.name)
+                              )
+                          )) : React.createElement('p', { className: "text-gray-500 text-center" }, "No recipes found in file.")
+                      )
+                  ),
+                  React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-gray-700" },
+                      React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
+                      React.createElement('button', { onClick: handleConfirm, className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-6 rounded-md" }, "Import Selected")
+                  )
+              )
+          );
+      };
+
+      // --- Start of inlined components/RecipeForm.tsx ---
+      const RecipeForm = ({ initialRecipe, sections, onSave, onCancel }) => {
+        const [name, setName] = useState('');
+        const [description, setDescription] = useState('');
+        const [selectedEmojis, setSelectedEmojis] = useState([]);
+        const [ingredients, setIngredients] = useState([]);
+        const [steps, setSteps] = useState(['']);
+        const [selectedSection, setSelectedSection] = useState('');
+        const [newSectionName, setNewSectionName] = useState('');
+
+        useEffect(() => {
+          if (initialRecipe) {
+            setName(initialRecipe.name);
+            setDescription(initialRecipe.description || '');
+            setSelectedEmojis(initialRecipe.emojis || []);
+            setIngredients(initialRecipe.ingredients);
+            setSteps(initialRecipe.steps.length > 0 ? initialRecipe.steps : ['']);
+            setSelectedSection(initialRecipe.sectionId || '');
+          } else {
+            setName('');
+            setDescription('');
+            setSelectedEmojis([]);
+            setIngredients([{ id: `new_${Date.now()}`, name: '', quantity: 1, unit: Unit.PIECE }]);
+            setSteps(['']);
+            setSelectedSection('');
+          }
+          setNewSectionName('');
+        }, [initialRecipe]);
+        
+        const toggleEmoji = (emoji) => {
+          setSelectedEmojis(prev =>
+            prev.includes(emoji)
+              ? prev.filter(e => e !== emoji)
+              : [...prev, emoji]
+          );
+        };
+
+        const handleIngredientChange = (index, field, value) => {
+          const newIngredients = ingredients.map((ing, i) => 
+              i === index ? { ...ing, [field]: value } : ing
+          );
+          setIngredients(newIngredients);
+        };
+
+        const addIngredient = () => {
+          setIngredients([...ingredients, { id: `new_${Date.now()}`, name: '', quantity: 1, unit: Unit.PIECE }]);
+        };
+
+        const removeIngredient = (index) => {
+          setIngredients(ingredients.filter((_, i) => i !== index));
+        };
+        
+        const handleStepChange = (index, value) => {
+          const newSteps = [...steps];
+          newSteps[index] = value;
+          setSteps(newSteps);
+        };
+
+        const addStep = () => {
+          setSteps([...steps, '']);
+        };
+
+        const removeStep = (index) => {
+          setSteps(steps.filter((_, i) => i !== index));
+        };
+        
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (!name.trim()) {
+              alert("Please enter a recipe name.");
+              return;
+          }
+          if (selectedSection === 'new' && !newSectionName.trim()) {
+              alert("Please enter a name for the new section.");
+              return;
+          }
+
+          const finalIngredients = ingredients.filter(ing => ing.name.trim() !== '');
+          const finalSteps = steps.filter(step => step.trim() !== '');
+
+          const recipeData = {
+              id: initialRecipe?.id,
+              name,
+              description,
+              emojis: selectedEmojis,
+              ingredients: finalIngredients,
+              steps: finalSteps,
+              sectionId: selectedSection !== 'new' ? selectedSection : undefined,
+          };
+
+          onSave(recipeData, selectedSection === 'new' ? newSectionName : undefined);
+        };
+
+        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+          React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
+          React.createElement('form', { onSubmit: handleSubmit, className: "space-y-8 bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
+            React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
+              React.createElement('div', null,
+                React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "Recipe Name"),
+                React.createElement('input', {
+                  id: "recipe-name",
+                  type: "text",
+                  value: name,
+                  onChange: (e) => setName(e.target.value),
+                  placeholder: "e.g., Chocolate Chip Cookies",
+                  className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500",
+                  required: true
+                })
+              ),
+              React.createElement('div', null,
+                React.createElement('label', { htmlFor: "section-select", className: "block text-lg font-medium text-gray-300 mb-2" }, "Section"),
+                React.createElement('select', { 
+                    id: "section-select",
+                    value: selectedSection,
+                    onChange: (e) => setSelectedSection(e.target.value),
+                    className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                  },
+                  React.createElement('option', { value: "" }, "Uncategorized"),
+                  sections.map(section => React.createElement('option', { key: section.id, value: section.id }, section.name)),
+                  React.createElement('option', { value: "new" }, "-- Add New Section --")
+                )
+              )
+            ),
+            selectedSection === 'new' && React.createElement('div', null,
+              React.createElement('label', { htmlFor: "new-section-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "New Section Name"),
+              React.createElement('input', {
+                id: "new-section-name",
+                type: "text",
+                value: newSectionName,
+                onChange: e => setNewSectionName(e.target.value),
+                placeholder: "e.g., Desserts",
+                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+              })
+            ),
+            React.createElement('div', null,
+              React.createElement('label', { htmlFor: "recipe-description", className: "block text-lg font-medium text-gray-300 mb-2" }, "Description"),
+              React.createElement('textarea', {
+                id: "recipe-description",
+                value: description,
+                onChange: (e) => setDescription(e.target.value),
+                rows: 3,
+                placeholder: "A short description of the recipe...",
+                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+              })
+            ),
+            React.createElement('div', null,
+              React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Emojis"),
+              React.createElement('div', { className: "p-3 bg-gray-900/50 rounded-md border border-gray-700 flex flex-wrap gap-2" },
+                FOOD_EMOJIS.map(emoji => React.createElement('button', {
+                  key: emoji,
+                  type: "button",
+                  onClick: () => toggleEmoji(emoji),
+                  className: `text-2xl p-2 rounded-md transition-colors duration-200 ${selectedEmojis.includes(emoji) ? 'bg-blue-500/50' : 'hover:bg-gray-700'}`,
+                  'aria-pressed': selectedEmojis.includes(emoji)
+                }, emoji))
+              )
+            ),
+            React.createElement('div', null,
+              React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
+              React.createElement('div', { className: "space-y-4" },
+                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "flex flex-col sm:flex-row items-center gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
+                  React.createElement('input', {
+                    type: "number",
+                    value: ing.quantity,
+                    onChange: (e) => handleIngredientChange(index, 'quantity', parseFloat(e.target.value) || 0),
+                    className: "w-full sm:w-20 p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
+                    placeholder: "Qty",
+                    min: "0",
+                    step: "0.01"
+                  }),
+                  React.createElement('select', {
+                    value: ing.unit,
+                    onChange: (e) => handleIngredientChange(index, 'unit', e.target.value),
+                    className: "w-full sm:w-32 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  }, UNITS.map(unit => React.createElement('option', { key: unit.value, value: unit.value }, unit.label))),
+                  React.createElement('input', {
+                    type: "text",
+                    value: ing.name,
+                    onChange: (e) => handleIngredientChange(index, 'name', e.target.value),
+                    className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
+                    placeholder: "Ingredient Name"
+                  }),
+                  React.createElement('button', { type: "button", onClick: () => removeIngredient(index), className: "text-red-500 hover:text-red-400 p-2" },
+                    React.createElement(TrashIcon, { className: "w-5 h-5" })
+                  )
+                ))
+              ),
+              React.createElement('button', {
+                type: "button",
+                onClick: addIngredient,
+                className: "mt-4 flex items-center text-blue-400 font-semibold hover:text-blue-300"
+              }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Ingredient")
+            ),
+            React.createElement('div', null,
+              React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
+              React.createElement('div', { className: "space-y-4" },
+                steps.map((step, index) => React.createElement('div', { key: index, className: "flex items-start gap-2" },
+                  React.createElement('span', { className: "text-lg font-bold text-gray-500 pt-2" }, `${index + 1}.`),
+                  React.createElement('textarea', {
+                    value: step,
+                    onChange: (e) => handleStepChange(index, e.target.value),
+                    rows: 3,
+                    className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
+                    placeholder: "Describe step..."
+                  }),
+                  React.createElement('button', { type: "button", onClick: () => removeStep(index), className: "text-red-500 hover:text-red-400 p-2" },
+                    React.createElement(TrashIcon, { className: "w-5 h-5" })
+                  )
+                ))
+              ),
+               React.createElement('button', {
+                type: "button",
+                onClick: addStep,
+                className: "mt-4 flex items-center text-blue-400 font-semibold hover:text-blue-300"
+              }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Step")
+            ),
+            React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-gray-700" },
+              React.createElement('button', { type: "button", onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
+              React.createElement('button', { type: "submit", className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-6 rounded-md" }, initialRecipe ? 'Save Changes' : 'Save Recipe')
+            )
+          )
+        );
+      };
+      
+      // --- Start of inlined components/RecipeDetail.tsx ---
+      const RecipeDetail = ({ recipe, onBack, onEdit, onDelete }) => {
+          const [multiplier, setMultiplier] = useState(1);
+
+          const multipliers = [
+              { label: '¼', value: 0.25 },
+              { label: '⅓', value: 1/3 },
+              { label: '½', value: 0.5 },
+              { label: '1x', value: 1 },
+          ];
+
+          const formatQuantity = (quantity) => {
+              const result = quantity * multiplier;
+              if (result === 0) return '';
+              if (result < 0.1) return result.toFixed(3);
+              if (result < 1) return result.toFixed(2);
+              return Number.isInteger(result) ? result : result.toFixed(2);
+          }
+          
+          const handleDelete = () => {
+              if (window.confirm(`Are you sure you want to delete "${recipe.name}"? This action cannot be undone.`)) {
+                  onDelete(recipe.id);
+              }
+          };
+
+        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+            React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+                React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
+                "Back to Recipes"
+            ),
+            React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
+                React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-gray-700 pb-4" },
+                    React.createElement('div', { className: "flex items-center gap-3 flex-grow" },
+                        recipe.emojis && recipe.emojis.length > 0 && (
+                            React.createElement('span', { className: "text-4xl", 'aria-hidden': "true" }, recipe.emojis.join(''))
+                        ),
+                        React.createElement('h1', { className: "text-4xl font-bold text-gray-100" }, recipe.name)
+                    ),
+                    React.createElement('div', { className: "flex gap-2 flex-shrink-0 pt-1" },
+                        React.createElement('button', { 
+                            onClick: () => onEdit(recipe.id), 
+                            className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                            'aria-label': "Edit recipe"
+                        }, React.createElement(PencilIcon, { className: "w-6 h-6" })),
+                        React.createElement('button', { 
+                            onClick: handleDelete, 
+                            className: "p-2 rounded-full text-red-500 hover:bg-red-900/50 hover:text-red-400 transition-colors",
+                            'aria-label': "Delete recipe"
+                        }, React.createElement(TrashIcon, { className: "w-6 h-6" }))
+                    )
+                ),
+                recipe.description && (
+                    React.createElement('p', { className: "text-gray-400 italic mb-6 border-l-4 border-gray-600 pl-4 py-2" }, recipe.description)
+                ),
+                React.createElement('div', { className: "mb-8" },
+                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
+                    React.createElement('div', { className: "flex flex-wrap items-center gap-2 mb-4 p-2 bg-gray-700/50 rounded-md" },
+                        React.createElement('span', { className: "text-sm font-medium text-gray-300 mr-2" }, "Adjust serving:"),
+                        React.createElement('div', { className: "flex gap-2 flex-wrap" },
+                            multipliers.map(m => (
+                                 React.createElement('button', { 
+                                    key: m.label, 
+                                    onClick: () => setMultiplier(m.value),
+                                    className: `px-3 py-1 text-sm font-semibold rounded-full transition-colors ${multiplier === m.value ? 'bg-[#64C7CC] text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`
+                                }, m.label)
+                            ))
+                        )
+                    ),
+                    React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" },
+                        recipe.ingredients.map(ing => (
+                            React.createElement('li', { key: ing.id },
+                                React.createElement('span', { className: "font-medium text-gray-100" }, `${formatQuantity(ing.quantity)} ${ing.unit.toLowerCase()}`), ` - ${ing.name}`
+                            )
+                        ))
+                    )
+                ),
+                React.createElement('div', null,
+                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
+                    React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" },
+                        recipe.steps.map((step, index) => (
+                            React.createElement('li', { key: index, className: "pl-2" }, step)
+                        ))
+                    )
+                )
+            )
+        );
+      };
+
+      // --- Start of inlined components/RecipeList.tsx ---
+      const RecipeCard = ({ recipe, onSelect }) => (
+          React.createElement('div', {
+            onClick: () => onSelect(recipe.id),
+            className: "bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-xl hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-gray-700"
+          },
+            React.createElement('div', { className: "flex items-center gap-3" },
+              recipe.emojis && recipe.emojis.length > 0 && (
+                  React.createElement('span', { className: "text-2xl flex-shrink-0", 'aria-hidden': "true" }, recipe.emojis.join(''))
+              ),
+              React.createElement('h2', { className: "text-xl font-semibold text-gray-200 truncate" }, recipe.name)
+            ),
+            recipe.description && (
+              React.createElement('p', { className: "mt-2 text-gray-400 text-sm pl-1 truncate" }, recipe.description)
+            )
+          )
+      );
+
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect }) => {
+        const [searchTerm, setSearchTerm] = useState('');
+        const [openSections, setOpenSections] = useState({});
+        const importInputRef = useRef(null);
+
+        const handleImportClick = () => {
+          importInputRef.current?.click();
+        };
+
+        const filteredRecipes = useMemo(() => {
+          const term = searchTerm.toLowerCase().trim();
+          if (!term) return recipes;
+          return recipes.filter(recipe =>
+            recipe.name.toLowerCase().includes(term) ||
+            (recipe.description && recipe.description.toLowerCase().includes(term)) ||
+            (recipe.emojis && recipe.emojis.join('').includes(term)) ||
+            recipe.ingredients.some(ing => ing.name.toLowerCase().includes(term)) ||
+            recipe.steps.some(step => step.toLowerCase().includes(term))
+          );
+        }, [searchTerm, recipes]);
+        
+        const { recipesBySection, uncategorizedRecipes } = useMemo(() => {
+          const sectionMap = new Map(sections.map(s => [s.id, s]));
+          const bySection = {};
+          const uncategorized = [];
+
+          for (const recipe of filteredRecipes) {
+            if (recipe.sectionId && sectionMap.has(recipe.sectionId)) {
+              if (!bySection[recipe.sectionId]) bySection[recipe.sectionId] = [];
+              bySection[recipe.sectionId].push(recipe);
+            } else {
+              uncategorized.push(recipe);
+            }
+          }
+          return { recipesBySection: bySection, uncategorizedRecipes: uncategorized };
+        }, [filteredRecipes, sections]);
+
+        useEffect(() => {
+          if (searchTerm.trim()) {
+            const newOpenSections = {};
+            Object.keys(recipesBySection).forEach(sectionId => {
+              newOpenSections[sectionId] = true;
+            });
+            setOpenSections(newOpenSections);
+          }
+        }, [searchTerm, recipesBySection]);
+
+        const toggleSection = (sectionId) => {
+          setOpenSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
+        };
+        
+        return (
+          React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+            React.createElement('h1', { className: "font-fancy text-5xl font-bold text-blue-200 text-center mb-6" }, "Sharné's recipes"),
+            
+            React.createElement('div', { className: "flex flex-col sm:flex-row justify-between items-center gap-4 mb-8" },
+              React.createElement('div', { className: "relative w-full sm:w-auto sm:flex-grow" },
+                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" }),
+                React.createElement('input', {
+                  type: "text",
+                  placeholder: "Search recipes...",
+                  value: searchTerm,
+                  onChange: e => setSearchTerm(e.target.value),
+                  className: "w-full bg-gray-800 border border-gray-700 rounded-full py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                })
+              ),
+              React.createElement('button', {
+                onClick: onAddRecipe,
+                className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center",
+                'aria-label': "Add a new recipe"
+              },
+                React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }),
+                "Add Recipe"
+              )
+            ),
+            
+            filteredRecipes.length === 0 ? (
+              React.createElement('div', { className: "text-center bg-gray-800 p-12 rounded-lg border-2 border-dashed border-gray-700" },
+                  React.createElement('h2', { className: "text-2xl font-semibold text-gray-400" }, searchTerm ? 'No Recipes Found' : 'No Recipes Yet!'),
+                  React.createElement('p', { className: "text-gray-500 mt-2" }, searchTerm ? `Your search for "${searchTerm}" did not match any recipes.` : 'Click "Add Recipe" to get started.')
+              )
+            ) : (
+              React.createElement('div', { className: "space-y-4" },
+                sections.map(section => {
+                  const sectionRecipes = recipesBySection[section.id];
+                  if (!sectionRecipes || sectionRecipes.length === 0) return null;
+
+                  return (
+                    React.createElement('div', { key: section.id, className: "bg-gray-800/50 rounded-lg border border-gray-700 overflow-hidden" },
+                      React.createElement('button', {
+                        onClick: () => toggleSection(section.id),
+                        className: "w-full flex justify-between items-center p-4 text-left font-semibold text-xl text-blue-300 hover:bg-gray-700/50"
+                      },
+                        React.createElement('span', null, 
+                            `${section.name} `,
+                            React.createElement('span', { className: "text-sm font-normal text-gray-400" }, `(${sectionRecipes.length})`)
+                        ),
+                        React.createElement(ChevronDownIcon, { className: `w-5 h-5 transition-transform ${openSections[section.id] ? 'rotate-180' : ''}` })
+                      ),
+                      openSections[section.id] && (
+                        React.createElement('div', { className: "p-4 space-y-3" },
+                          sectionRecipes.map(recipe => React.createElement(RecipeCard, { key: recipe.id, recipe: recipe, onSelect: onSelectRecipe }))
+                        )
+                      )
+                    )
+                  );
+                }),
+                
+                uncategorizedRecipes.length > 0 && (
+                  React.createElement('div', { className: "space-y-3 pt-4" },
+                    uncategorizedRecipes.map(recipe => React.createElement(RecipeCard, { key: recipe.id, recipe: recipe, onSelect: onSelectRecipe }))
+                  )
+                )
+              )
+            ),
+
+            React.createElement('div', { className: "mt-12 pt-8 border-t border-gray-700 flex flex-col sm:flex-row justify-center items-center gap-4" },
+              React.createElement('input', { 
+                  type: "file", 
+                  ref: importInputRef, 
+                  onChange: onFileSelect,
+                  className: "hidden",
+                  accept: ".json"
+              }),
+              React.createElement('button', { 
+                  onClick: handleImportClick,
+                  className: "bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+              },
+                  React.createElement(CloudUploadIcon, { className: "w-5 h-5 mr-2" }),
+                  "Import"
+              ),
+              React.createElement('button', {
+                  onClick: onExport,
+                  className: "bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+              },
+                  React.createElement(CloudDownloadIcon, { className: "w-5 h-5 mr-2" }),
+                  "Export"
+              )
+            )
+          )
+        );
+      };
+
+      // --- Start of inlined App.tsx ---
+      const App = () => {
+        const [recipes, setRecipes] = useLocalStorage('recipes', []);
+        const [sections, setSections] = useLocalStorage('sections', []);
+        const [view, setView] = useState({ page: 'list' });
+
+        const handleSaveRecipe = (recipeData, newSectionName) => {
+          let finalRecipeData = { ...recipeData };
+          
+          if (newSectionName && newSectionName.trim()) {
+              const newSection = {
+                  id: Date.now().toString(),
+                  name: newSectionName.trim()
+              };
+              setSections([...sections, newSection]);
+              finalRecipeData.sectionId = newSection.id;
+          }
+
+          if (finalRecipeData.id) {
+            setRecipes(recipes.map(r => r.id === finalRecipeData.id ? finalRecipeData : r));
+          } else {
+            const newRecipe = {
+              ...finalRecipeData,
+              ingredients: finalRecipeData.ingredients.map(ing => ({...ing, id: ing.id || `${Date.now()}-${Math.random()}`})),
+              id: Date.now().toString(),
+            };
+            setRecipes([...recipes, newRecipe]);
+          }
+          setView({ page: 'list' });
+        };
+
+        const handleDeleteRecipe = (id) => {
+          setRecipes(recipes.filter(r => r.id !== id));
+          setView({ page: 'list' });
+        };
+
+        const handleExport = () => {
+          const dataToExport = { recipes, sections };
+          const jsonString = JSON.stringify(dataToExport, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `sharnes-recipes-backup-${new Date().toISOString().split('T')[0]}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        };
+        
+        const handleFileSelect = (event) => {
+          const file = event.target.files?.[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              try {
+                  const text = e.target?.result;
+                  const data = JSON.parse(text);
+                  if (Array.isArray(data.recipes) && Array.isArray(data.sections)) {
+                      setView({ page: 'import_confirm', data });
+                  } else {
+                      alert('Invalid file format.');
+                  }
+              } catch (error) {
+                  alert('Error reading or parsing file.');
+                  console.error(error);
+              }
+          };
+          reader.readAsText(file);
+          event.target.value = '';
+        };
+
+        const handleConfirmImport = (selectedRecipes, selectedSections) => {
+            const newSections = [...sections];
+            const sectionIdMap = new Map();
+
+            selectedSections.forEach(importedSection => {
+                const existingSection = sections.find(s => s.name.trim().toLowerCase() === importedSection.name.trim().toLowerCase());
+                if (existingSection) {
+                    sectionIdMap.set(importedSection.id, existingSection.id);
+                } else {
+                    const newSection = { ...importedSection, id: `${Date.now()}-${importedSection.name}` };
+                    newSections.push(newSection);
+                    sectionIdMap.set(importedSection.id, newSection.id);
+                }
+            });
+            setSections(newSections);
+
+            const recipesToAdd = selectedRecipes.map(importedRecipe => {
+                const newId = `${Date.now()}-${importedRecipe.name}`;
+                const newIngredients = importedRecipe.ingredients.map(ing => ({ ...ing, id: `${newId}-${ing.name}-${Math.random()}` }));
+                const newSectionId = importedRecipe.sectionId ? sectionIdMap.get(importedRecipe.sectionId) : undefined;
+                
+                return {
+                    ...importedRecipe,
+                    id: newId,
+                    ingredients: newIngredients,
+                    sectionId: newSectionId,
+                };
+            });
+
+            setRecipes([...recipes, ...recipesToAdd]);
+            setView({ page: 'list' });
+        };
+
+        const renderContent = () => {
+          switch (view.page) {
+            case 'list':
+              return React.createElement(RecipeList, {
+                recipes: recipes,
+                sections: sections,
+                onSelectRecipe: (id) => setView({ page: 'detail', id }),
+                onAddRecipe: () => setView({ page: 'form' }),
+                onExport: handleExport,
+                onFileSelect: handleFileSelect
+              });
+            case 'detail':
+              const selectedRecipe = recipes.find(r => r.id === view.id);
+              if (!selectedRecipe) {
+                  setView({ page: 'list' });
+                  return null;
+              }
+              return React.createElement(RecipeDetail, {
+                recipe: selectedRecipe,
+                onBack: () => setView({ page: 'list' }),
+                onEdit: (id) => setView({ page: 'form', id }),
+                onDelete: handleDeleteRecipe
+              });
+            case 'form':
+              const recipeToEdit = view.id ? recipes.find(r => r.id === view.id) : undefined;
+              return React.createElement(RecipeForm, {
+                initialRecipe: recipeToEdit,
+                sections: sections,
+                onSave: handleSaveRecipe,
+                onCancel: () => setView({ page: 'list' })
+              });
+            case 'import_confirm':
+              return React.createElement(ImportConfirmation, {
+                data: view.data,
+                onConfirm: handleConfirmImport,
+                onCancel: () => setView({ page: 'list' })
+              });
+            default:
+              return React.createElement('div', null, 'Unknown view');
+          }
+        };
+
+        return (
+          React.createElement('div', { className: "min-h-screen font-sans" },
+            React.createElement('main', null, renderContent())
+          )
+        );
+      };
+
+      // --- Start of inlined index.tsx ---
+      const rootElement = document.getElementById('root');
+      if (!rootElement) {
+        throw new Error("Could not find root element to mount to");
+      }
+
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        React.createElement(React.StrictMode, null, 
+          React.createElement(App, null)
+        )
+      );
+    </script>
+  </body>
+</html>
