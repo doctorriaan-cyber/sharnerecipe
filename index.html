@@ -31,46 +31,25 @@
       import React, { useState, useEffect, useMemo, useRef } from 'react';
       import ReactDOM from 'react-dom/client';
 
-      // --- Start of inlined types.ts ---
-      const Unit = {
-        GRAM: 'GRAM',
-        KILOGRAM: 'KILOGRAM',
-        MILLILITER: 'MILLILITER',
-        LITER: 'LITER',
-        TEASPOON: 'TEASPOON',
-        TABLESPOON: 'TABLESPOON',
-        CUP: 'CUP',
-        FLUID_OUNCE: 'FLUID_OUNCE',
-        OUNCE: 'OUNCE',
-        POUND: 'POUND',
-        PINT: 'PINT',
-        QUART: 'QUART',
-        GALLON: 'GALLON',
-        PINCH: 'PINCH',
-        PIECE: 'PIECE',
-        CLOVE: 'CLOVE',
-        TO_TASTE: 'TO_TASTE',
-      };
-
       // --- Start of inlined constants.ts ---
-      const UNITS = [
-        { value: Unit.GRAM, label: 'Gram(s)' },
-        { value: Unit.KILOGRAM, label: 'Kilogram(s)' },
-        { value: Unit.MILLILITER, label: 'Milliliter(s)' },
-        { value: Unit.LITER, label: 'Liter(s)' },
-        { value: Unit.TEASPOON, label: 'Teaspoon(s)' },
-        { value: Unit.TABLESPOON, label: 'Tablespoon(s)' },
-        { value: Unit.CUP, label: 'Cup(s)' },
-        { value: Unit.FLUID_OUNCE, label: 'Fluid Ounce(s)' },
-        { value: Unit.OUNCE, label: 'Ounce(s)' },
-        { value: Unit.POUND, label: 'Pound(s)' },
-        { value: Unit.PINT, label: 'Pint(s)' },
-        { value: Unit.QUART, label: 'Quart(s)' },
-        { value: Unit.GALLON, label: 'Gallon(s)' },
-        { value: Unit.PINCH, label: 'Pinch(es)' },
-        { value: Unit.PIECE, label: 'Piece(s)' },
-        { value: Unit.CLOVE, label: 'Clove(s)' },
-        { value: Unit.TO_TASTE, label: 'To Taste' },
+      const DEFAULT_UNITS = [
+        { id: 'GRAM', label: 'Gram(s)' },
+        { id: 'KILOGRAM', label: 'Kilogram(s)' },
+        { id: 'MILLILITER', label: 'Milliliter(s)' },
+        { id: 'LITER', label: 'Liter(s)' },
+        { id: 'TEASPOON', label: 'Teaspoon(s)' },
+        { id: 'TABLESPOON', label: 'Tablespoon(s)' },
+        { id: 'CUP', label: 'Cup(s)' },
+        { id: 'FLUID_OUNCE', label: 'Fluid Ounce(s)' },
+        { id: 'OUNCE', label: 'Ounce(s)' },
+        { id: 'POUND', label: 'Pound(s)' },
+        { id: 'PINT', label: 'Pint(s)' },
+        { id: 'QUART', label: 'Quart(s)' },
+        { id: 'GALLON', label: 'Gallon(s)' },
+        { id: 'PINCH', label: 'Pinch(es)' },
+        { id: 'PIECE', label: 'Piece(s)' },
+        { id: 'CLOVE', label: 'Clove(s)' },
+        { id: 'TO_TASTE', label: 'To Taste' },
       ];
 
       const FOOD_EMOJIS = [
@@ -79,7 +58,7 @@
         '🥩', '🥓', '🥚', '🧀', '🍞', '🥐', '🥨', '🥞', '🧇', '🍿', '🥣',
         '🥗', '🌮', '🌯', '🥘', '🍲', '🍛', '🍙', '🍤', '🍦', '🍫', '🍬',
         '☕', '🍵', '🍷', '🍺', '🍹', '🍴', '🥄', '🔪', '🧂'
-      ].filter((v, i, a) => a.indexOf(v) === i); // Ensure no duplicates
+      ].filter((v, i, a) => a.indexOf(v) === i);
 
       // --- Start of inlined hooks/useLocalStorage.ts ---
       function useLocalStorage(key, initialValue) {
@@ -115,6 +94,12 @@
       const TrashIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.067-2.09 1.02-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" })
+          )
+      );
+      
+      const XMarkIcon = ({ className = "w-4 h-4" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 2, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M6 18L18 6M6 6l12 12" })
           )
       );
 
@@ -154,104 +139,125 @@
           )
       );
       
+      const BurgerMenuIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" })
+          )
+      );
+      
+      const ShoppingBagIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.658-.463 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" })
+          )
+      );
+
       // --- Start of inlined components/ImportConfirmation.tsx ---
       const ImportConfirmation = ({ data, onConfirm, onCancel }) => {
-          const [selectedRecipeIds, setSelectedRecipeIds] = useState(() => new Set(data.recipes.map(r => r.id)));
-          const [selectedSectionIds, setSelectedSectionIds] = useState(() => new Set(data.sections.map(s => s.id)));
+          const importedRecipes = useMemo(() => data.recipes || [], [data.recipes]);
+          const importedSections = useMemo(() => data.sections || [], [data.sections]);
+          const importedUnits = useMemo(() => data.units || [], [data.units]);
+          const importedShoppingList = useMemo(() => data.shoppingList || [], [data.shoppingList]);
 
-          const handleRecipeToggle = (id) => {
-              setSelectedRecipeIds(prev => {
+          const [selectedRecipeIds, setSelectedRecipeIds] = useState(() => new Set(importedRecipes.map(r => r.id)));
+          const [selectedSectionIds, setSelectedSectionIds] = useState(() => new Set(importedSections.map(s => s.id)));
+          const [selectedUnitIds, setSelectedUnitIds] = useState(() => new Set(importedUnits.map(u => u.id)));
+          const [selectedShoppingListIds, setSelectedShoppingListIds] = useState(() => new Set(importedShoppingList.map(i => i.id)));
+
+          const createToggleHandler = (setter) => (id) => {
+              setter(prev => {
                   const newSet = new Set(prev);
-                  if (newSet.has(id)) {
-                      newSet.delete(id);
-                  } else {
-                      newSet.add(id);
-                  }
+                  if (newSet.has(id)) newSet.delete(id);
+                  else newSet.add(id);
                   return newSet;
               });
           };
 
-          const handleSectionToggle = (id) => {
-              setSelectedSectionIds(prev => {
-                  const newSet = new Set(prev);
-                  if (newSet.has(id)) {
-                      newSet.delete(id);
-                  } else {
-                      newSet.add(id);
-                  }
-                  return newSet;
-              });
-          };
-          
-          const handleSelectAllRecipes = (select) => {
-              if (select) {
-                  setSelectedRecipeIds(new Set(data.recipes.map(r => r.id)));
-              } else {
-                  setSelectedRecipeIds(new Set());
-              }
-          };
-          
-          const handleSelectAllSections = (select) => {
-              if (select) {
-                  setSelectedSectionIds(new Set(data.sections.map(s => s.id)));
-              } else {
-                  setSelectedSectionIds(new Set());
-              }
+          const createSelectAllHandler = (setter, items) => (select) => {
+              setter(select ? new Set(items.map(item => item.id)) : new Set());
           };
 
+          const handleRecipeToggle = createToggleHandler(setSelectedRecipeIds);
+          const handleSectionToggle = createToggleHandler(setSelectedSectionIds);
+          const handleUnitToggle = createToggleHandler(setSelectedUnitIds);
+          const handleShoppingListToggle = createToggleHandler(setSelectedShoppingListIds);
+
+          const handleSelectAllRecipes = createSelectAllHandler(setSelectedRecipeIds, importedRecipes);
+          const handleSelectAllSections = createSelectAllHandler(setSelectedSectionIds, importedSections);
+          const handleSelectAllUnits = createSelectAllHandler(setSelectedUnitIds, importedUnits);
+          const handleSelectAllShoppingList = createSelectAllHandler(setSelectedShoppingListIds, importedShoppingList);
+          
           const handleConfirm = () => {
-              const selectedRecipes = data.recipes.filter(r => selectedRecipeIds.has(r.id));
-              const selectedSections = data.sections.filter(s => selectedSectionIds.has(s.id));
-              onConfirm(selectedRecipes, selectedSections);
+              const selectedRecipes = importedRecipes.filter(r => selectedRecipeIds.has(r.id));
+              const selectedSections = importedSections.filter(s => selectedSectionIds.has(s.id));
+              const selectedUnits = importedUnits.filter(u => selectedUnitIds.has(u.id));
+              const selectedShoppingList = importedShoppingList.filter(i => selectedShoppingListIds.has(i.id));
+              onConfirm(selectedRecipes, selectedSections, selectedUnits, selectedShoppingList);
           };
+
+          const CheckboxList = ({ title, items, selectedIds, onToggle, onSelectAll, itemLabelProp, emptyText }) => (
+              React.createElement('div', null,
+                  React.createElement('div', { className: "flex justify-between items-center mb-4" },
+                      React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `${title} (${selectedIds.size}/${items.length})`),
+                      React.createElement('div', { className: "flex gap-2 text-sm" },
+                          React.createElement('button', { type: "button", onClick: () => onSelectAll(true), className: "text-blue-400 hover:underline" }, "All"),
+                          React.createElement('button', { type: "button", onClick: () => onSelectAll(false), className: "text-blue-400 hover:underline" }, "None")
+                      )
+                  ),
+                  React.createElement('div', { className: "max-h-60 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
+                      items.length > 0 ? items.map(item => (
+                          React.createElement('label', { key: item.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
+                              React.createElement('input', {
+                                  type: "checkbox",
+                                  checked: selectedIds.has(item.id),
+                                  onChange: () => onToggle(item.id),
+                                  className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                              }),
+                              React.createElement('span', { className: "ml-3 text-gray-200 truncate" }, item[itemLabelProp])
+                          )
+                      )) : React.createElement('p', { className: "text-gray-500 text-center" }, emptyText)
+                  )
+              )
+          );
 
           return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
               React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-6" }, "Confirm Import"),
               React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 space-y-8" },
-                  React.createElement('div', null,
-                      React.createElement('div', { className: "flex justify-between items-center mb-4" },
-                          React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `Sections (${selectedSectionIds.size}/${data.sections.length})`),
-                          React.createElement('div', { className: "flex gap-2 text-sm" },
-                              React.createElement('button', { onClick: () => handleSelectAllSections(true), className: "text-blue-400 hover:underline" }, "All"),
-                              React.createElement('button', { onClick: () => handleSelectAllSections(false), className: "text-blue-400 hover:underline" }, "None")
-                          )
-                      ),
-                      React.createElement('div', { className: "max-h-60 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
-                          data.sections.length > 0 ? data.sections.map(section => (
-                              React.createElement('label', { key: section.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
-                                  React.createElement('input', {
-                                      type: "checkbox",
-                                      checked: selectedSectionIds.has(section.id),
-                                      onChange: () => handleSectionToggle(section.id),
-                                      className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
-                                  }),
-                                  React.createElement('span', { className: "ml-3 text-gray-200" }, section.name)
-                              )
-                          )) : React.createElement('p', { className: "text-gray-500 text-center" }, "No sections found in file.")
-                      )
-                  ),
-                  React.createElement('div', null,
-                      React.createElement('div', { className: "flex justify-between items-center mb-4" },
-                          React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `Recipes (${selectedRecipeIds.size}/${data.recipes.length})`),
-                           React.createElement('div', { className: "flex gap-2 text-sm" },
-                              React.createElement('button', { onClick: () => handleSelectAllRecipes(true), className: "text-blue-400 hover:underline" }, "All"),
-                              React.createElement('button', { onClick: () => handleSelectAllRecipes(false), className: "text-blue-400 hover:underline" }, "None")
-                          )
-                      ),
-                       React.createElement('div', { className: "max-h-96 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
-                          data.recipes.length > 0 ? data.recipes.map(recipe => (
-                               React.createElement('label', { key: recipe.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
-                                  React.createElement('input', {
-                                      type: "checkbox",
-                                      checked: selectedRecipeIds.has(recipe.id),
-                                      onChange: () => handleRecipeToggle(recipe.id),
-                                      className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
-                                  }),
-                                  React.createElement('span', { className: "ml-3 text-gray-200" }, recipe.name)
-                              )
-                          )) : React.createElement('p', { className: "text-gray-500 text-center" }, "No recipes found in file.")
-                      )
-                  ),
+                  React.createElement(CheckboxList, {
+                      title: 'Recipes',
+                      items: importedRecipes,
+                      selectedIds: selectedRecipeIds,
+                      onToggle: handleRecipeToggle,
+                      onSelectAll: handleSelectAllRecipes,
+                      itemLabelProp: 'name',
+                      emptyText: "No recipes found in file."
+                  }),
+                  React.createElement(CheckboxList, {
+                      title: 'Sections',
+                      items: importedSections,
+                      selectedIds: selectedSectionIds,
+                      onToggle: handleSectionToggle,
+                      onSelectAll: handleSelectAllSections,
+                      itemLabelProp: 'name',
+                      emptyText: "No sections found in file."
+                  }),
+                  React.createElement(CheckboxList, {
+                      title: 'Measurement Units',
+                      items: importedUnits,
+                      selectedIds: selectedUnitIds,
+                      onToggle: handleUnitToggle,
+                      onSelectAll: handleSelectAllUnits,
+                      itemLabelProp: 'label',
+                      emptyText: "No units found in file."
+                  }),
+                   React.createElement(CheckboxList, {
+                      title: 'Shopping List Items',
+                      items: importedShoppingList,
+                      selectedIds: selectedShoppingListIds,
+                      onToggle: handleShoppingListToggle,
+                      onSelectAll: handleSelectAllShoppingList,
+                      itemLabelProp: 'text',
+                      emptyText: "No shopping list items found."
+                  }),
                   React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-gray-700" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
                       React.createElement('button', { onClick: handleConfirm, className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-6 rounded-md" }, "Import Selected")
@@ -261,43 +267,87 @@
       };
 
       // --- Start of inlined components/RecipeForm.tsx ---
-      const RecipeForm = ({ initialRecipe, sections, onSave, onCancel }) => {
+      const RecipeForm = ({ initialRecipe, sections, units, onSave, onCancel, onAddSection, showConfirmDialog, showAddUnitDialog }) => {
         const [name, setName] = useState('');
         const [description, setDescription] = useState('');
+        const [categories, setCategories] = useState([]);
+        const [newCategoryName, setNewCategoryName] = useState('');
         const [selectedEmojis, setSelectedEmojis] = useState([]);
         const [ingredients, setIngredients] = useState([]);
-        const [steps, setSteps] = useState(['']);
-        const [selectedSection, setSelectedSection] = useState('');
+        const [steps, setSteps] = useState([]);
+        const [selectedSectionIds, setSelectedSectionIds] = useState(new Set());
         const [newSectionName, setNewSectionName] = useState('');
+        const ADD_NEW_UNIT_VALUE = '__add_new__';
 
         useEffect(() => {
           if (initialRecipe) {
             setName(initialRecipe.name);
             setDescription(initialRecipe.description || '');
+            setCategories(initialRecipe.categories || []);
             setSelectedEmojis(initialRecipe.emojis || []);
             setIngredients(initialRecipe.ingredients);
-            setSteps(initialRecipe.steps.length > 0 ? initialRecipe.steps : ['']);
-            setSelectedSection(initialRecipe.sectionId || '');
+
+            const initialSteps = Array.isArray(initialRecipe.steps) ? initialRecipe.steps : [];
+            const processedSteps = initialSteps.map((step, index) => {
+                if (typeof step === 'string') {
+                    return { id: `s_${Date.now()}_${index}`, text: step, categoryId: undefined };
+                }
+                return step.id ? step : { ...step, id: `s_${Date.now()}_${index}` };
+            });
+            setSteps(processedSteps.length > 0 ? processedSteps : [{ id: `s_new_${Date.now()}`, text: '', categoryId: undefined }]);
+
+            const currentSectionIds = new Set();
+            if (initialRecipe.sectionIds) {
+                initialRecipe.sectionIds.forEach(id => currentSectionIds.add(id));
+            } else if (initialRecipe.sectionId) {
+                currentSectionIds.add(initialRecipe.sectionId);
+            }
+            setSelectedSectionIds(currentSectionIds);
           } else {
             setName('');
             setDescription('');
+            setCategories([]);
             setSelectedEmojis([]);
-            setIngredients([{ id: `new_${Date.now()}`, name: '', quantity: 1, unit: Unit.PIECE }]);
-            setSteps(['']);
-            setSelectedSection('');
+            setIngredients([{ id: `new_ing_${Date.now()}`, name: '', quantity: '', unit: units[0]?.id || '', categoryId: undefined }]);
+            setSteps([{ id: `new_step_${Date.now()}`, text: '', categoryId: undefined }]);
+            setSelectedSectionIds(new Set());
           }
           setNewSectionName('');
-        }, [initialRecipe]);
+          setNewCategoryName('');
+        }, [initialRecipe, units]);
         
-        const toggleEmoji = (emoji) => {
-          setSelectedEmojis(prev =>
-            prev.includes(emoji)
-              ? prev.filter(e => e !== emoji)
-              : [...prev, emoji]
-          );
+        const addEmoji = (emoji) => {
+          setSelectedEmojis(prev => [...prev, emoji]);
+        };
+        
+        const removeLastEmoji = () => {
+          setSelectedEmojis(prev => prev.slice(0, -1));
+        };
+        
+        const handleAddCategory = () => {
+            const trimmedName = newCategoryName.trim();
+            if (!trimmedName || categories.some(c => c.name.toLowerCase() === trimmedName.toLowerCase())) {
+                setNewCategoryName('');
+                return;
+            }
+            const newCategory = { id: `cat_${Date.now()}`, name: trimmedName };
+            setCategories(prev => [...prev, newCategory]);
+            setNewCategoryName('');
+        };
+        
+        const handleRemoveCategory = (id) => {
+            setCategories(prev => prev.filter(c => c.id !== id));
+            setIngredients(prev => prev.map(ing => ing.categoryId === id ? { ...ing, categoryId: undefined } : ing));
+            setSteps(prev => prev.map(step => step.categoryId === id ? { ...step, categoryId: undefined } : step));
         };
 
         const handleIngredientChange = (index, field, value) => {
+          if (field === 'unit' && value === ADD_NEW_UNIT_VALUE) {
+            showAddUnitDialog(newUnit => {
+              handleIngredientChange(index, 'unit', newUnit.id);
+            });
+            return;
+          }
           const newIngredients = ingredients.map((ing, i) => 
               i === index ? { ...ing, [field]: value } : ing
           );
@@ -305,25 +355,79 @@
         };
 
         const addIngredient = () => {
-          setIngredients([...ingredients, { id: `new_${Date.now()}`, name: '', quantity: 1, unit: Unit.PIECE }]);
+          const lastCategoryId = ingredients.length > 0 ? ingredients[ingredients.length - 1].categoryId : undefined;
+          setIngredients([...ingredients, { id: `new_ing_${Date.now()}`, name: '', quantity: '', unit: units[0]?.id || '', categoryId: lastCategoryId }]);
         };
 
         const removeIngredient = (index) => {
-          setIngredients(ingredients.filter((_, i) => i !== index));
+          const ingredientToRemove = ingredients[index];
+          if (!ingredientToRemove.name.trim() && !String(ingredientToRemove.quantity).trim()) {
+            setIngredients(prev => prev.filter((_, i) => i !== index));
+            return;
+          }
+          const ingredientName = ingredientToRemove.name || 'this ingredient';
+          showConfirmDialog(
+              'Delete Ingredient',
+              `Are you sure you want to delete "${ingredientName}"?`,
+              () => {
+                  setIngredients(currentIngredients => currentIngredients.filter((_, i) => i !== index));
+              }
+          );
         };
         
-        const handleStepChange = (index, value) => {
-          const newSteps = [...steps];
-          newSteps[index] = value;
-          setSteps(newSteps);
+        const handleStepChange = (index, field, value) => {
+            const newSteps = steps.map((s, i) =>
+                i === index ? { ...s, [field]: value } : s
+            );
+            setSteps(newSteps);
         };
 
         const addStep = () => {
-          setSteps([...steps, '']);
+          const lastCategoryId = steps.length > 0 ? steps[steps.length - 1].categoryId : undefined;
+          setSteps([...steps, { id: `new_step_${Date.now()}`, text: '', categoryId: lastCategoryId }]);
         };
 
         const removeStep = (index) => {
-          setSteps(steps.filter((_, i) => i !== index));
+          const stepToRemove = steps[index];
+          if (!stepToRemove.text.trim()) {
+            setSteps(prev => prev.filter((_, i) => i !== index));
+            return;
+          }
+          const stepText = stepToRemove.text;
+          const shortStepText = stepText.length > 40 ? `${stepText.substring(0, 40)}...` : stepText;
+          showConfirmDialog(
+              'Delete Step',
+              `Are you sure you want to delete step ${index + 1} ("${shortStepText}")?`,
+              () => {
+                  setSteps(currentSteps => currentSteps.filter((_, i) => i !== index));
+              }
+          );
+        };
+
+        const handleSectionToggle = (sectionId) => {
+            setSelectedSectionIds(prev => {
+                const newSet = new Set(prev);
+                if (newSet.has(sectionId)) {
+                    newSet.delete(sectionId);
+                } else {
+                    newSet.add(sectionId);
+                }
+                return newSet;
+            });
+        };
+
+        const handleAddSection = () => {
+            const trimmedName = newSectionName.trim();
+            if (!trimmedName) return;
+            const newSection = onAddSection(trimmedName);
+            if (newSection) {
+                setSelectedSectionIds(prev => {
+                    const newSet = new Set(prev);
+                    newSet.add(newSection.id);
+                    return newSet;
+                });
+                setNewSectionName('');
+            }
         };
         
         const handleSubmit = (e) => {
@@ -332,67 +436,68 @@
               alert("Please enter a recipe name.");
               return;
           }
-          if (selectedSection === 'new' && !newSectionName.trim()) {
-              alert("Please enter a name for the new section.");
-              return;
-          }
 
           const finalIngredients = ingredients.filter(ing => ing.name.trim() !== '');
-          const finalSteps = steps.filter(step => step.trim() !== '');
+          const finalSteps = steps.filter(step => step.text.trim() !== '');
 
           const recipeData = {
               id: initialRecipe?.id,
               name,
               description,
+              categories,
               emojis: selectedEmojis,
               ingredients: finalIngredients,
               steps: finalSteps,
-              sectionId: selectedSection !== 'new' ? selectedSection : undefined,
+              sectionIds: Array.from(selectedSectionIds),
           };
 
-          onSave(recipeData, selectedSection === 'new' ? newSectionName : undefined);
+          onSave(recipeData);
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
           React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
           React.createElement('form', { onSubmit: handleSubmit, className: "space-y-8 bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
-            React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
-              React.createElement('div', null,
-                React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "Recipe Name"),
-                React.createElement('input', {
-                  id: "recipe-name",
-                  type: "text",
-                  value: name,
-                  onChange: (e) => setName(e.target.value),
-                  placeholder: "e.g., Chocolate Chip Cookies",
-                  className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500",
-                  required: true
-                })
-              ),
-              React.createElement('div', null,
-                React.createElement('label', { htmlFor: "section-select", className: "block text-lg font-medium text-gray-300 mb-2" }, "Section"),
-                React.createElement('select', { 
-                    id: "section-select",
-                    value: selectedSection,
-                    onChange: (e) => setSelectedSection(e.target.value),
-                    className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
-                  },
-                  React.createElement('option', { value: "" }, "Uncategorized"),
-                  sections.map(section => React.createElement('option', { key: section.id, value: section.id }, section.name)),
-                  React.createElement('option', { value: "new" }, "-- Add New Section --")
-                )
-              )
-            ),
-            selectedSection === 'new' && React.createElement('div', null,
-              React.createElement('label', { htmlFor: "new-section-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "New Section Name"),
+            React.createElement('div', null,
+              React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "Recipe Name"),
               React.createElement('input', {
-                id: "new-section-name",
+                id: "recipe-name",
                 type: "text",
-                value: newSectionName,
-                onChange: e => setNewSectionName(e.target.value),
-                placeholder: "e.g., Desserts",
-                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                value: name,
+                onChange: (e) => setName(e.target.value),
+                placeholder: "e.g., Chocolate Chip Cookies",
+                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500",
+                required: true
               })
+            ),
+            React.createElement('div', null,
+              React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Sections"),
+              React.createElement('div', { className: "space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-48 overflow-y-auto" },
+                sections.length > 0 
+                  ? sections.map(section => React.createElement('label', { key: section.id, className: "flex items-center cursor-pointer" },
+                      React.createElement('input', {
+                        type: "checkbox",
+                        checked: selectedSectionIds.has(section.id),
+                        onChange: () => handleSectionToggle(section.id),
+                        className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                      }),
+                      React.createElement('span', { className: "ml-3 text-gray-200" }, section.name)
+                    ))
+                  : React.createElement('p', { className: "text-gray-500" }, "No sections created yet.")
+              ),
+              React.createElement('div', { className: "flex items-center gap-2 mt-3" },
+                React.createElement('input', {
+                  type: "text",
+                  value: newSectionName,
+                  onChange: e => setNewSectionName(e.target.value),
+                  placeholder: "Create a new section...",
+                  className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                }),
+                React.createElement('button', {
+                  type: "button",
+                  onClick: handleAddSection,
+                  className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                }, "Add Section")
+              )
             ),
             React.createElement('div', null,
               React.createElement('label', { htmlFor: "recipe-description", className: "block text-lg font-medium text-gray-300 mb-2" }, "Description"),
@@ -406,35 +511,77 @@
               })
             ),
             React.createElement('div', null,
-              React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Emojis"),
+                React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Categories"),
+                React.createElement('div', { className: "flex items-center gap-2 mb-3" },
+                    React.createElement('input', {
+                        type: "text",
+                        value: newCategoryName,
+                        onChange: e => setNewCategoryName(e.target.value),
+                        placeholder: "e.g., Crust, Filling...",
+                        className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                    }),
+                    React.createElement('button', {
+                        type: "button",
+                        onClick: handleAddCategory,
+                        className: "bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                    }, "Add Category")
+                ),
+                categories.length > 0 && React.createElement('div', { className: "flex flex-wrap gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
+                    categories.map(cat => React.createElement('span', { key: cat.id, className: "bg-gray-600 text-gray-200 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2" },
+                        cat.name,
+                        React.createElement('button', { type: "button", onClick: () => handleRemoveCategory(cat.id), className: "text-gray-400 hover:text-white" },
+                            React.createElement(XMarkIcon, { className: "w-3 h-3" })
+                        )
+                    ))
+                )
+            ),
+            React.createElement('div', null,
+              React.createElement('div', { className: "flex items-center gap-4 mb-2" },
+                React.createElement('label', { className: "text-lg font-medium text-gray-300 flex-shrink-0" }, "Emojis"),
+                React.createElement('div', { className: "flex-grow flex items-center bg-gray-900/50 border border-gray-700 rounded-md min-h-[50px] px-3 py-2" },
+                  React.createElement('div', { className: "flex-grow text-2xl tracking-widest overflow-x-auto whitespace-nowrap" },
+                    selectedEmojis.length > 0
+                      ? selectedEmojis.join('')
+                      : React.createElement('span', { className: "text-gray-500 text-base tracking-normal" }, "Select from the grid below...")
+                  ),
+                  React.createElement('button', {
+                    type: "button",
+                    onClick: removeLastEmoji,
+                    className: "ml-2 px-3 py-1 text-sm bg-red-600 hover:bg-red-500 rounded-md text-white font-semibold flex-shrink-0 disabled:bg-gray-500 disabled:cursor-not-allowed",
+                    'aria-label': "Remove last emoji",
+                    disabled: selectedEmojis.length === 0
+                  }, "Delete")
+                )
+              ),
               React.createElement('div', { className: "p-3 bg-gray-900/50 rounded-md border border-gray-700 flex flex-wrap gap-2" },
                 FOOD_EMOJIS.map(emoji => React.createElement('button', {
                   key: emoji,
                   type: "button",
-                  onClick: () => toggleEmoji(emoji),
-                  className: `text-2xl p-2 rounded-md transition-colors duration-200 ${selectedEmojis.includes(emoji) ? 'bg-blue-500/50' : 'hover:bg-gray-700'}`,
-                  'aria-pressed': selectedEmojis.includes(emoji)
+                  onClick: () => addEmoji(emoji),
+                  className: "text-2xl p-2 rounded-md transition-colors duration-200 hover:bg-gray-700",
+                  'aria-label': `Add ${emoji} emoji`
                 }, emoji))
               )
             ),
             React.createElement('div', null,
               React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
               React.createElement('div', { className: "space-y-4" },
-                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "flex flex-col sm:flex-row items-center gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
+                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 sm:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
                   React.createElement('input', {
-                    type: "number",
+                    type: "text",
                     value: ing.quantity,
-                    onChange: (e) => handleIngredientChange(index, 'quantity', parseFloat(e.target.value) || 0),
+                    onChange: (e) => handleIngredientChange(index, 'quantity', e.target.value),
                     className: "w-full sm:w-20 p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
-                    placeholder: "Qty",
-                    min: "0",
-                    step: "0.01"
+                    placeholder: "Qty"
                   }),
                   React.createElement('select', {
                     value: ing.unit,
                     onChange: (e) => handleIngredientChange(index, 'unit', e.target.value),
                     className: "w-full sm:w-32 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  }, UNITS.map(unit => React.createElement('option', { key: unit.value, value: unit.value }, unit.label))),
+                  }, 
+                    units.map(unit => React.createElement('option', { key: unit.id, value: unit.id }, unit.label)),
+                    React.createElement('option', { value: ADD_NEW_UNIT_VALUE, className: "text-blue-400 font-bold" }, 'Add new...')
+                  ),
                   React.createElement('input', {
                     type: "text",
                     value: ing.name,
@@ -442,7 +589,15 @@
                     className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
                     placeholder: "Ingredient Name"
                   }),
-                  React.createElement('button', { type: "button", onClick: () => removeIngredient(index), className: "text-red-500 hover:text-red-400 p-2" },
+                   React.createElement('select', {
+                    value: ing.categoryId || '',
+                    onChange: (e) => handleIngredientChange(index, 'categoryId', e.target.value || undefined),
+                    className: `w-full sm:w-32 p-2 bg-gray-700 border border-gray-600 rounded-md text-white ${!ing.categoryId ? 'text-gray-400' : ''}`
+                  }, 
+                    React.createElement('option', { value: '' }, 'Uncategorized'),
+                    categories.map(cat => React.createElement('option', { key: cat.id, value: cat.id }, cat.name))
+                  ),
+                  React.createElement('button', { type: "button", onClick: () => removeIngredient(index), className: "text-red-500 hover:text-red-400 p-2 justify-self-end" },
                     React.createElement(TrashIcon, { className: "w-5 h-5" })
                   )
                 ))
@@ -456,15 +611,25 @@
             React.createElement('div', null,
               React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
               React.createElement('div', { className: "space-y-4" },
-                steps.map((step, index) => React.createElement('div', { key: index, className: "flex items-start gap-2" },
+                steps.map((step, index) => React.createElement('div', { key: step.id, className: "flex items-start gap-2" },
                   React.createElement('span', { className: "text-lg font-bold text-gray-500 pt-2" }, `${index + 1}.`),
-                  React.createElement('textarea', {
-                    value: step,
-                    onChange: (e) => handleStepChange(index, e.target.value),
-                    rows: 3,
-                    className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
-                    placeholder: "Describe step..."
-                  }),
+                   React.createElement('div', { className: "flex-grow flex flex-col gap-2" },
+                      React.createElement('textarea', {
+                        value: step.text,
+                        onChange: (e) => handleStepChange(index, 'text', e.target.value),
+                        rows: 3,
+                        className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white w-full",
+                        placeholder: "Describe step..."
+                      }),
+                      React.createElement('select', {
+                        value: step.categoryId || '',
+                        onChange: (e) => handleStepChange(index, 'categoryId', e.target.value || undefined),
+                        className: `w-full sm:w-40 p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm ${!step.categoryId ? 'text-gray-400' : ''}`
+                      }, 
+                        React.createElement('option', { value: '' }, 'Uncategorized'),
+                        categories.map(cat => React.createElement('option', { key: cat.id, value: cat.id }, cat.name))
+                      )
+                    ),
                   React.createElement('button', { type: "button", onClick: () => removeStep(index), className: "text-red-500 hover:text-red-400 p-2" },
                     React.createElement(TrashIcon, { className: "w-5 h-5" })
                   )
@@ -485,8 +650,11 @@
       };
       
       // --- Start of inlined components/RecipeDetail.tsx ---
-      const RecipeDetail = ({ recipe, onBack, onEdit, onDelete }) => {
+      const RecipeDetail = ({ recipe, onBack, onEdit, onDelete, showConfirmDialog, units, onAddIngredientsToShoppingList }) => {
           const [multiplier, setMultiplier] = useState(1);
+          const [justAdded, setJustAdded] = useState(false);
+          
+          const unitMap = useMemo(() => new Map(units.map(u => [u.id, u])), [units]);
 
           const multipliers = [
               { label: '¼', value: 0.25 },
@@ -504,10 +672,86 @@
           }
           
           const handleDelete = () => {
-              if (window.confirm(`Are you sure you want to delete "${recipe.name}"? This action cannot be undone.`)) {
-                  onDelete(recipe.id);
-              }
+              showConfirmDialog(
+                  'Delete Recipe',
+                  `Are you sure you want to delete "${recipe.name}"? This action cannot be undone.`,
+                  () => onDelete(recipe.id)
+              );
           };
+
+          const handleAddAllToShoppingList = () => {
+            if (justAdded) return;
+    
+            const itemsToAdd = recipe.ingredients.map(ing => {
+                const quantityStr = String(ing.quantity);
+                const numericQuantity = Number(quantityStr);
+                const isNumeric = quantityStr.trim() !== '' && isFinite(numericQuantity);
+                
+                const quantityDisplay = isNumeric ? formatQuantity(numericQuantity) : ing.quantity;
+                const unitLabel = unitMap.get(ing.unit)?.label || ing.unit;
+    
+                const prefix = (quantityDisplay || unitLabel) 
+                    ? `${quantityDisplay} ${unitLabel.toLowerCase()}`.trim() + ' - ' 
+                    : '';
+                return `${prefix}${ing.name}`;
+            });
+    
+            onAddIngredientsToShoppingList(itemsToAdd);
+    
+            setJustAdded(true);
+            setTimeout(() => {
+                setJustAdded(false);
+            }, 2000);
+          };
+
+          const { groupedIngredients, uncategorizedIngredients } = useMemo(() => {
+              const grouped = {};
+              const uncategorized = [];
+              if (!recipe.ingredients) return { grouped: {}, uncategorized: [] };
+              
+              recipe.ingredients.forEach(ing => {
+                  if (ing.categoryId) {
+                      if (!grouped[ing.categoryId]) grouped[ing.categoryId] = [];
+                      grouped[ing.categoryId].push(ing);
+                  } else {
+                      uncategorized.push(ing);
+                  }
+              });
+              return { groupedIngredients: grouped, uncategorizedIngredients: uncategorized };
+          }, [recipe.ingredients]);
+          
+          const { groupedSteps, uncategorizedSteps } = useMemo(() => {
+              const grouped = {};
+              const uncategorized = [];
+              if (!recipe.steps) return { grouped: {}, uncategorized: [] };
+              
+              recipe.steps.forEach(step => {
+                  const stepObj = typeof step === 'string' ? { text: step, categoryId: null } : step;
+                  if (stepObj.categoryId) {
+                      if (!grouped[stepObj.categoryId]) grouped[stepObj.categoryId] = [];
+                      grouped[stepObj.categoryId].push(stepObj.text);
+                  } else {
+                      uncategorized.push(stepObj.text);
+                  }
+              });
+              return { groupedSteps: grouped, uncategorizedSteps: uncategorized };
+          }, [recipe.steps]);
+
+          const renderIngredientItem = (ing) => {
+              const isScaling = multiplier !== 1;
+              const quantityStr = String(ing.quantity);
+              const numericQuantity = Number(quantityStr);
+              const isNumeric = quantityStr.trim() !== '' && isFinite(numericQuantity);
+              const quantityDisplay = isNumeric ? formatQuantity(numericQuantity) : ing.quantity;
+              const quantityColor = (isScaling && !isNumeric && ing.quantity) ? 'text-red-400' : 'text-gray-100';
+              const unitLabel = unitMap.get(ing.unit)?.label || ing.unit;
+              
+              return React.createElement('li', { key: ing.id },
+                  React.createElement('span', { className: `font-medium ${quantityColor}` }, `${quantityDisplay} ${unitLabel.toLowerCase()}`), ` - ${ing.name}`
+              );
+          };
+
+          const hasCategories = recipe.categories && recipe.categories.length > 0;
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
             React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
@@ -552,45 +796,114 @@
                             ))
                         )
                     ),
-                    React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" },
-                        recipe.ingredients.map(ing => (
-                            React.createElement('li', { key: ing.id },
-                                React.createElement('span', { className: "font-medium text-gray-100" }, `${formatQuantity(ing.quantity)} ${ing.unit.toLowerCase()}`), ` - ${ing.name}`
+                    React.createElement('div', { className: "mt-4 mb-6" },
+                        React.createElement('button', {
+                            onClick: handleAddAllToShoppingList,
+                            disabled: justAdded,
+                            className: `w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md font-semibold transition-colors duration-300 ${
+                                justAdded
+                                ? 'bg-green-600 text-white cursor-default'
+                                : 'bg-blue-600 hover:bg-blue-500 text-white'
+                            }`
+                        }, 
+                            React.createElement(ShoppingBagIcon, { className: "w-5 h-5" }),
+                            justAdded ? 'Added to List!' : 'Add Ingredients to Shopping List'
+                        )
+                    ),
+                    hasCategories ?
+                        React.createElement('div', { className: "space-y-4" },
+                            recipe.categories.map(category => {
+                                const ingredientsForCategory = groupedIngredients[category.id];
+                                if (!ingredientsForCategory || ingredientsForCategory.length === 0) return null;
+                                return React.createElement('div', { key: category.id },
+                                    React.createElement('h3', { className: "text-lg font-bold text-blue-300 mb-2 border-b border-gray-700 pb-1" }, category.name),
+                                    React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300 pl-2" }, ingredientsForCategory.map(renderIngredientItem))
+                                )
+                            }),
+                            uncategorizedIngredients.length > 0 && React.createElement('div', { className: "pt-4" },
+                                React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" }, uncategorizedIngredients.map(renderIngredientItem))
                             )
-                        ))
-                    )
+                        ) :
+                        React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" }, recipe.ingredients.map(renderIngredientItem))
                 ),
                 React.createElement('div', null,
                     React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
-                    React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" },
-                        recipe.steps.map((step, index) => (
-                            React.createElement('li', { key: index, className: "pl-2" }, step)
-                        ))
-                    )
+                     hasCategories ? 
+                        React.createElement('div', { className: "space-y-6" },
+                            recipe.categories.map(category => {
+                                const stepsForCategory = groupedSteps[category.id];
+                                if (!stepsForCategory || stepsForCategory.length === 0) return null;
+                                return React.createElement('div', { key: category.id },
+                                    React.createElement('h3', { className: "text-lg font-bold text-blue-300 mb-2 border-b border-gray-700 pb-1" }, category.name),
+                                    React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" }, 
+                                        stepsForCategory.map((step, index) => React.createElement('li', { key: index, className: "pl-2" }, step))
+                                    )
+                                )
+                            }),
+                            uncategorizedSteps.length > 0 && React.createElement('div', { className: "pt-4" },
+                                React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" }, 
+                                    uncategorizedSteps.map((step, index) => React.createElement('li', { key: index, className: "pl-2" }, step))
+                                )
+                            )
+                        ) :
+                        React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" },
+                           uncategorizedSteps.map((step, index) => (
+                                React.createElement('li', { key: index, className: "pl-2" }, step)
+                            ))
+                        )
                 )
             )
         );
       };
 
       // --- Start of inlined components/RecipeList.tsx ---
-      const RecipeCard = ({ recipe, onSelect }) => (
-          React.createElement('div', {
-            onClick: () => onSelect(recipe.id),
-            className: "bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-xl hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-gray-700"
-          },
-            React.createElement('div', { className: "flex items-center gap-3" },
-              recipe.emojis && recipe.emojis.length > 0 && (
-                  React.createElement('span', { className: "text-2xl flex-shrink-0", 'aria-hidden': "true" }, recipe.emojis.join(''))
-              ),
-              React.createElement('h2', { className: "text-xl font-semibold text-gray-200 truncate" }, recipe.name)
-            ),
-            recipe.description && (
-              React.createElement('p', { className: "mt-2 text-gray-400 text-sm pl-1 truncate" }, recipe.description)
-            )
-          )
-      );
+      const RecipeCard = ({ recipe, onSelect }) => {
+        const emojis = recipe.emojis || [];
+        const numEmojis = emojis.length;
 
-      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect }) => {
+        const gridCols = numEmojis > 1 ? Math.ceil(Math.sqrt(numEmojis)) : 1;
+
+        let emojiSizeClass = 'text-3xl';
+        if (gridCols === 3) {
+            emojiSizeClass = 'text-2xl';
+        } else if (gridCols === 4) {
+            emojiSizeClass = 'text-lg';
+        } else if (gridCols >= 5) {
+            emojiSizeClass = 'text-base';
+        }
+
+        return React.createElement('div', {
+          onClick: () => onSelect(recipe.id),
+          className: "bg-gray-800 rounded-lg shadow-md hover:shadow-xl hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-gray-700 flex overflow-hidden min-h-[88px]"
+        },
+          numEmojis > 0 && React.createElement('div', {
+            className: "flex-shrink-0 w-20 flex items-center justify-center p-2 border-r border-gray-700"
+          },
+            React.createElement('div', {
+                className: "grid place-items-center gap-0.5",
+                style: { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` },
+                'aria-hidden': "true"
+            }, emojis.map((emoji, index) =>
+                React.createElement('span', {
+                    key: index,
+                    className: `${emojiSizeClass} leading-tight`
+                }, emoji)
+            ))
+          ),
+          React.createElement('div', {
+            className: "p-4 flex-grow min-w-0 flex flex-col justify-center"
+          },
+            React.createElement('h2', {
+              className: "text-xl font-semibold text-gray-200 truncate"
+            }, recipe.name),
+            recipe.description && React.createElement('p', {
+              className: "mt-2 text-gray-400 text-sm truncate"
+            }, recipe.description)
+          )
+        );
+      };
+
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList }) => {
         const [searchTerm, setSearchTerm] = useState('');
         const [openSections, setOpenSections] = useState({});
         const importInputRef = useRef(null);
@@ -607,24 +920,34 @@
             (recipe.description && recipe.description.toLowerCase().includes(term)) ||
             (recipe.emojis && recipe.emojis.join('').includes(term)) ||
             recipe.ingredients.some(ing => ing.name.toLowerCase().includes(term)) ||
-            recipe.steps.some(step => step.toLowerCase().includes(term))
+            (Array.isArray(recipe.steps) && recipe.steps.some(step => (typeof step === 'string' ? step : step.text).toLowerCase().includes(term)))
           );
         }, [searchTerm, recipes]);
         
         const { recipesBySection, uncategorizedRecipes } = useMemo(() => {
-          const sectionMap = new Map(sections.map(s => [s.id, s]));
-          const bySection = {};
-          const uncategorized = [];
+            const sectionMap = new Map(sections.map(s => [s.id, s]));
+            const bySection = {};
+            const uncategorized = [];
 
-          for (const recipe of filteredRecipes) {
-            if (recipe.sectionId && sectionMap.has(recipe.sectionId)) {
-              if (!bySection[recipe.sectionId]) bySection[recipe.sectionId] = [];
-              bySection[recipe.sectionId].push(recipe);
-            } else {
-              uncategorized.push(recipe);
+            for (const recipe of filteredRecipes) {
+                let isCategorized = false;
+                const targetSectionIds = recipe.sectionIds || (recipe.sectionId ? [recipe.sectionId] : []);
+                
+                if (targetSectionIds.length > 0) {
+                    for (const sectionId of targetSectionIds) {
+                        if (sectionMap.has(sectionId)) {
+                            if (!bySection[sectionId]) bySection[sectionId] = [];
+                            bySection[sectionId].push(recipe);
+                            isCategorized = true;
+                        }
+                    }
+                }
+
+                if (!isCategorized) {
+                    uncategorized.push(recipe);
+                }
             }
-          }
-          return { recipesBySection: bySection, uncategorizedRecipes: uncategorized };
+            return { recipesBySection: bySection, uncategorizedRecipes: uncategorized };
         }, [filteredRecipes, sections]);
 
         useEffect(() => {
@@ -643,8 +966,21 @@
         
         return (
           React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-            React.createElement('h1', { className: "font-fancy text-5xl font-bold text-blue-200 text-center mb-6" }, "Sharné's recipes"),
-            
+             React.createElement('div', { className: "relative mb-6" },
+                React.createElement('h1', { className: "font-fancy text-5xl font-bold text-blue-200 text-center" }, "Sharné's recipes"),
+                React.createElement('div', { className: "absolute top-0 left-0 flex items-center gap-2" },
+                    React.createElement('button', {
+                        onClick: onGoToSettings,
+                        className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                        'aria-label': "Settings"
+                    }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
+                    React.createElement('button', {
+                        onClick: onGoToShoppingList,
+                        className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                        'aria-label': "Shopping List"
+                    }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
+                )
+            ),
             React.createElement('div', { className: "flex flex-col sm:flex-row justify-between items-center gap-4 mb-8" },
               React.createElement('div', { className: "relative w-full sm:w-auto sm:flex-grow" },
                 React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" }),
@@ -732,36 +1068,281 @@
           )
         );
       };
+      
+      // --- Start of inlined components/Settings.tsx ---
+      const Settings = ({ units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog }) => {
+        const [newUnitLabel, setNewUnitLabel] = useState('');
+
+        const handleAdd = () => {
+          const trimmed = newUnitLabel.trim();
+          if (trimmed) {
+            onAddUnit(trimmed);
+            setNewUnitLabel('');
+          }
+        };
+
+        const handleDelete = (unit) => {
+          showConfirmDialog(
+            'Delete Unit',
+            `Are you sure you want to delete "${unit.label}"? This cannot be undone.`,
+            () => onDeleteUnit(unit.id)
+          );
+        };
+
+        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+          React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+              React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
+              "Back to Recipes"
+          ),
+          React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
+              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, "Settings"),
+              React.createElement('div', { className: "space-y-6" },
+                  React.createElement('div', null,
+                      React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Measurement Units"),
+                      React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+                          React.createElement('input', {
+                              type: "text",
+                              value: newUnitLabel,
+                              onChange: e => setNewUnitLabel(e.target.value),
+                              placeholder: "New unit name (e.g. Pinch)",
+                              className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                          }),
+                          React.createElement('button', {
+                              type: "button",
+                              onClick: handleAdd,
+                              className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                          }, "Add Unit")
+                      ),
+                      React.createElement('div', { className: "space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-96 overflow-y-auto" },
+                          units.length > 0 ? units.map(unit =>
+                              React.createElement('div', { key: unit.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-gray-700/50" },
+                                  React.createElement('span', { className: "text-gray-200" }, unit.label),
+                                  React.createElement('button', {
+                                      onClick: () => handleDelete(unit),
+                                      className: "text-red-500 hover:text-red-400 p-1"
+                                  }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
+                              )
+                          ) : React.createElement('p', { className: "text-gray-500 text-center" }, "No units defined.")
+                      )
+                  )
+              )
+          )
+        );
+      };
+      
+       // --- Start of inlined components/ShoppingList.tsx ---
+      const ShoppingList = ({ items, onAddItem, onToggleItem, onDeleteItem, onBack, onClearAll, showConfirmDialog }) => {
+        const [newItemText, setNewItemText] = useState('');
+
+        const handleAdd = (e) => {
+            e.preventDefault();
+            const trimmed = newItemText.trim();
+            if (trimmed) {
+                onAddItem(trimmed);
+                setNewItemText('');
+            }
+        };
+        
+        const handleDeleteItemWithConfirm = (item) => {
+            showConfirmDialog(
+                'Delete Item',
+                `Are you sure you want to delete "${item.text}"?`,
+                () => onDeleteItem(item.id)
+            );
+        };
+
+        const handleClearAllWithConfirm = () => {
+            showConfirmDialog(
+                'Clear Shopping List',
+                'Are you sure you want to remove all items from the list?',
+                onClearAll
+            );
+        };
+
+        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+          React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+              React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
+              "Back to Recipes"
+          ),
+          React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
+              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, "Shopping List"),
+              React.createElement('form', { onSubmit: handleAdd, className: "flex items-center gap-2 mb-6" },
+                  React.createElement('input', {
+                      type: "text",
+                      value: newItemText,
+                      onChange: e => setNewItemText(e.target.value),
+                      placeholder: "e.g., Flour, sugar...",
+                      className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                  }),
+                  React.createElement('button', {
+                      type: "submit",
+                      className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                  }, "Add Item")
+              ),
+              React.createElement('div', { className: "space-y-3 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-[60vh] overflow-y-auto" },
+                  items.length > 0 ? items.map(item =>
+                      React.createElement('div', { key: item.id, className: "flex items-center justify-between p-3 rounded-md hover:bg-gray-700/50" },
+                          React.createElement('label', { className: "flex items-center cursor-pointer flex-grow" },
+                              React.createElement('input', {
+                                  type: 'checkbox',
+                                  checked: item.completed,
+                                  onChange: () => onToggleItem(item.id),
+                                  className: "w-6 h-6 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                              }),
+                              React.createElement('span', { className: `ml-4 text-lg ${item.completed ? 'line-through text-gray-500' : 'text-gray-200'}` }, item.text)
+                          ),
+                          React.createElement('button', {
+                              onClick: () => handleDeleteItemWithConfirm(item),
+                              className: "text-red-500 hover:text-red-400 p-1 ml-4"
+                          }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
+                      )
+                  ) : React.createElement('p', { className: "text-gray-500 text-center py-4" }, "Your shopping list is empty.")
+              ),
+              items.length > 0 && React.createElement('div', { className: "mt-6 flex justify-end" },
+                  React.createElement('button', {
+                      type: "button",
+                      onClick: handleClearAllWithConfirm,
+                      className: "bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+                  }, "Clear All")
+              )
+          )
+        );
+      };
 
       // --- Start of inlined App.tsx ---
+      const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel }) => {
+          if (!isOpen) return null;
+
+          return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50", 'aria-modal': "true", role: "dialog" },
+              React.createElement('div', { className: "bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-md m-4" },
+                  React.createElement('div', { className: "p-6" },
+                      React.createElement('h2', { className: "text-2xl font-bold text-gray-100 mb-4" }, title),
+                      React.createElement('p', { className: "text-gray-300 mb-6" }, message)
+                  ),
+                  React.createElement('div', { className: "bg-gray-700/50 px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
+                      React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-4 rounded-md" }, "Cancel"),
+                      React.createElement('button', { onClick: onConfirm, className: "bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md" }, "Confirm")
+                  )
+              )
+          );
+      };
+      
+      const AddUnitDialog = ({ isOpen, onSave, onCancel }) => {
+          if (!isOpen) return null;
+          const [label, setLabel] = useState('');
+
+          const handleSave = () => {
+              const trimmed = label.trim();
+              if (trimmed) {
+                  onSave(trimmed);
+                  setLabel('');
+              }
+          };
+
+          return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50", 'aria-modal': "true", role: "dialog" },
+              React.createElement('div', { className: "bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-md m-4" },
+                  React.createElement('div', { className: "p-6" },
+                      React.createElement('h2', { className: "text-2xl font-bold text-gray-100 mb-4" }, "Add New Unit"),
+                      React.createElement('p', { className: "text-gray-400 mb-2" }, "Enter the name for the new measurement unit."),
+                      React.createElement('input', {
+                          type: "text",
+                          value: label,
+                          onChange: e => setLabel(e.target.value),
+                          placeholder: "e.g., Pinch, Dash, etc.",
+                          className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                      })
+                  ),
+                  React.createElement('div', { className: "bg-gray-700/50 px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
+                      React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-4 rounded-md" }, "Cancel"),
+                      React.createElement('button', { onClick: handleSave, className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md" }, "Save")
+                  )
+              )
+          );
+      };
+
       const App = () => {
         const [recipes, setRecipes] = useLocalStorage('recipes', []);
         const [sections, setSections] = useLocalStorage('sections', []);
+        const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
+        const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
         const [view, setView] = useState({ page: 'list' });
+        const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
 
-        const handleSaveRecipe = (recipeData, newSectionName) => {
-          let finalRecipeData = { ...recipeData };
-          
-          if (newSectionName && newSectionName.trim()) {
-              const newSection = {
-                  id: Date.now().toString(),
-                  name: newSectionName.trim()
-              };
-              setSections([...sections, newSection]);
-              finalRecipeData.sectionId = newSection.id;
-          }
+        const showConfirmDialog = (title, message, onConfirm) => {
+            setConfirmState({ isOpen: true, title, message, onConfirm });
+        };
 
-          if (finalRecipeData.id) {
-            setRecipes(recipes.map(r => r.id === finalRecipeData.id ? finalRecipeData : r));
-          } else {
-            const newRecipe = {
-              ...finalRecipeData,
-              ingredients: finalRecipeData.ingredients.map(ing => ({...ing, id: ing.id || `${Date.now()}-${Math.random()}`})),
-              id: Date.now().toString(),
-            };
-            setRecipes([...recipes, newRecipe]);
+        const handleConfirmAction = () => {
+            confirmState.onConfirm();
+            setConfirmState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        };
+
+        const handleCancelAction = () => {
+            setConfirmState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        };
+        
+        const showAddUnitDialog = (onSaveCallback) => {
+            setAddUnitState({ isOpen: true, onSave: onSaveCallback });
+        };
+        
+        const handleSaveNewUnit = (label) => {
+            const newUnit = handleAddUnit(label);
+            addUnitState.onSave(newUnit);
+            setAddUnitState({ isOpen: false, onSave: () => {} });
+        };
+
+        const handleCancelNewUnit = () => {
+            setAddUnitState({ isOpen: false, onSave: () => {} });
+        };
+        
+        const handleAddUnit = (label) => {
+          const trimmed = label.trim();
+          if (!trimmed || units.some(u => u.label.toLowerCase() === trimmed.toLowerCase())) {
+            alert('This unit already exists.');
+            return units.find(u => u.label.toLowerCase() === trimmed.toLowerCase());
           }
-          setView({ page: 'list' });
+          const newUnit = { id: `unit_${Date.now()}`, label: trimmed };
+          setUnits(prev => [...prev, newUnit]);
+          return newUnit;
+        };
+
+        const handleDeleteUnit = (id) => {
+          setUnits(prev => prev.filter(u => u.id !== id));
+        };
+
+        const handleAddSection = (name) => {
+            const trimmedName = name.trim();
+            if (!trimmedName) return undefined;
+
+            const existing = sections.find(s => s.name.trim().toLowerCase() === trimmedName.toLowerCase());
+            if (existing) {
+                alert("A section with this name already exists.");
+                return existing;
+            }
+            
+            const newSection = { id: Date.now().toString(), name: trimmedName };
+            setSections(prev => [...prev, newSection]);
+            return newSection;
+        };
+
+        const handleSaveRecipe = (recipeData) => {
+            const finalRecipeData = { ...recipeData };
+            if ('sectionId' in finalRecipeData) {
+                delete finalRecipeData.sectionId;
+            }
+
+            if (finalRecipeData.id) {
+                setRecipes(recipes.map(r => r.id === finalRecipeData.id ? finalRecipeData : r));
+            } else {
+                const newRecipe = {
+                ...finalRecipeData,
+                ingredients: finalRecipeData.ingredients.map(ing => ({...ing, id: ing.id || `${Date.now()}-${Math.random()}`})),
+                id: Date.now().toString(),
+                };
+                setRecipes([...recipes, newRecipe]);
+            }
+            setView({ page: 'list' });
         };
 
         const handleDeleteRecipe = (id) => {
@@ -769,8 +1350,34 @@
           setView({ page: 'list' });
         };
 
+        const handleAddShoppingItem = (text) => {
+            const newItem = { id: `item_${Date.now()}_${Math.random()}`, text, completed: false };
+            setShoppingList(prev => [...prev, newItem]);
+        };
+        
+        const handleAddIngredientsToShoppingList = (items) => {
+            const newItems = items.map(text => ({
+                id: `item_${Date.now()}_${Math.random()}`,
+                text,
+                completed: false
+            }));
+            setShoppingList(prev => [...prev, ...newItems]);
+        };
+
+        const handleToggleShoppingItem = (id) => {
+            setShoppingList(prev => prev.map(item => item.id === id ? { ...item, completed: !item.completed } : item));
+        };
+
+        const handleDeleteShoppingItem = (id) => {
+            setShoppingList(prev => prev.filter(item => item.id !== id));
+        };
+
+        const handleClearShoppingList = () => {
+            setShoppingList([]);
+        };
+
         const handleExport = () => {
-          const dataToExport = { recipes, sections };
+          const dataToExport = { recipes, sections, units, shoppingList };
           const jsonString = JSON.stringify(dataToExport, null, 2);
           const blob = new Blob([jsonString], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
@@ -792,10 +1399,10 @@
               try {
                   const text = e.target?.result;
                   const data = JSON.parse(text);
-                  if (Array.isArray(data.recipes) && Array.isArray(data.sections)) {
+                  if (data.recipes || data.sections || data.units || data.shoppingList) {
                       setView({ page: 'import_confirm', data });
                   } else {
-                      alert('Invalid file format.');
+                      alert('Invalid file format. The file must contain at least one of: recipes, sections, units, or shoppingList.');
                   }
               } catch (error) {
                   alert('Error reading or parsing file.');
@@ -806,36 +1413,53 @@
           event.target.value = '';
         };
 
-        const handleConfirmImport = (selectedRecipes, selectedSections) => {
+        const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList) => {
+            // Merge Sections
             const newSections = [...sections];
             const sectionIdMap = new Map();
-
+            const existingSectionNames = new Set(sections.map(s => s.name.trim().toLowerCase()));
+            
             selectedSections.forEach(importedSection => {
-                const existingSection = sections.find(s => s.name.trim().toLowerCase() === importedSection.name.trim().toLowerCase());
-                if (existingSection) {
-                    sectionIdMap.set(importedSection.id, existingSection.id);
-                } else {
-                    const newSection = { ...importedSection, id: `${Date.now()}-${importedSection.name}` };
+                if (!existingSectionNames.has(importedSection.name.trim().toLowerCase())) {
+                    const newSection = { ...importedSection, id: `${Date.now()}-s-${importedSection.name}` };
                     newSections.push(newSection);
                     sectionIdMap.set(importedSection.id, newSection.id);
+                    existingSectionNames.add(newSection.name.trim().toLowerCase());
+                } else {
+                    const existingSection = sections.find(s => s.name.trim().toLowerCase() === importedSection.name.trim().toLowerCase());
+                    sectionIdMap.set(importedSection.id, existingSection.id);
                 }
             });
             setSections(newSections);
 
+            // Merge Recipes
             const recipesToAdd = selectedRecipes.map(importedRecipe => {
-                const newId = `${Date.now()}-${importedRecipe.name}`;
-                const newIngredients = importedRecipe.ingredients.map(ing => ({ ...ing, id: `${newId}-${ing.name}-${Math.random()}` }));
-                const newSectionId = importedRecipe.sectionId ? sectionIdMap.get(importedRecipe.sectionId) : undefined;
-                
-                return {
+                const newId = `${Date.now()}-r-${importedRecipe.name}`;
+                const newIngredients = importedRecipe.ingredients.map(ing => ({ ...ing, id: `${newId}-i-${ing.name}-${Math.random()}` }));
+                const targetSectionIds = new Set(importedRecipe.sectionIds || (importedRecipe.sectionId ? [importedRecipe.sectionId] : []));
+                const mappedSectionIds = Array.from(targetSectionIds).map(id => sectionIdMap.get(id)).filter(Boolean);
+
+                const finalRecipe = {
                     ...importedRecipe,
                     id: newId,
                     ingredients: newIngredients,
-                    sectionId: newSectionId,
+                    sectionIds: mappedSectionIds,
                 };
+                delete finalRecipe.sectionId;
+                return finalRecipe;
             });
+            setRecipes(prev => [...prev, ...recipesToAdd]);
+            
+            // Merge Units
+            const existingUnitLabels = new Set(units.map(u => u.label.trim().toLowerCase()));
+            const unitsToAdd = selectedUnits.filter(u => !existingUnitLabels.has(u.label.trim().toLowerCase()));
+            setUnits(prev => [...prev, ...unitsToAdd]);
+            
+            // Merge Shopping List
+            const existingShoppingListText = new Set(shoppingList.map(i => i.text.trim().toLowerCase()));
+            const shoppingListItemsToAdd = selectedShoppingList.filter(i => !existingShoppingListText.has(i.text.trim().toLowerCase()));
+            setShoppingList(prev => [...prev, ...shoppingListItemsToAdd]);
 
-            setRecipes([...recipes, ...recipesToAdd]);
             setView({ page: 'list' });
         };
 
@@ -847,6 +1471,8 @@
                 sections: sections,
                 onSelectRecipe: (id) => setView({ page: 'detail', id }),
                 onAddRecipe: () => setView({ page: 'form' }),
+                onGoToSettings: () => setView({ page: 'settings' }),
+                onGoToShoppingList: () => setView({ page: 'shopping_list' }),
                 onExport: handleExport,
                 onFileSelect: handleFileSelect
               });
@@ -858,17 +1484,42 @@
               }
               return React.createElement(RecipeDetail, {
                 recipe: selectedRecipe,
+                units: units,
                 onBack: () => setView({ page: 'list' }),
                 onEdit: (id) => setView({ page: 'form', id }),
-                onDelete: handleDeleteRecipe
+                onDelete: handleDeleteRecipe,
+                showConfirmDialog: showConfirmDialog,
+                onAddIngredientsToShoppingList: handleAddIngredientsToShoppingList
               });
             case 'form':
               const recipeToEdit = view.id ? recipes.find(r => r.id === view.id) : undefined;
               return React.createElement(RecipeForm, {
                 initialRecipe: recipeToEdit,
                 sections: sections,
+                units: units,
                 onSave: handleSaveRecipe,
-                onCancel: () => setView({ page: 'list' })
+                onCancel: () => setView({ page: 'list' }),
+                onAddSection: handleAddSection,
+                showConfirmDialog: showConfirmDialog,
+                showAddUnitDialog: showAddUnitDialog
+              });
+            case 'settings':
+              return React.createElement(Settings, {
+                units: units,
+                onAddUnit: handleAddUnit,
+                onDeleteUnit: handleDeleteUnit,
+                onBack: () => setView({ page: 'list' }),
+                showConfirmDialog: showConfirmDialog
+              });
+            case 'shopping_list':
+              return React.createElement(ShoppingList, {
+                items: shoppingList,
+                onAddItem: handleAddShoppingItem,
+                onToggleItem: handleToggleShoppingItem,
+                onDeleteItem: handleDeleteShoppingItem,
+                onClearAll: handleClearShoppingList,
+                onBack: () => setView({ page: 'list' }),
+                showConfirmDialog: showConfirmDialog,
               });
             case 'import_confirm':
               return React.createElement(ImportConfirmation, {
@@ -883,12 +1534,23 @@
 
         return (
           React.createElement('div', { className: "min-h-screen font-sans" },
-            React.createElement('main', null, renderContent())
+            React.createElement('main', null, renderContent()),
+            React.createElement(ConfirmDialog, {
+                isOpen: confirmState.isOpen,
+                title: confirmState.title,
+                message: confirmState.message,
+                onConfirm: handleConfirmAction,
+                onCancel: handleCancelAction,
+            }),
+            React.createElement(AddUnitDialog, {
+                isOpen: addUnitState.isOpen,
+                onSave: handleSaveNewUnit,
+                onCancel: handleCancelNewUnit,
+            })
           )
         );
       };
 
-      // --- Start of inlined index.tsx ---
       const rootElement = document.getElementById('root');
       if (!rootElement) {
         throw new Error("Could not find root element to mount to");
