@@ -26,7 +26,6 @@
         --color-border-secondary: #4b5563;
         --color-accent: #64C7CC;
         --color-accent-text: #64C7CC;
-        --color-header-text: #bfdbfe;
         --color-danger: #EF4444;
         --color-danger-hover: #DC2626;
       }
@@ -76,6 +75,10 @@
         '🥗', '🌮', '🌯', '🥘', '🍲', '🍛', '🍙', '🍤', '🍦', '🍫', '🍬',
         '☕', '🍵', '🍷', '🍺', '🍹', '🍴', '🥄', '🔪', '🧂'
       ].filter((v, i, a) => a.indexOf(v) === i);
+      
+      const ACCENT_COLORS = ['#64C7CC', '#F6AD55', '#A7C5EB', '#D6BCFA', '#FBB6CE', '#81E6D9', '#FBD38D', '#C3DAFE', '#FED7D7', '#BEE3F8'];
+      const DARK_BACKGROUND_COLORS = ['#111827', '#1F2937', '#1A202C', '#171923', '#222B45', '#1E2C33', '#2F1B25', '#1A2D27', '#32262B', '#182C3C'];
+      const LIGHT_BACKGROUND_COLORS = ['#F9FAFB', '#F7FAFC', '#EDF2F7', '#FEFBF6', '#FAF5FF', '#FFF5F5', '#F0FFF4', '#FFFFF0', '#F3F2EE', '#FAF7F2'];
 
       const DEFAULT_THEME = {
         mode: 'dark',
@@ -1007,7 +1010,7 @@
                     }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
                 ),
                 // Title
-                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-header-text)] text-center px-2 flex-shrink min-w-0" }, "Sharné's recipes"),
+                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-accent-text)] text-center px-2 flex-shrink min-w-0" }, "Sharné's recipes"),
                 // Right Spacer for centering
                 React.createElement('div', { className: "flex items-center gap-2 invisible", 'aria-hidden': 'true' },
                     React.createElement('div', { className: "p-2" }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
@@ -1103,10 +1106,25 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ theme, setTheme, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog }) => {
+      const Settings = ({ theme, setTheme, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
+        const [newSectionName, setNewSectionName] = useState('');
 
-        const handleAdd = () => {
+        const sectionUsageCount = useMemo(() => {
+          const counts = {};
+          sections.forEach(s => counts[s.id] = 0);
+          recipes.forEach(recipe => {
+            const recipeSections = recipe.sectionIds || (recipe.sectionId ? [recipe.sectionId] : []);
+            recipeSections.forEach(sectionId => {
+              if (counts.hasOwnProperty(sectionId)) {
+                counts[sectionId]++;
+              }
+            });
+          });
+          return counts;
+        }, [recipes, sections]);
+
+        const handleAddUnit = () => {
           const trimmed = newUnitLabel.trim();
           if (trimmed) {
             onAddUnit(trimmed);
@@ -1114,11 +1132,27 @@
           }
         };
 
-        const handleDelete = (unit) => {
+        const handleDeleteUnit = (unit) => {
           showConfirmDialog(
             'Delete Unit',
             `Are you sure you want to delete "${unit.label}"? This cannot be undone.`,
             () => onDeleteUnit(unit.id)
+          );
+        };
+        
+        const handleAddSection = () => {
+          const trimmed = newSectionName.trim();
+          if (trimmed) {
+            onAddSection(trimmed);
+            setNewSectionName('');
+          }
+        };
+
+        const handleDeleteSection = (section) => {
+          showConfirmDialog(
+            'Delete Section',
+            `Are you sure you want to delete the section "${section.name}"?`,
+            () => onDeleteSection(section.id)
           );
         };
 
@@ -1134,9 +1168,22 @@
                 backgroundColor: newMode === 'light' ? '#f9fafb' : '#111827'
             }));
         };
-
-        const resetTheme = () => {
-            setTheme(DEFAULT_THEME);
+        
+        const ColorPalette = ({ colors, selectedValue, onChange }) => {
+            return React.createElement('div', { className: "flex flex-wrap gap-3" },
+                colors.map(color => {
+                    const isSelected = selectedValue.toLowerCase() === color.toLowerCase();
+                    return React.createElement('button', {
+                        key: color,
+                        type: 'button',
+                        onClick: () => onChange(color),
+                        className: `w-8 h-8 rounded-full transition-transform transform hover:scale-110 border border-[var(--color-border-primary)] ${isSelected ? 'ring-2 ring-offset-2 ring-offset-[var(--color-bg-primary)] ring-[var(--color-accent)]' : 'ring-2 ring-transparent'}`,
+                        style: { backgroundColor: color },
+                        'aria-label': `Select color ${color}`,
+                        'aria-pressed': isSelected
+                    });
+                })
+            );
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
@@ -1166,30 +1213,57 @@
                                 React.createElement('span', { className: "text-sm text-[var(--color-text-tertiary)]" }, "Dark")
                               )
                           ),
-                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
-                              React.createElement('label', { htmlFor: "accent-color", className: "font-medium text-[var(--color-text-primary)]" }, "Accent Color"),
-                              React.createElement('input', {
-                                  id: "accent-color",
-                                  type: "color",
-                                  value: theme.accentColor,
-                                  onChange: e => handleThemeChange('accentColor', e.target.value),
-                                  className: "w-10 h-10 rounded-md border-none cursor-pointer bg-transparent"
+                          React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, "Accent Color"),
+                              React.createElement(ColorPalette, {
+                                  colors: ACCENT_COLORS,
+                                  selectedValue: theme.accentColor,
+                                  onChange: (color) => handleThemeChange('accentColor', color)
                               })
                           ),
-                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
-                              React.createElement('label', { htmlFor: "bg-color", className: "font-medium text-[var(--color-text-primary)]" }, "Background Color"),
-                              React.createElement('input', {
-                                  id: "bg-color",
-                                  type: "color",
-                                  value: theme.backgroundColor,
-                                  onChange: e => handleThemeChange('backgroundColor', e.target.value),
-                                  className: "w-10 h-10 rounded-md border-none cursor-pointer bg-transparent"
+                          React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, "Background Color"),
+                              React.createElement(ColorPalette, {
+                                  colors: theme.mode === 'dark' ? DARK_BACKGROUND_COLORS : LIGHT_BACKGROUND_COLORS,
+                                  selectedValue: theme.backgroundColor,
+                                  onChange: (color) => handleThemeChange('backgroundColor', color)
                               })
-                          ),
+                          )
+                      )
+                  ),
+                  React.createElement('div', null,
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Recipe Sections"),
+                      React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+                          React.createElement('input', {
+                              type: "text",
+                              value: newSectionName,
+                              onChange: e => setNewSectionName(e.target.value),
+                              placeholder: "New section name",
+                              className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                          }),
                           React.createElement('button', {
-                              onClick: resetTheme,
-                              className: "w-full text-center py-2 px-4 rounded-md font-semibold transition-colors bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)]"
-                          }, "Reset to Defaults")
+                              type: "button",
+                              onClick: handleAddSection,
+                              className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                          }, "Add Section")
+                      ),
+                      React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
+                          sections.length > 0 ? sections.map(section => {
+                              const inUseCount = sectionUsageCount[section.id] || 0;
+                              const isInUse = inUseCount > 0;
+                              return React.createElement('div', { key: section.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)]" },
+                                  React.createElement('span', { className: "text-[var(--color-text-primary)]" }, 
+                                      section.name,
+                                      isInUse && React.createElement('span', { className: "text-xs text-[var(--color-text-tertiary)] ml-2" }, `(${inUseCount} recipes)`)
+                                  ),
+                                  React.createElement('button', {
+                                      onClick: () => handleDeleteSection(section),
+                                      disabled: isInUse,
+                                      className: "p-1 disabled:text-gray-600 disabled:cursor-not-allowed text-red-500 hover:text-red-400",
+                                      title: isInUse ? "Cannot delete a section that is in use." : "Delete section"
+                                  }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
+                              )
+                          }) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No sections created.")
                       )
                   ),
                   React.createElement('div', null,
@@ -1204,7 +1278,7 @@
                           }),
                           React.createElement('button', {
                               type: "button",
-                              onClick: handleAdd,
+                              onClick: handleAddUnit,
                               className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Unit")
                       ),
@@ -1213,7 +1287,7 @@
                               React.createElement('div', { key: unit.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)]" },
                                   React.createElement('span', { className: "text-[var(--color-text-primary)]" }, unit.label),
                                   React.createElement('button', {
-                                      onClick: () => handleDelete(unit),
+                                      onClick: () => handleDeleteUnit(unit),
                                       className: "text-red-500 hover:text-red-400 p-1"
                                   }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
                               )
@@ -1377,7 +1451,6 @@
                 root.style.setProperty('--color-text-tertiary', '#6b7280');
                 root.style.setProperty('--color-border-primary', '#d1d5db');
                 root.style.setProperty('--color-border-secondary', '#e5e7eb');
-                root.style.setProperty('--color-header-text', '#1e40af');
             } else { // dark
                 root.style.setProperty('--color-bg-primary', theme.backgroundColor || '#111827');
                 root.style.setProperty('--color-bg-secondary', '#1f2937');
@@ -1388,7 +1461,6 @@
                 root.style.setProperty('--color-text-tertiary', '#9ca3af');
                 root.style.setProperty('--color-border-primary', '#374151');
                 root.style.setProperty('--color-border-secondary', '#4b5563');
-                root.style.setProperty('--color-header-text', '#bfdbfe');
             }
             root.style.setProperty('--color-accent', theme.accentColor);
             root.style.setProperty('--color-accent-text', theme.accentColor);
@@ -1451,6 +1523,10 @@
             const newSection = { id: Date.now().toString(), name: trimmedName };
             setSections(prev => [...prev, newSection]);
             return newSection;
+        };
+        
+        const handleDeleteSection = (id) => {
+            setSections(prev => prev.filter(s => s.id !== id));
         };
 
         const handleSaveRecipe = (recipeData) => {
@@ -1637,6 +1713,10 @@
                 units: units,
                 onAddUnit: handleAddUnit,
                 onDeleteUnit: handleDeleteUnit,
+                sections: sections,
+                recipes: recipes,
+                onAddSection: handleAddSection,
+                onDeleteSection: handleDeleteSection,
                 onBack: () => setView({ page: 'list' }),
                 showConfirmDialog: showConfirmDialog
               });
