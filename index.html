@@ -500,13 +500,13 @@
               )
             ),
             React.createElement('div', null,
-              React.createElement('label', { htmlFor: "recipe-description", className: "block text-lg font-medium text-gray-300 mb-2" }, "Description"),
+              React.createElement('label', { htmlFor: "recipe-notes", className: "block text-lg font-medium text-gray-300 mb-2" }, "Notes"),
               React.createElement('textarea', {
-                id: "recipe-description",
+                id: "recipe-notes",
                 value: description,
                 onChange: (e) => setDescription(e.target.value),
-                rows: 3,
-                placeholder: "A short description of the recipe...",
+                rows: 4,
+                placeholder: "Add any tips, variations, or notes for this recipe...",
                 className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
               })
             ),
@@ -780,7 +780,10 @@
                     )
                 ),
                 recipe.description && (
-                    React.createElement('p', { className: "text-gray-400 italic mb-6 border-l-4 border-gray-600 pl-4 py-2" }, recipe.description)
+                  React.createElement('div', { className: "mb-8" },
+                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Notes"),
+                    React.createElement('p', { className: "text-gray-300 whitespace-pre-wrap bg-gray-900/50 p-4 rounded-md border border-gray-700" }, recipe.description)
+                  )
                 ),
                 React.createElement('div', { className: "mb-8" },
                     React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
