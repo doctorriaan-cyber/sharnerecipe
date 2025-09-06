@@ -116,6 +116,12 @@
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 4.5v15m7.5-7.5h-15" })
           )
       );
+      
+      const MinusIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M18 12H6" })
+          )
+      );
 
       const TrashIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
@@ -1106,9 +1112,20 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ theme, setTheme, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection }) => {
+      const Settings = ({ theme, setTheme, textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
+
+        const MIN_TEXT_SIZE = 0.8;
+        const MAX_TEXT_SIZE = 1.5;
+        const STEP_TEXT_SIZE = 0.05;
+
+        const handleTextSizeChange = (newSize) => {
+            // Round to avoid floating point inaccuracies with the step
+            const roundedSize = Math.round(newSize / STEP_TEXT_SIZE) * STEP_TEXT_SIZE;
+            const clampedSize = Math.max(MIN_TEXT_SIZE, Math.min(MAX_TEXT_SIZE, roundedSize));
+            setTextSize(clampedSize);
+        };
 
         const sectionUsageCount = useMemo(() => {
           const counts = {};
@@ -1228,6 +1245,35 @@
                                   selectedValue: theme.backgroundColor,
                                   onChange: (color) => handleThemeChange('backgroundColor', color)
                               })
+                          ),
+                          React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, `Text Size: ${Math.round(textSize * 100)}%`),
+                              React.createElement('div', { className: "flex items-center gap-3" },
+                                  React.createElement('button', {
+                                      type: 'button',
+                                      onClick: () => handleTextSizeChange(textSize - STEP_TEXT_SIZE),
+                                      className: "p-2 rounded-full bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                                      disabled: textSize <= MIN_TEXT_SIZE,
+                                      'aria-label': "Decrease text size"
+                                  }, React.createElement(MinusIcon, { className: "w-5 h-5" })),
+                                  React.createElement('input', {
+                                      type: 'range',
+                                      min: MIN_TEXT_SIZE,
+                                      max: MAX_TEXT_SIZE,
+                                      step: STEP_TEXT_SIZE,
+                                      value: textSize,
+                                      onChange: (e) => handleTextSizeChange(parseFloat(e.target.value)),
+                                      className: "w-full h-2 bg-[var(--color-bg-tertiary)] rounded-lg appearance-none cursor-pointer accent-[var(--color-accent)]",
+                                      'aria-label': "Text size slider"
+                                  }),
+                                  React.createElement('button', {
+                                      type: 'button',
+                                      onClick: () => handleTextSizeChange(textSize + STEP_TEXT_SIZE),
+                                      className: "p-2 rounded-full bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                                      disabled: textSize >= MAX_TEXT_SIZE,
+                                      'aria-label': "Increase text size"
+                                  }, React.createElement(PlusIcon, { className: "w-5 h-5" }))
+                              )
                           )
                       )
                   ),
@@ -1435,6 +1481,7 @@
         const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
         const [theme, setTheme] = useLocalStorage('themeSettings', DEFAULT_THEME);
+        const [textSize, setTextSize] = useLocalStorage('textSize', 1);
         const [view, setView] = useState({ page: 'list' });
         const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
@@ -1467,6 +1514,12 @@
             document.body.style.backgroundColor = 'var(--color-bg-primary)';
             document.body.style.color = 'var(--color-text-primary)';
         }, [theme]);
+
+        useEffect(() => {
+            // 16px is a common browser default base font size.
+            // Multiplying it scales all rem-based units in the app.
+            document.documentElement.style.fontSize = `${16 * textSize}px`;
+        }, [textSize]);
 
         const showConfirmDialog = (title, message, onConfirm) => {
             setConfirmState({ isOpen: true, title, message, onConfirm });
@@ -1710,6 +1763,8 @@
               return React.createElement(Settings, {
                 theme: theme,
                 setTheme: setTheme,
+                textSize: textSize,
+                setTextSize: setTextSize,
                 units: units,
                 onAddUnit: handleAddUnit,
                 onDeleteUnit: handleDeleteUnit,
