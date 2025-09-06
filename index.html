@@ -13,6 +13,23 @@
       .font-fancy {
         font-family: 'Playfair Display', serif;
       }
+      /* Initial theme variables */
+      :root {
+        --color-bg-primary: #111827;
+        --color-bg-secondary: #1f2937;
+        --color-bg-tertiary: #374151;
+        --color-bg-input: #374151;
+        --color-text-primary: #f9fafb;
+        --color-text-secondary: #d1d5db;
+        --color-text-tertiary: #9ca3af;
+        --color-border-primary: #374151;
+        --color-border-secondary: #4b5563;
+        --color-accent: #64C7CC;
+        --color-accent-text: #64C7CC;
+        --color-header-text: #bfdbfe;
+        --color-danger: #EF4444;
+        --color-danger-hover: #DC2626;
+      }
     </style>
   <script type="importmap">
 {
@@ -25,7 +42,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-900 text-gray-200">
+  <body>
     <div id="root"></div>
     <script type="module">
       import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -59,6 +76,12 @@
         '🥗', '🌮', '🌯', '🥘', '🍲', '🍛', '🍙', '🍤', '🍦', '🍫', '🍬',
         '☕', '🍵', '🍷', '🍺', '🍹', '🍴', '🥄', '🔪', '🧂'
       ].filter((v, i, a) => a.indexOf(v) === i);
+
+      const DEFAULT_THEME = {
+        mode: 'dark',
+        accentColor: '#64C7CC',
+        backgroundColor: '#111827',
+      };
 
       // --- Start of inlined hooks/useLocalStorage.ts ---
       function useLocalStorage(key, initialValue) {
@@ -197,31 +220,31 @@
           const CheckboxList = ({ title, items, selectedIds, onToggle, onSelectAll, itemLabelProp, emptyText }) => (
               React.createElement('div', null,
                   React.createElement('div', { className: "flex justify-between items-center mb-4" },
-                      React.createElement('h2', { className: "text-2xl font-semibold text-gray-300" }, `${title} (${selectedIds.size}/${items.length})`),
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)]" }, `${title} (${selectedIds.size}/${items.length})`),
                       React.createElement('div', { className: "flex gap-2 text-sm" },
-                          React.createElement('button', { type: "button", onClick: () => onSelectAll(true), className: "text-blue-400 hover:underline" }, "All"),
-                          React.createElement('button', { type: "button", onClick: () => onSelectAll(false), className: "text-blue-400 hover:underline" }, "None")
+                          React.createElement('button', { type: "button", onClick: () => onSelectAll(true), className: "text-[var(--color-accent-text)] hover:underline" }, "All"),
+                          React.createElement('button', { type: "button", onClick: () => onSelectAll(false), className: "text-[var(--color-accent-text)] hover:underline" }, "None")
                       )
                   ),
-                  React.createElement('div', { className: "max-h-60 overflow-y-auto space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700" },
+                  React.createElement('div', { className: "max-h-60 overflow-y-auto space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
                       items.length > 0 ? items.map(item => (
-                          React.createElement('label', { key: item.id, className: "flex items-center p-2 rounded-md hover:bg-gray-700/50 cursor-pointer" },
+                          React.createElement('label', { key: item.id, className: "flex items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)] cursor-pointer" },
                               React.createElement('input', {
                                   type: "checkbox",
                                   checked: selectedIds.has(item.id),
                                   onChange: () => onToggle(item.id),
-                                  className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                                  className: "w-5 h-5 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
                               }),
-                              React.createElement('span', { className: "ml-3 text-gray-200 truncate" }, item[itemLabelProp])
+                              React.createElement('span', { className: "ml-3 text-[var(--color-text-primary)] truncate" }, item[itemLabelProp])
                           )
-                      )) : React.createElement('p', { className: "text-gray-500 text-center" }, emptyText)
+                      )) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, emptyText)
                   )
               )
           );
 
           return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-6" }, "Confirm Import"),
-              React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 space-y-8" },
+              React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-6" }, "Confirm Import"),
+              React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)] space-y-8" },
                   React.createElement(CheckboxList, {
                       title: 'Recipes',
                       items: importedRecipes,
@@ -258,9 +281,9 @@
                       itemLabelProp: 'text',
                       emptyText: "No shopping list items found."
                   }),
-                  React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-gray-700" },
+                  React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-[var(--color-border-primary)]" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
-                      React.createElement('button', { onClick: handleConfirm, className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-6 rounded-md" }, "Import Selected")
+                      React.createElement('button', { onClick: handleConfirm, className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-6 rounded-md" }, "Import Selected")
                   )
               )
           );
@@ -455,34 +478,34 @@
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-          React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
-          React.createElement('form', { onSubmit: handleSubmit, className: "space-y-8 bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
+          React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
+          React.createElement('form', { onSubmit: handleSubmit, className: "space-y-8 bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
             React.createElement('div', null,
-              React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-gray-300 mb-2" }, "Recipe Name"),
+              React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Recipe Name"),
               React.createElement('input', {
                 id: "recipe-name",
                 type: "text",
                 value: name,
                 onChange: (e) => setName(e.target.value),
                 placeholder: "e.g., Chocolate Chip Cookies",
-                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500",
+                className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]",
                 required: true
               })
             ),
             React.createElement('div', null,
-              React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Sections"),
-              React.createElement('div', { className: "space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-48 overflow-y-auto" },
+              React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Sections"),
+              React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-48 overflow-y-auto" },
                 sections.length > 0 
                   ? sections.map(section => React.createElement('label', { key: section.id, className: "flex items-center cursor-pointer" },
                       React.createElement('input', {
                         type: "checkbox",
                         checked: selectedSectionIds.has(section.id),
                         onChange: () => handleSectionToggle(section.id),
-                        className: "w-5 h-5 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                        className: "w-5 h-5 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
                       }),
-                      React.createElement('span', { className: "ml-3 text-gray-200" }, section.name)
+                      React.createElement('span', { className: "ml-3 text-[var(--color-text-primary)]" }, section.name)
                     ))
-                  : React.createElement('p', { className: "text-gray-500" }, "No sections created yet.")
+                  : React.createElement('p', { className: "text-[var(--color-text-tertiary)]" }, "No sections created yet.")
               ),
               React.createElement('div', { className: "flex items-center gap-2 mt-3" },
                 React.createElement('input', {
@@ -490,7 +513,7 @@
                   value: newSectionName,
                   onChange: e => setNewSectionName(e.target.value),
                   placeholder: "Create a new section...",
-                  className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                  className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                 }),
                 React.createElement('button', {
                   type: "button",
@@ -500,25 +523,25 @@
               )
             ),
             React.createElement('div', null,
-              React.createElement('label', { htmlFor: "recipe-notes", className: "block text-lg font-medium text-gray-300 mb-2" }, "Notes"),
+              React.createElement('label', { htmlFor: "recipe-notes", className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Notes"),
               React.createElement('textarea', {
                 id: "recipe-notes",
                 value: description,
                 onChange: (e) => setDescription(e.target.value),
                 rows: 4,
                 placeholder: "Add any tips, variations, or notes for this recipe...",
-                className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
               })
             ),
             React.createElement('div', null,
-                React.createElement('label', { className: "block text-lg font-medium text-gray-300 mb-2" }, "Categories"),
+                React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Categories"),
                 React.createElement('div', { className: "flex items-center gap-2 mb-3" },
                     React.createElement('input', {
                         type: "text",
                         value: newCategoryName,
                         onChange: e => setNewCategoryName(e.target.value),
                         placeholder: "e.g., Crust, Filling...",
-                        className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                        className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                     }),
                     React.createElement('button', {
                         type: "button",
@@ -526,10 +549,10 @@
                         className: "bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                     }, "Add Category")
                 ),
-                categories.length > 0 && React.createElement('div', { className: "flex flex-wrap gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
-                    categories.map(cat => React.createElement('span', { key: cat.id, className: "bg-gray-600 text-gray-200 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2" },
+                categories.length > 0 && React.createElement('div', { className: "flex flex-wrap gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                    categories.map(cat => React.createElement('span', { key: cat.id, className: "bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2" },
                         cat.name,
-                        React.createElement('button', { type: "button", onClick: () => handleRemoveCategory(cat.id), className: "text-gray-400 hover:text-white" },
+                        React.createElement('button', { type: "button", onClick: () => handleRemoveCategory(cat.id), className: "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]" },
                             React.createElement(XMarkIcon, { className: "w-3 h-3" })
                         )
                     ))
@@ -537,12 +560,12 @@
             ),
             React.createElement('div', null,
               React.createElement('div', { className: "flex items-center gap-4 mb-2" },
-                React.createElement('label', { className: "text-lg font-medium text-gray-300 flex-shrink-0" }, "Emojis"),
-                React.createElement('div', { className: "flex-grow flex items-center bg-gray-900/50 border border-gray-700 rounded-md min-h-[50px] px-3 py-2" },
+                React.createElement('label', { className: "text-lg font-medium text-[var(--color-text-secondary)] flex-shrink-0" }, "Emojis"),
+                React.createElement('div', { className: "flex-grow flex items-center bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-md min-h-[50px] px-3 py-2" },
                   React.createElement('div', { className: "flex-grow text-2xl tracking-widest overflow-x-auto whitespace-nowrap" },
                     selectedEmojis.length > 0
                       ? selectedEmojis.join('')
-                      : React.createElement('span', { className: "text-gray-500 text-base tracking-normal" }, "Select from the grid below...")
+                      : React.createElement('span', { className: "text-[var(--color-text-tertiary)] text-base tracking-normal" }, "Select from the grid below...")
                   ),
                   React.createElement('button', {
                     type: "button",
@@ -553,31 +576,31 @@
                   }, "Delete")
                 )
               ),
-              React.createElement('div', { className: "p-3 bg-gray-900/50 rounded-md border border-gray-700 flex flex-wrap gap-2" },
+              React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-wrap gap-2" },
                 FOOD_EMOJIS.map(emoji => React.createElement('button', {
                   key: emoji,
                   type: "button",
                   onClick: () => addEmoji(emoji),
-                  className: "text-2xl p-2 rounded-md transition-colors duration-200 hover:bg-gray-700",
+                  className: "text-2xl p-2 rounded-md transition-colors duration-200 hover:bg-[var(--color-bg-tertiary)]",
                   'aria-label': `Add ${emoji} emoji`
                 }, emoji))
               )
             ),
             React.createElement('div', null,
-              React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
+              React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
               React.createElement('div', { className: "space-y-4" },
-                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 sm:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-gray-900/50 rounded-md border border-gray-700" },
+                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 sm:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
                   React.createElement('input', {
                     type: "text",
                     value: ing.quantity,
                     onChange: (e) => handleIngredientChange(index, 'quantity', e.target.value),
-                    className: "w-full sm:w-20 p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
+                    className: "w-full sm:w-20 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
                     placeholder: "Qty"
                   }),
                   React.createElement('select', {
                     value: ing.unit,
                     onChange: (e) => handleIngredientChange(index, 'unit', e.target.value),
-                    className: "w-full sm:w-32 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    className: "w-full sm:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]"
                   }, 
                     units.map(unit => React.createElement('option', { key: unit.id, value: unit.id }, unit.label)),
                     React.createElement('option', { value: ADD_NEW_UNIT_VALUE, className: "text-blue-400 font-bold" }, 'Add new...')
@@ -586,13 +609,13 @@
                     type: "text",
                     value: ing.name,
                     onChange: (e) => handleIngredientChange(index, 'name', e.target.value),
-                    className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white",
+                    className: "flex-grow p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
                     placeholder: "Ingredient Name"
                   }),
                    React.createElement('select', {
                     value: ing.categoryId || '',
                     onChange: (e) => handleIngredientChange(index, 'categoryId', e.target.value || undefined),
-                    className: `w-full sm:w-32 p-2 bg-gray-700 border border-gray-600 rounded-md text-white ${!ing.categoryId ? 'text-gray-400' : ''}`
+                    className: `w-full sm:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] ${!ing.categoryId ? 'text-[var(--color-text-tertiary)]' : ''}`
                   }, 
                     React.createElement('option', { value: '' }, 'Uncategorized'),
                     categories.map(cat => React.createElement('option', { key: cat.id, value: cat.id }, cat.name))
@@ -605,26 +628,26 @@
               React.createElement('button', {
                 type: "button",
                 onClick: addIngredient,
-                className: "mt-4 flex items-center text-blue-400 font-semibold hover:text-blue-300"
+                className: "mt-4 flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
               }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Ingredient")
             ),
             React.createElement('div', null,
-              React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
+              React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Steps"),
               React.createElement('div', { className: "space-y-4" },
                 steps.map((step, index) => React.createElement('div', { key: step.id, className: "flex items-start gap-2" },
-                  React.createElement('span', { className: "text-lg font-bold text-gray-500 pt-2" }, `${index + 1}.`),
+                  React.createElement('span', { className: "text-lg font-bold text-[var(--color-text-tertiary)] pt-2" }, `${index + 1}.`),
                    React.createElement('div', { className: "flex-grow flex flex-col gap-2" },
                       React.createElement('textarea', {
                         value: step.text,
                         onChange: (e) => handleStepChange(index, 'text', e.target.value),
                         rows: 3,
-                        className: "flex-grow p-2 bg-gray-700 border border-gray-600 rounded-md text-white w-full",
+                        className: "flex-grow p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] w-full",
                         placeholder: "Describe step..."
                       }),
                       React.createElement('select', {
                         value: step.categoryId || '',
                         onChange: (e) => handleStepChange(index, 'categoryId', e.target.value || undefined),
-                        className: `w-full sm:w-40 p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm ${!step.categoryId ? 'text-gray-400' : ''}`
+                        className: `w-full sm:w-40 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] text-sm ${!step.categoryId ? 'text-[var(--color-text-tertiary)]' : ''}`
                       }, 
                         React.createElement('option', { value: '' }, 'Uncategorized'),
                         categories.map(cat => React.createElement('option', { key: cat.id, value: cat.id }, cat.name))
@@ -638,12 +661,12 @@
                React.createElement('button', {
                 type: "button",
                 onClick: addStep,
-                className: "mt-4 flex items-center text-blue-400 font-semibold hover:text-blue-300"
+                className: "mt-4 flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
               }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Step")
             ),
-            React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-gray-700" },
+            React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('button', { type: "button", onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
-              React.createElement('button', { type: "submit", className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-6 rounded-md" }, initialRecipe ? 'Save Changes' : 'Save Recipe')
+              React.createElement('button', { type: "submit", className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-6 rounded-md" }, initialRecipe ? 'Save Changes' : 'Save Recipe')
             )
           )
         );
@@ -743,7 +766,7 @@
               const numericQuantity = Number(quantityStr);
               const isNumeric = quantityStr.trim() !== '' && isFinite(numericQuantity);
               const quantityDisplay = isNumeric ? formatQuantity(numericQuantity) : ing.quantity;
-              const quantityColor = (isScaling && !isNumeric && ing.quantity) ? 'text-red-400' : 'text-gray-100';
+              const quantityColor = (isScaling && !isNumeric && ing.quantity) ? 'text-red-400' : 'text-[var(--color-text-primary)]';
               const unitLabel = unitMap.get(ing.unit)?.label || ing.unit;
               
               return React.createElement('li', { key: ing.id },
@@ -754,22 +777,22 @@
           const hasCategories = recipe.categories && recipe.categories.length > 0;
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-            React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+            React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
                 React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
                 "Back to Recipes"
             ),
-            React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
-                React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-gray-700 pb-4" },
+            React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+                React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-[var(--color-border-primary)] pb-4" },
                     React.createElement('div', { className: "flex items-center gap-3 flex-grow" },
                         recipe.emojis && recipe.emojis.length > 0 && (
                             React.createElement('span', { className: "text-4xl", 'aria-hidden': "true" }, recipe.emojis.join(''))
                         ),
-                        React.createElement('h1', { className: "text-4xl font-bold text-gray-100" }, recipe.name)
+                        React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)]" }, recipe.name)
                     ),
                     React.createElement('div', { className: "flex gap-2 flex-shrink-0 pt-1" },
                         React.createElement('button', { 
                             onClick: () => onEdit(recipe.id), 
-                            className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                            className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
                             'aria-label': "Edit recipe"
                         }, React.createElement(PencilIcon, { className: "w-6 h-6" })),
                         React.createElement('button', { 
@@ -781,20 +804,20 @@
                 ),
                 recipe.description && (
                   React.createElement('div', { className: "mb-8" },
-                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Notes"),
-                    React.createElement('p', { className: "text-gray-300 whitespace-pre-wrap bg-gray-900/50 p-4 rounded-md border border-gray-700" }, recipe.description)
+                    React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Notes"),
+                    React.createElement('p', { className: "text-[var(--color-text-secondary)] whitespace-pre-wrap bg-[var(--color-bg-primary)] p-4 rounded-md border border-[var(--color-border-primary)]" }, recipe.description)
                   )
                 ),
                 React.createElement('div', { className: "mb-8" },
-                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Ingredients"),
-                    React.createElement('div', { className: "flex flex-wrap items-center gap-2 mb-4 p-2 bg-gray-700/50 rounded-md" },
-                        React.createElement('span', { className: "text-sm font-medium text-gray-300 mr-2" }, "Adjust serving:"),
+                    React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
+                    React.createElement('div', { className: "flex flex-wrap items-center gap-2 mb-4 p-2 bg-[var(--color-bg-tertiary)] rounded-md" },
+                        React.createElement('span', { className: "text-sm font-medium text-[var(--color-text-secondary)] mr-2" }, "Adjust serving:"),
                         React.createElement('div', { className: "flex gap-2 flex-wrap" },
                             multipliers.map(m => (
                                  React.createElement('button', { 
                                     key: m.label, 
                                     onClick: () => setMultiplier(m.value),
-                                    className: `px-3 py-1 text-sm font-semibold rounded-full transition-colors ${multiplier === m.value ? 'bg-[#64C7CC] text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`
+                                    className: `px-3 py-1 text-sm font-semibold rounded-full transition-colors ${multiplier === m.value ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)]'}`
                                 }, m.label)
                             ))
                         )
@@ -819,37 +842,37 @@
                                 const ingredientsForCategory = groupedIngredients[category.id];
                                 if (!ingredientsForCategory || ingredientsForCategory.length === 0) return null;
                                 return React.createElement('div', { key: category.id },
-                                    React.createElement('h3', { className: "text-lg font-bold text-blue-300 mb-2 border-b border-gray-700 pb-1" }, category.name),
-                                    React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300 pl-2" }, ingredientsForCategory.map(renderIngredientItem))
+                                    React.createElement('h3', { className: "text-lg font-bold text-[var(--color-accent-text)] mb-2 border-b border-[var(--color-border-primary)] pb-1" }, category.name),
+                                    React.createElement('ul', { className: "list-disc list-inside space-y-2 text-[var(--color-text-secondary)] pl-2" }, ingredientsForCategory.map(renderIngredientItem))
                                 )
                             }),
                             uncategorizedIngredients.length > 0 && React.createElement('div', { className: "pt-4" },
-                                React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" }, uncategorizedIngredients.map(renderIngredientItem))
+                                React.createElement('ul', { className: "list-disc list-inside space-y-2 text-[var(--color-text-secondary)]" }, uncategorizedIngredients.map(renderIngredientItem))
                             )
                         ) :
-                        React.createElement('ul', { className: "list-disc list-inside space-y-2 text-gray-300" }, recipe.ingredients.map(renderIngredientItem))
+                        React.createElement('ul', { className: "list-disc list-inside space-y-2 text-[var(--color-text-secondary)]" }, recipe.ingredients.map(renderIngredientItem))
                 ),
                 React.createElement('div', null,
-                    React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Steps"),
+                    React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Steps"),
                      hasCategories ? 
                         React.createElement('div', { className: "space-y-6" },
                             recipe.categories.map(category => {
                                 const stepsForCategory = groupedSteps[category.id];
                                 if (!stepsForCategory || stepsForCategory.length === 0) return null;
                                 return React.createElement('div', { key: category.id },
-                                    React.createElement('h3', { className: "text-lg font-bold text-blue-300 mb-2 border-b border-gray-700 pb-1" }, category.name),
-                                    React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" }, 
+                                    React.createElement('h3', { className: "text-lg font-bold text-[var(--color-accent-text)] mb-2 border-b border-[var(--color-border-primary)] pb-1" }, category.name),
+                                    React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-[var(--color-text-secondary)]" }, 
                                         stepsForCategory.map((step, index) => React.createElement('li', { key: index, className: "pl-2" }, step))
                                     )
                                 )
                             }),
                             uncategorizedSteps.length > 0 && React.createElement('div', { className: "pt-4" },
-                                React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" }, 
+                                React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-[var(--color-text-secondary)]" }, 
                                     uncategorizedSteps.map((step, index) => React.createElement('li', { key: index, className: "pl-2" }, step))
                                 )
                             )
                         ) :
-                        React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-gray-300" },
+                        React.createElement('ol', { className: "list-decimal list-inside space-y-4 text-[var(--color-text-secondary)]" },
                            uncategorizedSteps.map((step, index) => (
                                 React.createElement('li', { key: index, className: "pl-2" }, step)
                             ))
@@ -877,10 +900,10 @@
 
         return React.createElement('div', {
           onClick: () => onSelect(recipe.id),
-          className: "bg-gray-800 rounded-lg shadow-md hover:shadow-xl hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-gray-700 flex overflow-hidden min-h-[88px]"
+          className: "bg-[var(--color-bg-secondary)] rounded-lg shadow-md hover:shadow-xl hover:bg-[var(--color-bg-tertiary)] transition-all duration-200 cursor-pointer border border-[var(--color-border-primary)] flex overflow-hidden min-h-[88px]"
         },
           numEmojis > 0 && React.createElement('div', {
-            className: "flex-shrink-0 w-20 flex items-center justify-center p-2 border-r border-gray-700"
+            className: "flex-shrink-0 w-20 flex items-center justify-center p-2 border-r border-[var(--color-border-primary)]"
           },
             React.createElement('div', {
                 className: "grid place-items-center gap-0.5",
@@ -897,10 +920,10 @@
             className: "p-4 flex-grow min-w-0 flex flex-col justify-center"
           },
             React.createElement('h2', {
-              className: "text-xl font-semibold text-gray-200 truncate"
+              className: "text-xl font-semibold text-[var(--color-text-primary)] truncate"
             }, recipe.name),
             recipe.description && React.createElement('p', {
-              className: "mt-2 text-gray-400 text-sm truncate"
+              className: "mt-2 text-[var(--color-text-tertiary)] text-sm truncate"
             }, recipe.description)
           )
         );
@@ -969,35 +992,42 @@
         
         return (
           React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-             React.createElement('div', { className: "relative mb-6" },
-                React.createElement('h1', { className: "font-fancy text-5xl font-bold text-blue-200 text-center" }, "Sharné's recipes"),
-                React.createElement('div', { className: "absolute top-0 left-0 flex items-center gap-2" },
+            React.createElement('div', { className: "flex justify-between items-center mb-6" },
+                // Left Buttons
+                React.createElement('div', { className: "flex items-center gap-2" },
                     React.createElement('button', {
                         onClick: onGoToSettings,
-                        className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
                         'aria-label': "Settings"
                     }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
                     React.createElement('button', {
                         onClick: onGoToShoppingList,
-                        className: "p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors",
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
                         'aria-label': "Shopping List"
                     }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
+                ),
+                // Title
+                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-header-text)] text-center px-2 flex-shrink min-w-0" }, "Sharné's recipes"),
+                // Right Spacer for centering
+                React.createElement('div', { className: "flex items-center gap-2 invisible", 'aria-hidden': 'true' },
+                    React.createElement('div', { className: "p-2" }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
+                    React.createElement('div', { className: "p-2" }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
                 )
             ),
             React.createElement('div', { className: "flex flex-col sm:flex-row justify-between items-center gap-4 mb-8" },
               React.createElement('div', { className: "relative w-full sm:w-auto sm:flex-grow" },
-                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" }),
+                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-tertiary)]" }),
                 React.createElement('input', {
                   type: "text",
                   placeholder: "Search recipes...",
                   value: searchTerm,
                   onChange: e => setSearchTerm(e.target.value),
-                  className: "w-full bg-gray-800 border border-gray-700 rounded-full py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className: "w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] rounded-full py-2 pl-10 pr-4 text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                 })
               ),
               React.createElement('button', {
                 onClick: onAddRecipe,
-                className: "bg-[#64C7CC] hover:bg-[#5aaab0] text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center",
+                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center",
                 'aria-label': "Add a new recipe"
               },
                 React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }),
@@ -1006,9 +1036,9 @@
             ),
             
             filteredRecipes.length === 0 ? (
-              React.createElement('div', { className: "text-center bg-gray-800 p-12 rounded-lg border-2 border-dashed border-gray-700" },
-                  React.createElement('h2', { className: "text-2xl font-semibold text-gray-400" }, searchTerm ? 'No Recipes Found' : 'No Recipes Yet!'),
-                  React.createElement('p', { className: "text-gray-500 mt-2" }, searchTerm ? `Your search for "${searchTerm}" did not match any recipes.` : 'Click "Add Recipe" to get started.')
+              React.createElement('div', { className: "text-center bg-[var(--color-bg-secondary)] p-12 rounded-lg border-2 border-dashed border-[var(--color-border-primary)]" },
+                  React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)]" }, searchTerm ? 'No Recipes Found' : 'No Recipes Yet!'),
+                  React.createElement('p', { className: "text-[var(--color-text-tertiary)] mt-2" }, searchTerm ? `Your search for "${searchTerm}" did not match any recipes.` : 'Click "Add Recipe" to get started.')
               )
             ) : (
               React.createElement('div', { className: "space-y-4" },
@@ -1017,14 +1047,14 @@
                   if (!sectionRecipes || sectionRecipes.length === 0) return null;
 
                   return (
-                    React.createElement('div', { key: section.id, className: "bg-gray-800/50 rounded-lg border border-gray-700 overflow-hidden" },
+                    React.createElement('div', { key: section.id, className: "bg-[var(--color-bg-secondary)]/50 rounded-lg border border-[var(--color-border-primary)] overflow-hidden" },
                       React.createElement('button', {
                         onClick: () => toggleSection(section.id),
-                        className: "w-full flex justify-between items-center p-4 text-left font-semibold text-xl text-blue-300 hover:bg-gray-700/50"
+                        className: "w-full flex justify-between items-center p-4 text-left font-semibold text-xl text-[var(--color-accent-text)] hover:bg-[var(--color-bg-tertiary)]/50"
                       },
                         React.createElement('span', null, 
                             `${section.name} `,
-                            React.createElement('span', { className: "text-sm font-normal text-gray-400" }, `(${sectionRecipes.length})`)
+                            React.createElement('span', { className: "text-sm font-normal text-[var(--color-text-tertiary)]" }, `(${sectionRecipes.length})`)
                         ),
                         React.createElement(ChevronDownIcon, { className: `w-5 h-5 transition-transform ${openSections[section.id] ? 'rotate-180' : ''}` })
                       ),
@@ -1045,7 +1075,7 @@
               )
             ),
 
-            React.createElement('div', { className: "mt-12 pt-8 border-t border-gray-700 flex flex-col sm:flex-row justify-center items-center gap-4" },
+            React.createElement('div', { className: "mt-12 pt-8 border-t border-[var(--color-border-primary)] flex flex-col sm:flex-row justify-center items-center gap-4" },
               React.createElement('input', { 
                   type: "file", 
                   ref: importInputRef, 
@@ -1055,14 +1085,14 @@
               }),
               React.createElement('button', { 
                   onClick: handleImportClick,
-                  className: "bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+                  className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
               },
                   React.createElement(CloudUploadIcon, { className: "w-5 h-5 mr-2" }),
                   "Import"
               ),
               React.createElement('button', {
                   onClick: onExport,
-                  className: "bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+                  className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
               },
                   React.createElement(CloudDownloadIcon, { className: "w-5 h-5 mr-2" }),
                   "Export"
@@ -1073,7 +1103,7 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog }) => {
+      const Settings = ({ theme, setTheme, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
 
         const handleAdd = () => {
@@ -1092,23 +1122,85 @@
           );
         };
 
+        const handleThemeChange = (key, value) => {
+            setTheme(prev => ({...prev, [key]: value}));
+        };
+        
+        const handleModeToggle = () => {
+            const newMode = theme.mode === 'light' ? 'dark' : 'light';
+            setTheme(prev => ({
+                ...prev,
+                mode: newMode,
+                backgroundColor: newMode === 'light' ? '#f9fafb' : '#111827'
+            }));
+        };
+
+        const resetTheme = () => {
+            setTheme(DEFAULT_THEME);
+        };
+
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-          React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+          React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
               React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
               "Back to Recipes"
           ),
-          React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
-              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, "Settings"),
-              React.createElement('div', { className: "space-y-6" },
+          React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+              React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Settings"),
+              React.createElement('div', { className: "space-y-8" },
                   React.createElement('div', null,
-                      React.createElement('h2', { className: "text-2xl font-semibold text-gray-300 mb-4" }, "Measurement Units"),
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Appearance"),
+                      React.createElement('div', { className: "space-y-4" },
+                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { htmlFor: "theme-mode", className: "font-medium text-[var(--color-text-primary)]" }, "Theme"),
+                              React.createElement('div', { className: "flex items-center gap-2" },
+                                React.createElement('span', { className: "text-sm text-[var(--color-text-tertiary)]" }, "Light"),
+                                React.createElement('button', {
+                                    id: "theme-mode",
+                                    onClick: handleModeToggle,
+                                    className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-[var(--color-bg-tertiary)]`
+                                  },
+                                  React.createElement('span', {
+                                    className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${theme.mode === 'dark' ? 'translate-x-6' : 'translate-x-1'}`
+                                  })
+                                ),
+                                React.createElement('span', { className: "text-sm text-[var(--color-text-tertiary)]" }, "Dark")
+                              )
+                          ),
+                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { htmlFor: "accent-color", className: "font-medium text-[var(--color-text-primary)]" }, "Accent Color"),
+                              React.createElement('input', {
+                                  id: "accent-color",
+                                  type: "color",
+                                  value: theme.accentColor,
+                                  onChange: e => handleThemeChange('accentColor', e.target.value),
+                                  className: "w-10 h-10 rounded-md border-none cursor-pointer bg-transparent"
+                              })
+                          ),
+                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                              React.createElement('label', { htmlFor: "bg-color", className: "font-medium text-[var(--color-text-primary)]" }, "Background Color"),
+                              React.createElement('input', {
+                                  id: "bg-color",
+                                  type: "color",
+                                  value: theme.backgroundColor,
+                                  onChange: e => handleThemeChange('backgroundColor', e.target.value),
+                                  className: "w-10 h-10 rounded-md border-none cursor-pointer bg-transparent"
+                              })
+                          ),
+                          React.createElement('button', {
+                              onClick: resetTheme,
+                              className: "w-full text-center py-2 px-4 rounded-md font-semibold transition-colors bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)]"
+                          }, "Reset to Defaults")
+                      )
+                  ),
+                  React.createElement('div', null,
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Measurement Units"),
                       React.createElement('div', { className: "flex items-center gap-2 mb-4" },
                           React.createElement('input', {
                               type: "text",
                               value: newUnitLabel,
                               onChange: e => setNewUnitLabel(e.target.value),
                               placeholder: "New unit name (e.g. Pinch)",
-                              className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                              className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                           }),
                           React.createElement('button', {
                               type: "button",
@@ -1116,16 +1208,16 @@
                               className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Unit")
                       ),
-                      React.createElement('div', { className: "space-y-2 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-96 overflow-y-auto" },
+                      React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
                           units.length > 0 ? units.map(unit =>
-                              React.createElement('div', { key: unit.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-gray-700/50" },
-                                  React.createElement('span', { className: "text-gray-200" }, unit.label),
+                              React.createElement('div', { key: unit.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)]" },
+                                  React.createElement('span', { className: "text-[var(--color-text-primary)]" }, unit.label),
                                   React.createElement('button', {
                                       onClick: () => handleDelete(unit),
                                       className: "text-red-500 hover:text-red-400 p-1"
                                   }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
                               )
-                          ) : React.createElement('p', { className: "text-gray-500 text-center" }, "No units defined.")
+                          ) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No units defined.")
                       )
                   )
               )
@@ -1163,43 +1255,43 @@
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-          React.createElement('button', { onClick: onBack, className: "flex items-center text-blue-400 font-semibold hover:text-blue-300 mb-6" },
+          React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
               React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
               "Back to Recipes"
           ),
-          React.createElement('div', { className: "bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700" },
-              React.createElement('h1', { className: "text-4xl font-bold text-gray-100 mb-8" }, "Shopping List"),
+          React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+              React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Shopping List"),
               React.createElement('form', { onSubmit: handleAdd, className: "flex items-center gap-2 mb-6" },
                   React.createElement('input', {
                       type: "text",
                       value: newItemText,
                       onChange: e => setNewItemText(e.target.value),
                       placeholder: "e.g., Flour, sugar...",
-                      className: "flex-grow p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                      className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                   }),
                   React.createElement('button', {
                       type: "submit",
                       className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                   }, "Add Item")
               ),
-              React.createElement('div', { className: "space-y-3 p-4 bg-gray-900/50 rounded-md border border-gray-700 max-h-[60vh] overflow-y-auto" },
+              React.createElement('div', { className: "space-y-3 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-[60vh] overflow-y-auto" },
                   items.length > 0 ? items.map(item =>
-                      React.createElement('div', { key: item.id, className: "flex items-center justify-between p-3 rounded-md hover:bg-gray-700/50" },
+                      React.createElement('div', { key: item.id, className: "flex items-center justify-between p-3 rounded-md hover:bg-[var(--color-bg-tertiary)]" },
                           React.createElement('label', { className: "flex items-center cursor-pointer flex-grow" },
                               React.createElement('input', {
                                   type: 'checkbox',
                                   checked: item.completed,
                                   onChange: () => onToggleItem(item.id),
-                                  className: "w-6 h-6 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
+                                  className: "w-6 h-6 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
                               }),
-                              React.createElement('span', { className: `ml-4 text-lg ${item.completed ? 'line-through text-gray-500' : 'text-gray-200'}` }, item.text)
+                              React.createElement('span', { className: `ml-4 text-lg ${item.completed ? 'line-through text-[var(--color-text-tertiary)]' : 'text-[var(--color-text-primary)]'}` }, item.text)
                           ),
                           React.createElement('button', {
                               onClick: () => handleDeleteItemWithConfirm(item),
                               className: "text-red-500 hover:text-red-400 p-1 ml-4"
                           }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
                       )
-                  ) : React.createElement('p', { className: "text-gray-500 text-center py-4" }, "Your shopping list is empty.")
+                  ) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center py-4" }, "Your shopping list is empty.")
               ),
               items.length > 0 && React.createElement('div', { className: "mt-6 flex justify-end" },
                   React.createElement('button', {
@@ -1217,12 +1309,12 @@
           if (!isOpen) return null;
 
           return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50", 'aria-modal': "true", role: "dialog" },
-              React.createElement('div', { className: "bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-md m-4" },
+              React.createElement('div', { className: "bg-[var(--color-bg-secondary)] rounded-lg shadow-xl border border-[var(--color-border-primary)] w-full max-w-md m-4" },
                   React.createElement('div', { className: "p-6" },
-                      React.createElement('h2', { className: "text-2xl font-bold text-gray-100 mb-4" }, title),
-                      React.createElement('p', { className: "text-gray-300 mb-6" }, message)
+                      React.createElement('h2', { className: "text-2xl font-bold text-[var(--color-text-primary)] mb-4" }, title),
+                      React.createElement('p', { className: "text-[var(--color-text-secondary)] mb-6" }, message)
                   ),
-                  React.createElement('div', { className: "bg-gray-700/50 px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
+                  React.createElement('div', { className: "bg-[var(--color-bg-tertiary)] px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-4 rounded-md" }, "Cancel"),
                       React.createElement('button', { onClick: onConfirm, className: "bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md" }, "Confirm")
                   )
@@ -1243,19 +1335,19 @@
           };
 
           return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50", 'aria-modal': "true", role: "dialog" },
-              React.createElement('div', { className: "bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-md m-4" },
+              React.createElement('div', { className: "bg-[var(--color-bg-secondary)] rounded-lg shadow-xl border border-[var(--color-border-primary)] w-full max-w-md m-4" },
                   React.createElement('div', { className: "p-6" },
-                      React.createElement('h2', { className: "text-2xl font-bold text-gray-100 mb-4" }, "Add New Unit"),
-                      React.createElement('p', { className: "text-gray-400 mb-2" }, "Enter the name for the new measurement unit."),
+                      React.createElement('h2', { className: "text-2xl font-bold text-[var(--color-text-primary)] mb-4" }, "Add New Unit"),
+                      React.createElement('p', { className: "text-[var(--color-text-tertiary)] mb-2" }, "Enter the name for the new measurement unit."),
                       React.createElement('input', {
                           type: "text",
                           value: label,
                           onChange: e => setLabel(e.target.value),
                           placeholder: "e.g., Pinch, Dash, etc.",
-                          className: "w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500"
+                          className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                       })
                   ),
-                  React.createElement('div', { className: "bg-gray-700/50 px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
+                  React.createElement('div', { className: "bg-[var(--color-bg-tertiary)] px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-4 rounded-md" }, "Cancel"),
                       React.createElement('button', { onClick: handleSave, className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md" }, "Save")
                   )
@@ -1268,9 +1360,41 @@
         const [sections, setSections] = useLocalStorage('sections', []);
         const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
+        const [theme, setTheme] = useLocalStorage('themeSettings', DEFAULT_THEME);
         const [view, setView] = useState({ page: 'list' });
         const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
+
+        useEffect(() => {
+            const root = document.documentElement;
+            if (theme.mode === 'light') {
+                root.style.setProperty('--color-bg-primary', theme.backgroundColor || '#f9fafb');
+                root.style.setProperty('--color-bg-secondary', '#f3f4f6');
+                root.style.setProperty('--color-bg-tertiary', '#e5e7eb');
+                root.style.setProperty('--color-bg-input', '#ffffff');
+                root.style.setProperty('--color-text-primary', '#1f2937');
+                root.style.setProperty('--color-text-secondary', '#4b5563');
+                root.style.setProperty('--color-text-tertiary', '#6b7280');
+                root.style.setProperty('--color-border-primary', '#d1d5db');
+                root.style.setProperty('--color-border-secondary', '#e5e7eb');
+                root.style.setProperty('--color-header-text', '#1e40af');
+            } else { // dark
+                root.style.setProperty('--color-bg-primary', theme.backgroundColor || '#111827');
+                root.style.setProperty('--color-bg-secondary', '#1f2937');
+                root.style.setProperty('--color-bg-tertiary', '#374151');
+                root.style.setProperty('--color-bg-input', '#374151');
+                root.style.setProperty('--color-text-primary', '#f9fafb');
+                root.style.setProperty('--color-text-secondary', '#d1d5db');
+                root.style.setProperty('--color-text-tertiary', '#9ca3af');
+                root.style.setProperty('--color-border-primary', '#374151');
+                root.style.setProperty('--color-border-secondary', '#4b5563');
+                root.style.setProperty('--color-header-text', '#bfdbfe');
+            }
+            root.style.setProperty('--color-accent', theme.accentColor);
+            root.style.setProperty('--color-accent-text', theme.accentColor);
+            document.body.style.backgroundColor = 'var(--color-bg-primary)';
+            document.body.style.color = 'var(--color-text-primary)';
+        }, [theme]);
 
         const showConfirmDialog = (title, message, onConfirm) => {
             setConfirmState({ isOpen: true, title, message, onConfirm });
@@ -1508,6 +1632,8 @@
               });
             case 'settings':
               return React.createElement(Settings, {
+                theme: theme,
+                setTheme: setTheme,
                 units: units,
                 onAddUnit: handleAddUnit,
                 onDeleteUnit: handleDeleteUnit,
