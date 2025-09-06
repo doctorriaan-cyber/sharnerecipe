@@ -346,7 +346,7 @@
           }
           setNewSectionName('');
           setNewCategoryName('');
-        }, [initialRecipe, units]);
+        }, [initialRecipe]);
         
         const addEmoji = (emoji) => {
           setEmojiString(prev => prev + emoji);
@@ -484,7 +484,7 @@
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
           React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
-          React.createElement('form', { onSubmit: handleSubmit, className: "space-y-8 bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+          React.createElement('form', { onSubmit: handleSubmit, className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
             React.createElement('div', null,
               React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Recipe Name"),
               React.createElement('input', {
@@ -497,7 +497,7 @@
                 required: true
               })
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Sections"),
               React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-48 overflow-y-auto" },
                 sections.length > 0 
@@ -523,11 +523,11 @@
                 React.createElement('button', {
                   type: "button",
                   onClick: handleAddSection,
-                  className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                  className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                 }, "Add Section")
               )
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('label', { htmlFor: "recipe-notes", className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Notes"),
               React.createElement('textarea', {
                 id: "recipe-notes",
@@ -538,7 +538,7 @@
                 className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
               })
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('div', { className: "flex items-center gap-4 mb-2" },
                 React.createElement('label', { className: "text-lg font-medium text-[var(--color-text-secondary)] flex-shrink-0" }, "Emojis"),
                 React.createElement('div', { className: "flex-grow flex items-center bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-md min-h-[50px] px-3 py-2" },
@@ -547,7 +547,7 @@
                     value: emojiString,
                     onChange: (e) => setEmojiString(e.target.value),
                     placeholder: "Select from the grid or type...",
-                    className: "w-full p-0 bg-transparent border-none text-2xl tracking-widest text-[var(--color-text-primary)] focus:ring-0",
+                    className: "w-full p-0 bg-transparent border-none text-2xl tracking-widest text-[var(--color-text-primary)] focus:ring-0 placeholder:text-base placeholder:text-[var(--color-text-tertiary)]",
                     'aria-label': "Recipe Emojis"
                   })
                 )
@@ -562,7 +562,7 @@
                 }, emoji))
               )
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
                 React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Categories"),
                 React.createElement('div', { className: "flex items-center gap-2 mb-3" },
                     React.createElement('input', {
@@ -575,7 +575,7 @@
                     React.createElement('button', {
                         type: "button",
                         onClick: handleAddCategory,
-                        className: "bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                        className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                     }, "Add Category")
                 ),
                 categories.length > 0 && React.createElement('div', { className: "flex flex-wrap gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
@@ -587,7 +587,7 @@
                     ))
                 )
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
               React.createElement('div', { className: "space-y-4" },
                 ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 sm:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
@@ -632,7 +632,7 @@
                 className: "mt-4 flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
               }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Ingredient")
             ),
-            React.createElement('div', null,
+            React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Steps"),
               React.createElement('div', { className: "space-y-4" },
                 steps.map((step, index) => React.createElement('div', { key: step.id, className: "flex items-start gap-2" },
@@ -665,7 +665,7 @@
                 className: "mt-4 flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
               }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Step")
             ),
-            React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-[var(--color-border-primary)]" },
+            React.createElement('div', { className: "flex justify-end gap-4 mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('button', { type: "button", onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
               React.createElement('button', { type: "submit", className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-6 rounded-md" }, initialRecipe ? 'Save Changes' : 'Save Recipe')
             )
@@ -830,7 +830,7 @@
                             className: `w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md font-semibold transition-colors duration-300 ${
                                 justAdded
                                 ? 'bg-green-600 text-white cursor-default'
-                                : 'bg-blue-600 hover:bg-blue-500 text-white'
+                                : 'bg-[var(--color-accent)] hover:brightness-95 text-white'
                             }`
                         }, 
                             React.createElement(ShoppingBagIcon, { className: "w-5 h-5" }),
@@ -930,7 +930,7 @@
         );
       };
 
-      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList }) => {
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList, ownerName }) => {
         const [searchTerm, setSearchTerm] = useState('');
         const [openSections, setOpenSections] = useState({});
         const importInputRef = useRef(null);
@@ -1008,7 +1008,7 @@
                     }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
                 ),
                 // Title
-                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-accent-text)] text-center px-2 flex-shrink min-w-0" }, "Sharné's recipes"),
+                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-accent-text)] text-center px-2 flex-shrink min-w-0" }, `${ownerName}'s recipes`),
                 // Right Spacer for centering
                 React.createElement('div', { className: "flex items-center gap-2 invisible", 'aria-hidden': 'true' },
                     React.createElement('div', { className: "p-2" }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
@@ -1104,12 +1104,12 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ theme, setTheme, textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection }) => {
+      const Settings = ({ theme, setTheme, textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection, ownerName, setOwnerName }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
 
-        const MIN_TEXT_SIZE = 0.8;
-        const MAX_TEXT_SIZE = 1.5;
+        const MIN_TEXT_SIZE = 0.5;
+        const MAX_TEXT_SIZE = 1.25;
         const STEP_TEXT_SIZE = 0.05;
 
         const handleTextSizeChange = (newSize) => {
@@ -1202,8 +1202,22 @@
           ),
           React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
               React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Settings"),
-              React.createElement('div', { className: "space-y-8" },
+              React.createElement('div', { className: "" },
                   React.createElement('div', null,
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Personalization"),
+                      React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                          React.createElement('label', { htmlFor: "owner-name", className: "block font-medium text-[var(--color-text-primary)] mb-2" }, "Whose recipes are these?"),
+                          React.createElement('input', {
+                              id: "owner-name",
+                              type: "text",
+                              value: ownerName,
+                              onChange: e => setOwnerName(e.target.value),
+                              placeholder: "e.g., Sharné",
+                              className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                          })
+                      )
+                  ),
+                  React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Appearance"),
                       React.createElement('div', { className: "space-y-4" },
                           React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
@@ -1269,7 +1283,7 @@
                           )
                       )
                   ),
-                  React.createElement('div', null,
+                  React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Recipe Sections"),
                       React.createElement('div', { className: "flex items-center gap-2 mb-4" },
                           React.createElement('input', {
@@ -1282,7 +1296,7 @@
                           React.createElement('button', {
                               type: "button",
                               onClick: handleAddSection,
-                              className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                              className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Section")
                       ),
                       React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
@@ -1304,7 +1318,7 @@
                           }) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No sections created.")
                       )
                   ),
-                  React.createElement('div', null,
+                  React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Measurement Units"),
                       React.createElement('div', { className: "flex items-center gap-2 mb-4" },
                           React.createElement('input', {
@@ -1317,7 +1331,7 @@
                           React.createElement('button', {
                               type: "button",
                               onClick: handleAddUnit,
-                              className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                              className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Unit")
                       ),
                       React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
@@ -1383,7 +1397,7 @@
                   }),
                   React.createElement('button', {
                       type: "submit",
-                      className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                      className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                   }, "Add Item")
               ),
               React.createElement('div', { className: "space-y-3 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-[60vh] overflow-y-auto" },
@@ -1461,7 +1475,7 @@
                   ),
                   React.createElement('div', { className: "bg-[var(--color-bg-tertiary)] px-6 py-4 flex justify-end gap-4 rounded-b-lg" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-4 rounded-md" }, "Cancel"),
-                      React.createElement('button', { onClick: handleSave, className: "bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md" }, "Save")
+                      React.createElement('button', { onClick: handleSave, className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-md" }, "Save")
                   )
               )
           );
@@ -1474,6 +1488,7 @@
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
         const [theme, setTheme] = useLocalStorage('themeSettings', DEFAULT_THEME);
         const [textSize, setTextSize] = useLocalStorage('textSize', 1);
+        const [ownerName, setOwnerName] = useLocalStorage('ownerName', 'Sharné');
         const [view, setView] = useState({ page: 'list' });
         const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
@@ -1722,7 +1737,8 @@
                 onGoToSettings: () => setView({ page: 'settings' }),
                 onGoToShoppingList: () => setView({ page: 'shopping_list' }),
                 onExport: handleExport,
-                onFileSelect: handleFileSelect
+                onFileSelect: handleFileSelect,
+                ownerName: ownerName
               });
             case 'detail':
               const selectedRecipe = recipes.find(r => r.id === view.id);
@@ -1765,7 +1781,9 @@
                 onAddSection: handleAddSection,
                 onDeleteSection: handleDeleteSection,
                 onBack: () => setView({ page: 'list' }),
-                showConfirmDialog: showConfirmDialog
+                showConfirmDialog: showConfirmDialog,
+                ownerName: ownerName,
+                setOwnerName: setOwnerName
               });
             case 'shopping_list':
               return React.createElement(ShoppingList, {
