@@ -304,7 +304,7 @@
         const [description, setDescription] = useState('');
         const [categories, setCategories] = useState([]);
         const [newCategoryName, setNewCategoryName] = useState('');
-        const [selectedEmojis, setSelectedEmojis] = useState([]);
+        const [emojiString, setEmojiString] = useState('');
         const [ingredients, setIngredients] = useState([]);
         const [steps, setSteps] = useState([]);
         const [selectedSectionIds, setSelectedSectionIds] = useState(new Set());
@@ -316,7 +316,7 @@
             setName(initialRecipe.name);
             setDescription(initialRecipe.description || '');
             setCategories(initialRecipe.categories || []);
-            setSelectedEmojis(initialRecipe.emojis || []);
+            setEmojiString(initialRecipe.emojis ? initialRecipe.emojis.join('') : '');
             setIngredients(initialRecipe.ingredients);
 
             const initialSteps = Array.isArray(initialRecipe.steps) ? initialRecipe.steps : [];
@@ -339,7 +339,7 @@
             setName('');
             setDescription('');
             setCategories([]);
-            setSelectedEmojis([]);
+            setEmojiString('');
             setIngredients([{ id: `new_ing_${Date.now()}`, name: '', quantity: '', unit: units[0]?.id || '', categoryId: undefined }]);
             setSteps([{ id: `new_step_${Date.now()}`, text: '', categoryId: undefined }]);
             setSelectedSectionIds(new Set());
@@ -349,11 +349,7 @@
         }, [initialRecipe, units]);
         
         const addEmoji = (emoji) => {
-          setSelectedEmojis(prev => [...prev, emoji]);
-        };
-        
-        const removeLastEmoji = () => {
-          setSelectedEmojis(prev => prev.slice(0, -1));
+          setEmojiString(prev => prev + emoji);
         };
         
         const handleAddCategory = () => {
@@ -477,7 +473,7 @@
               name,
               description,
               categories,
-              emojis: selectedEmojis,
+              emojis: [...emojiString],
               ingredients: finalIngredients,
               steps: finalSteps,
               sectionIds: Array.from(selectedSectionIds),
@@ -543,6 +539,30 @@
               })
             ),
             React.createElement('div', null,
+              React.createElement('div', { className: "flex items-center gap-4 mb-2" },
+                React.createElement('label', { className: "text-lg font-medium text-[var(--color-text-secondary)] flex-shrink-0" }, "Emojis"),
+                React.createElement('div', { className: "flex-grow flex items-center bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-md min-h-[50px] px-3 py-2" },
+                  React.createElement('input', {
+                    type: "text",
+                    value: emojiString,
+                    onChange: (e) => setEmojiString(e.target.value),
+                    placeholder: "Select from the grid or type...",
+                    className: "w-full p-0 bg-transparent border-none text-2xl tracking-widest text-[var(--color-text-primary)] focus:ring-0",
+                    'aria-label': "Recipe Emojis"
+                  })
+                )
+              ),
+              React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-wrap gap-2" },
+                FOOD_EMOJIS.map(emoji => React.createElement('button', {
+                  key: emoji,
+                  type: "button",
+                  onClick: () => addEmoji(emoji),
+                  className: "text-2xl p-2 rounded-md transition-colors duration-200 hover:bg-[var(--color-bg-tertiary)]",
+                  'aria-label': `Add ${emoji} emoji`
+                }, emoji))
+              )
+            ),
+            React.createElement('div', null,
                 React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Categories"),
                 React.createElement('div', { className: "flex items-center gap-2 mb-3" },
                     React.createElement('input', {
@@ -566,34 +586,6 @@
                         )
                     ))
                 )
-            ),
-            React.createElement('div', null,
-              React.createElement('div', { className: "flex items-center gap-4 mb-2" },
-                React.createElement('label', { className: "text-lg font-medium text-[var(--color-text-secondary)] flex-shrink-0" }, "Emojis"),
-                React.createElement('div', { className: "flex-grow flex items-center bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-md min-h-[50px] px-3 py-2" },
-                  React.createElement('div', { className: "flex-grow text-2xl tracking-widest overflow-x-auto whitespace-nowrap" },
-                    selectedEmojis.length > 0
-                      ? selectedEmojis.join('')
-                      : React.createElement('span', { className: "text-[var(--color-text-tertiary)] text-base tracking-normal" }, "Select from the grid below...")
-                  ),
-                  React.createElement('button', {
-                    type: "button",
-                    onClick: removeLastEmoji,
-                    className: "ml-2 px-3 py-1 text-sm bg-red-600 hover:bg-red-500 rounded-md text-white font-semibold flex-shrink-0 disabled:bg-gray-500 disabled:cursor-not-allowed",
-                    'aria-label': "Remove last emoji",
-                    disabled: selectedEmojis.length === 0
-                  }, "Delete")
-                )
-              ),
-              React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-wrap gap-2" },
-                FOOD_EMOJIS.map(emoji => React.createElement('button', {
-                  key: emoji,
-                  type: "button",
-                  onClick: () => addEmoji(emoji),
-                  className: "text-2xl p-2 rounded-md transition-colors duration-200 hover:bg-[var(--color-bg-tertiary)]",
-                  'aria-label': `Add ${emoji} emoji`
-                }, emoji))
-              )
             ),
             React.createElement('div', null,
               React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
