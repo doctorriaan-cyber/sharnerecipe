@@ -1268,8 +1268,7 @@
                                       max: MAX_TEXT_SIZE,
                                       step: STEP_TEXT_SIZE,
                                       value: textSize,
-                                      onChange: (e) => handleTextSizeChange(parseFloat(e.target.value)),
-                                      className: "w-full h-2 bg-[var(--color-bg-tertiary)] rounded-lg appearance-none cursor-pointer accent-[var(--color-accent)]",
+                                      className: "w-full h-2 bg-[var(--color-bg-tertiary)] rounded-lg appearance-none pointer-events-none accent-[var(--color-accent)]",
                                       'aria-label': "Text size slider"
                                   }),
                                   React.createElement('button', {
