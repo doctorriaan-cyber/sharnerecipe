@@ -158,6 +158,12 @@
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m19.5 8.25-7.5 7.5-7.5-7.5" })
           )
       );
+      
+      const ChevronUpIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m4.5 15.75 7.5-7.5 7.5 7.5" })
+          )
+      );
 
       const CloudUploadIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
@@ -180,6 +186,12 @@
       const ShoppingBagIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.658-.463 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" })
+          )
+      );
+
+      const ClockIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" })
           )
       );
 
@@ -930,10 +942,18 @@
         );
       };
 
-      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList, ownerName }) => {
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList, onGoToTimers, ownerName }) => {
         const [searchTerm, setSearchTerm] = useState('');
         const [openSections, setOpenSections] = useState({});
         const importInputRef = useRef(null);
+        const [isSearchVisible, setIsSearchVisible] = useState(false);
+        const searchInputRef = useRef(null);
+
+        useEffect(() => {
+            if (isSearchVisible) {
+                searchInputRef.current?.focus();
+            }
+        }, [isSearchVisible]);
 
         const handleImportClick = () => {
           importInputRef.current?.click();
@@ -994,8 +1014,7 @@
         return (
           React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
             React.createElement('div', { className: "flex justify-between items-center mb-6" },
-                // Left Buttons
-                React.createElement('div', { className: "flex items-center gap-2" },
+                React.createElement('div', { className: "flex items-center gap-2", style: { flex: '1 1 0%' } },
                     React.createElement('button', {
                         onClick: onGoToSettings,
                         className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
@@ -1007,18 +1026,27 @@
                         'aria-label': "Shopping List"
                     }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
                 ),
-                // Title
                 React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-accent-text)] text-center px-2 flex-shrink min-w-0" }, `${ownerName}'s recipes`),
-                // Right Spacer for centering
-                React.createElement('div', { className: "flex items-center gap-2 invisible", 'aria-hidden': 'true' },
-                    React.createElement('div', { className: "p-2" }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
-                    React.createElement('div', { className: "p-2" }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
+                React.createElement('div', { className: "flex items-center gap-2 justify-end", style: { flex: '1 1 0%' } },
+                    React.createElement('button', {
+                        onClick: onGoToTimers,
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
+                        'aria-label': "Timers"
+                    }, React.createElement(ClockIcon, { className: "w-7 h-7" })),
+                    React.createElement('button', {
+                        onClick: () => setIsSearchVisible(prev => !prev),
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
+                        'aria-label': "Toggle Search"
+                    }, React.createElement(SearchIcon, { className: "w-7 h-7" }))
                 )
             ),
-            React.createElement('div', { className: "flex flex-col sm:flex-row justify-between items-center gap-4 mb-8" },
-              React.createElement('div', { className: "relative w-full sm:w-auto sm:flex-grow" },
-                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-tertiary)]" }),
+            React.createElement('div', { className: "flex flex-col sm:flex-row justify-end items-center gap-4 mb-8" },
+              React.createElement('div', {
+                className: `relative sm:flex-grow w-full sm:w-auto transition-all duration-300 ease-in-out ${isSearchVisible ? 'max-w-full sm:max-w-md' : 'max-w-0 opacity-0'}`
+              },
+                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-tertiary)] pointer-events-none" }),
                 React.createElement('input', {
+                  ref: searchInputRef,
                   type: "text",
                   placeholder: "Search recipes...",
                   value: searchTerm,
@@ -1028,7 +1056,7 @@
               ),
               React.createElement('button', {
                 onClick: onAddRecipe,
-                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center",
+                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center flex-shrink-0",
                 'aria-label': "Add a new recipe"
               },
                 React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }),
@@ -1350,6 +1378,218 @@
         );
       };
       
+      // --- Start of inlined components/Timers.tsx ---
+      const Timers = ({ onBack, showConfirmDialog }) => {
+        const DEFAULT_TIMER = {
+            id: Date.now(),
+            name: 'Default',
+            duration: { hours: 0, minutes: 0, seconds: 0 },
+            remainingTime: 0,
+            isRunning: false,
+            isFinished: false,
+        };
+        const [timers, setTimers] = useLocalStorage('timers', [DEFAULT_TIMER]);
+        const audioRef = useRef(null);
+
+        useEffect(() => {
+            const interval = setInterval(() => {
+                setTimers(prev =>
+                    prev.map(t => {
+                        if (!t.isRunning || t.remainingTime <= 0) {
+                            return t;
+                        }
+                        const newRemainingTime = t.remainingTime - 1;
+                        if (newRemainingTime <= 0) {
+                            if (audioRef.current) {
+                                audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+                            }
+                            return { ...t, remainingTime: 0, isRunning: false, isFinished: true };
+                        }
+                        return { ...t, remainingTime: newRemainingTime };
+                    })
+                );
+            }, 1000);
+            return () => clearInterval(interval);
+        }, []);
+
+        const formatTime = (totalSeconds) => {
+            const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        };
+
+        const handleAddTimer = () => {
+            setTimers(prev => [...prev, { ...DEFAULT_TIMER, id: Date.now(), name: `Timer ${prev.length + 1}` }]);
+        };
+
+        const handleDeleteTimer = (id) => {
+            const timerToDelete = timers.find(t => t.id === id);
+            showConfirmDialog(
+                'Delete Timer',
+                `Are you sure you want to delete the timer "${timerToDelete.name}"?`,
+                () => setTimers(prev => prev.filter(t => t.id !== id))
+            );
+        };
+        
+        const handleUpdate = (id, field, value) => {
+            setTimers(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
+        };
+
+        const handleDurationChange = (id, unit, value) => {
+            let numericValue = parseInt(value, 10);
+            if (isNaN(numericValue) || numericValue < 0) {
+                numericValue = 0;
+            }
+
+            if (unit === 'minutes' || unit === 'seconds') {
+                if (numericValue > 59) numericValue = 59;
+            } else if (unit === 'hours') {
+                if (numericValue > 99) numericValue = 99;
+            }
+
+            setTimers(prev => prev.map(t => {
+                if (t.id === id) {
+                    const newDuration = { ...t.duration, [unit]: numericValue };
+                    return { ...t, duration: newDuration, isFinished: false };
+                }
+                return t;
+            }));
+        };
+        
+        const handleDurationIncrement = (id, unit, delta) => {
+            setTimers(prev => prev.map(t => {
+                if (t.id === id) {
+                    let currentValue = t.duration[unit];
+                    let newValue = currentValue + delta;
+                    const max = unit === 'hours' ? 99 : 59;
+                    const min = 0;
+                    if (newValue > max) newValue = max;
+                    if (newValue < min) newValue = min;
+                    const newDuration = { ...t.duration, [unit]: newValue };
+                    return { ...t, duration: newDuration, isFinished: false };
+                }
+                return t;
+            }));
+        };
+
+        const handleToggleTimer = (id) => {
+            setTimers(prev => prev.map(t => {
+                if (t.id === id) {
+                    if (t.isRunning) {
+                        return { ...t, isRunning: false };
+                    }
+                    const newRemainingTime = (t.duration.hours * 3600) + (t.duration.minutes * 60) + t.duration.seconds;
+                    if (newRemainingTime <= 0) {
+                        return t;
+                    }
+                    return { ...t, isRunning: true, remainingTime: newRemainingTime, isFinished: false };
+                }
+                return t;
+            }));
+        };
+
+        const handleResetTimer = (id) => {
+            setTimers(prev => prev.map(t => {
+                if (t.id === id) {
+                    return { ...t, isRunning: false, remainingTime: 0, isFinished: false };
+                }
+                return t;
+            }));
+        };
+
+        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
+            React.createElement('audio', { ref: audioRef, src: "https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg", preload: "auto" }),
+            React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
+                React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
+                "Back to Recipes"
+            ),
+            React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+                React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Timers"),
+                React.createElement('div', { className: "space-y-6" },
+                    timers.map(timer => {
+                        const isFinished = timer.isFinished && !timer.isRunning;
+                        const cardBg = isFinished ? 'bg-green-500/10' : 'bg-[var(--color-bg-primary)]';
+                        const cardBorder = isFinished ? 'border-green-500' : 'border-[var(--color-border-secondary)]';
+
+                        return React.createElement('div', { key: timer.id, className: `p-4 rounded-lg border ${cardBorder} ${cardBg} transition-colors` },
+                            React.createElement('div', { className: "flex justify-between items-center mb-4" },
+                                React.createElement('input', {
+                                    type: "text",
+                                    value: timer.name,
+                                    onChange: (e) => handleUpdate(timer.id, 'name', e.target.value),
+                                    placeholder: "Timer Name",
+                                    className: "flex-grow p-2 bg-transparent border-none text-xl font-semibold text-[var(--color-text-primary)] focus:ring-0",
+                                    disabled: timer.isRunning
+                                }),
+                                React.createElement('button', { onClick: () => handleDeleteTimer(timer.id), className: "text-red-500 hover:text-red-400 p-1" },
+                                    React.createElement(TrashIcon, { className: "w-5 h-5" })
+                                )
+                            ),
+                            React.createElement('div', { className: "flex items-center justify-center text-center my-4" },
+                                timer.isRunning || (timer.remainingTime > 0 && !timer.isRunning && !isFinished) ? (
+                                    React.createElement('div', { className: `text-6xl font-mono tracking-wider ${isFinished ? 'text-green-400' : 'text-[var(--color-text-primary)]'}` },
+                                        formatTime(timer.remainingTime)
+                                    )
+                                ) : (
+                                    React.createElement('div', { className: "flex items-center justify-center gap-2" },
+                                        ['hours', 'minutes', 'seconds'].map((unit, index) =>
+                                            React.createElement(React.Fragment, { key: unit },
+                                                index > 0 && React.createElement('span', { className: "text-3xl font-bold text-[var(--color-text-tertiary)]" }, ':'),
+                                                React.createElement('div', { className: "flex items-center" },
+                                                    React.createElement('input', {
+                                                        type: "number",
+                                                        min: "0",
+                                                        max: unit === 'hours' ? 99 : 59,
+                                                        value: timer.duration[unit],
+                                                        onChange: (e) => handleDurationChange(timer.id, unit, e.target.value),
+                                                        className: "w-24 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-4xl text-center text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                                                        'aria-label': unit
+                                                    }),
+                                                    React.createElement('div', { className: "flex flex-col ml-2" },
+                                                        React.createElement('button', {
+                                                            type: "button",
+                                                            onClick: () => handleDurationIncrement(timer.id, unit, 1),
+                                                            className: "p-1 rounded-md bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-secondary)]",
+                                                            'aria-label': `Increase ${unit}`
+                                                        }, React.createElement(ChevronUpIcon, { className: "w-5 h-5" })),
+                                                        React.createElement('button', {
+                                                            type: "button",
+                                                            onClick: () => handleDurationIncrement(timer.id, unit, -1),
+                                                            className: "p-1 mt-1 rounded-md bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-secondary)]",
+                                                            'aria-label': `Decrease ${unit}`
+                                                        }, React.createElement(ChevronDownIcon, { className: "w-5 h-5" }))
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            isFinished && React.createElement('div', { className: "text-center text-green-400 font-bold mb-4" }, "Timer Finished!"),
+                            React.createElement('div', { className: "flex justify-center gap-4" },
+                                React.createElement('button', {
+                                    onClick: () => handleToggleTimer(timer.id),
+                                    className: `px-6 py-2 rounded-md font-semibold text-white ${timer.isRunning ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-[var(--color-accent)] hover:brightness-95'}`
+                                }, timer.isRunning ? 'Pause' : 'Start'),
+                                React.createElement('button', {
+                                    onClick: () => handleResetTimer(timer.id),
+                                    className: "px-6 py-2 rounded-md font-semibold bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:brightness-110"
+                                }, "Reset")
+                            )
+                        );
+                    })
+                ),
+                React.createElement('div', { className: "mt-8 pt-6 border-t border-[var(--color-border-primary)]" },
+                    React.createElement('button', {
+                        onClick: handleAddTimer,
+                        className: "w-full flex items-center justify-center gap-2 bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-3 px-4 rounded-md"
+                    }, React.createElement(PlusIcon, { className: "w-5 h-5" }), "Add Timer")
+                )
+            )
+        );
+      };
+
        // --- Start of inlined components/ShoppingList.tsx ---
       const ShoppingList = ({ items, onAddItem, onToggleItem, onDeleteItem, onBack, onClearAll, showConfirmDialog }) => {
         const [newItemText, setNewItemText] = useState('');
@@ -1735,6 +1975,7 @@
                 onAddRecipe: () => setView({ page: 'form' }),
                 onGoToSettings: () => setView({ page: 'settings' }),
                 onGoToShoppingList: () => setView({ page: 'shopping_list' }),
+                onGoToTimers: () => setView({ page: 'timers' }),
                 onExport: handleExport,
                 onFileSelect: handleFileSelect,
                 ownerName: ownerName
@@ -1794,6 +2035,11 @@
                 onBack: () => setView({ page: 'list' }),
                 showConfirmDialog: showConfirmDialog,
               });
+            case 'timers':
+                return React.createElement(Timers, {
+                    onBack: () => setView({ page: 'list' }),
+                    showConfirmDialog: showConfirmDialog,
+                });
             case 'import_confirm':
               return React.createElement(ImportConfirmation, {
                 data: view.data,
