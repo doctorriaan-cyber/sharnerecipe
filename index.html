@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2hhcm7DqSdzIFJlY2lwZXMiLCJzaG9ydF9uYW1lIjoiUmVjaXBlcyIsImRlc2NyaXB0aW9uIjoiQSBwZXJzb25hbCByZWNpcGUgZGF0YWJhc2UgYXBwbGljYXRpb24uIExvZyB5b3VyIGZhdm9yaXRlIHJlY2lwZXMgZnJvbSBwYXBlciB0byBhIGRpZ2l0YWwgZm9ybWF0LCB2aWV3IHRoZW0sIGFuZCBhZGp1c3QgaW5ncmVkaWVudCBxdWFudGl0aWVzIG9uIHRoZSBmbHkuIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiM2NEM3Q0MiLCJpY29ucyI6W3sic3JjIjoiY3JvcHBlZC5wbmciLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=" />
+    <meta name="theme-color" content="#64C7CC" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sharné's Recipes" />
+    <link rel="apple-touch-icon" href="cropped.png" />
     <title>Sharné's Recipes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2081,6 +2087,68 @@
           React.createElement(App, null)
         )
       );
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        const swContent = `const CACHE_NAME = 'sharnes-recipes-cache-v1';
+const urlsToCache = [
+  '/',
+  'index.html',
+  'cropped.png',
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap',
+  'https://aistudiocdn.com/react@^19.1.1',
+  'https://aistudiocdn.com/react-dom@^19.1.1/client'
+];
+
+self.addEventListener('install', event => {
+  // Perform install steps
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener('fetch', event => {
+  // This is a network-first strategy.
+  // It tries to get the response from the network, and if it fails (offline),
+  // it tries to get it from the cache.
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
+  );
+});
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});`;
+        window.addEventListener('load', () => {
+          const blob = new Blob([swContent], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(swUrl)
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
     </script>
   </body>
 </html>
