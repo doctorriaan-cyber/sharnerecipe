@@ -200,6 +200,12 @@
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" })
           )
       );
+      
+      const ArrowUpTrayIcon = ({ className = "w-6 h-6" }) => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" })
+          )
+      );
 
       // --- Start of inlined components/ImportConfirmation.tsx ---
       const ImportConfirmation = ({ data, onConfirm, onCancel }) => {
@@ -692,9 +698,10 @@
       };
       
       // --- Start of inlined components/RecipeDetail.tsx ---
-      const RecipeDetail = ({ recipe, onBack, onEdit, onDelete, showConfirmDialog, units, onAddIngredientsToShoppingList }) => {
+      const RecipeDetail = ({ recipe, onBack, onEdit, onDelete, showConfirmDialog, units, sections, onAddIngredientsToShoppingList }) => {
           const [multiplier, setMultiplier] = useState(1);
           const [justAdded, setJustAdded] = useState(false);
+          const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
           
           const unitMap = useMemo(() => new Map(units.map(u => [u.id, u])), [units]);
 
@@ -796,9 +803,17 @@
           const hasCategories = recipe.categories && recipe.categories.length > 0;
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-            React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
-                React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
-                "Back to Recipes"
+            React.createElement('div', { className: "flex justify-between items-center mb-6" },
+                React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110" },
+                    React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
+                    "Back to Recipes"
+                ),
+                React.createElement('button', { 
+                    onClick: () => setIsShareDialogOpen(true), 
+                    className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
+                    'aria-label': "Share recipe",
+                    style: { display: navigator.share ? 'block' : 'none' }
+                }, React.createElement(ArrowUpTrayIcon, { className: "w-6 h-6" }))
             ),
             React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
                 React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-[var(--color-border-primary)] pb-4" },
@@ -897,7 +912,14 @@
                             ))
                         )
                 )
-            )
+            ),
+            React.createElement(ShareDialog, {
+                isOpen: isShareDialogOpen,
+                onClose: () => setIsShareDialogOpen(false),
+                recipe: recipe,
+                allSections: sections,
+                allUnits: units
+            })
         );
       };
 
@@ -1676,6 +1698,162 @@
       };
 
       // --- Start of inlined App.tsx ---
+      const ShareDialog = ({ isOpen, onClose, recipe, allSections, allUnits }) => {
+        if (!isOpen) return null;
+        const unitMap = useMemo(() => new Map(allUnits.map(u => [u.id, u.label])), [allUnits]);
+
+        const formatAsText = (ingredientsOnly = false) => {
+            let text = '';
+            if (recipe.emojis && recipe.emojis.length > 0) {
+                text += `${recipe.emojis.join('')} `;
+            }
+            text += `${recipe.name.toUpperCase()}\n`;
+            text += '====================\n\n';
+
+            if (recipe.description && !ingredientsOnly) {
+                text += `NOTES:\n${recipe.description}\n\n`;
+            }
+
+            text += 'INGREDIENTS\n----------\n';
+            const { categories = [] } = recipe;
+            const recipeIngredients = recipe.ingredients || [];
+            
+            const formatIngredientLine = (ing) => {
+                const unitLabel = unitMap.get(ing.unit) || ing.unit || '';
+                const quantity = ing.quantity || '';
+                let line = '- ';
+                if (quantity) line += `${quantity} `;
+                if (unitLabel) line += `${unitLabel.toLowerCase()} `;
+                line += ing.name;
+                return line.replace(/  +/g, ' ').trim() + '\n';
+            };
+
+            if (categories.length > 0) {
+                categories.forEach(cat => {
+                    const catIngredients = recipeIngredients.filter(ing => ing.categoryId === cat.id);
+                    if (catIngredients.length > 0) {
+                        text += `${cat.name}:\n`;
+                        catIngredients.forEach(ing => {
+                            text += formatIngredientLine(ing);
+                        });
+                        text += '\n';
+                    }
+                });
+                const uncategorizedIngredients = recipeIngredients.filter(ing => !ing.categoryId);
+                if (uncategorizedIngredients.length > 0) {
+                     if (categories.some(c => recipeIngredients.some(i => i.categoryId === c.id))) {
+                        text += 'Other:\n';
+                     }
+                     uncategorizedIngredients.forEach(ing => {
+                        text += formatIngredientLine(ing);
+                     });
+                     text += '\n';
+                }
+            } else if (recipeIngredients.length > 0) {
+                recipeIngredients.forEach(ing => {
+                    text += formatIngredientLine(ing);
+                });
+                text += '\n';
+            }
+
+            if (!ingredientsOnly) {
+                text += 'STEPS\n----------\n';
+                const steps = Array.isArray(recipe.steps) ? recipe.steps.map(s => typeof s === 'string' ? { text: s } : s) : [];
+
+                if (categories.length > 0) {
+                     categories.forEach(cat => {
+                        const catSteps = steps.filter(step => step.categoryId === cat.id);
+                        if (catSteps.length > 0) {
+                            text += `${cat.name}:\n`;
+                            catSteps.forEach((step, index) => {
+                                text += `${index + 1}. ${step.text}\n`;
+                            });
+                            text += '\n';
+                        }
+                    });
+                    const uncategorizedSteps = steps.filter(step => !step.categoryId);
+                    if (uncategorizedSteps.length > 0) {
+                        if (categories.some(c => steps.some(s => s.categoryId === c.id))) {
+                            text += 'Other:\n';
+                        }
+                        uncategorizedSteps.forEach((step, index) => {
+                            text += `${index + 1}. ${step.text}\n`;
+                        });
+                    }
+                } else if (steps.length > 0) {
+                    steps.forEach((step, index) => {
+                        text += `${index + 1}. ${step.text}\n`;
+                    });
+                }
+            }
+
+            return text;
+        };
+
+        const handleShare = async (type) => {
+            onClose();
+            try {
+                if (!navigator.share) {
+                    alert('Share functionality is not supported on this browser.');
+                    return;
+                }
+
+                if (type === 'full-text' || type === 'ingredients-text') {
+                    const isIngredientsOnly = type === 'ingredients-text';
+                    const text = formatAsText(isIngredientsOnly);
+                    const title = isIngredientsOnly ? `${recipe.name} - Ingredients` : recipe.name;
+                    await navigator.share({ title, text });
+                } else if (type === 'file') {
+                    const recipeSections = allSections.filter(s => recipe.sectionIds?.includes(s.id));
+                    const dataToExport = { 
+                        recipes: [recipe], 
+                        sections: recipeSections, 
+                        units: allUnits,
+                        shoppingList: [] 
+                    };
+                    const jsonString = JSON.stringify(dataToExport, null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const fileName = `${recipe.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+                    const file = new File([blob], fileName, { type: 'application/json' });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: recipe.name,
+                            text: `Recipe file for ${recipe.name}`
+                        });
+                    } else {
+                        alert('Sharing files is not supported on this browser.');
+                    }
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                  console.error('Error sharing:', error);
+                  alert(`Could not share. Error: ${error.message}`);
+                }
+            }
+        };
+
+        return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50", 'aria-modal': "true", role: "dialog" },
+            React.createElement('div', { className: "bg-[var(--color-bg-secondary)] rounded-lg shadow-xl border border-[var(--color-border-primary)] w-full max-w-md m-4" },
+                React.createElement('div', { className: "p-6" },
+                    React.createElement('div', { className: "flex justify-between items-center" },
+                        React.createElement('h2', { className: "text-2xl font-bold text-[var(--color-text-primary)]" }, "Share Recipe"),
+                        React.createElement('button', { onClick: onClose, className: "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]" },
+                            React.createElement(XMarkIcon, { className: "w-6 h-6" })
+                        )
+                    ),
+                    React.createElement('p', { className: "text-[var(--color-text-secondary)] mt-2 mb-6" }, `How would you like to share "${recipe.name}"?`)
+                ),
+                React.createElement('div', { className: "p-6 pt-0 flex flex-col gap-3" },
+                    React.createElement('button', { onClick: () => handleShare('full-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Full Recipe (as text)"),
+                    React.createElement('button', { onClick: () => handleShare('ingredients-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Ingredients Only (as text)"),
+                    React.createElement('button', { onClick: () => handleShare('file'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Share as Importable File")
+                )
+            )
+        );
+      };
+
       const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel }) => {
           if (!isOpen) return null;
 
@@ -1995,6 +2173,7 @@
               return React.createElement(RecipeDetail, {
                 recipe: selectedRecipe,
                 units: units,
+                sections: sections,
                 onBack: () => setView({ page: 'list' }),
                 onEdit: (id) => setView({ page: 'form', id }),
                 onDelete: handleDeleteRecipe,
