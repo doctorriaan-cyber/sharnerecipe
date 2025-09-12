@@ -552,18 +552,18 @@
                     ))
                   : React.createElement('p', { className: "text-[var(--color-text-tertiary)]" }, "No sections created yet.")
               ),
-              React.createElement('div', { className: "flex items-center gap-2 mt-3" },
+              React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mt-3" },
                 React.createElement('input', {
                   type: "text",
                   value: newSectionName,
                   onChange: e => setNewSectionName(e.target.value),
                   placeholder: "Create a new section...",
-                  className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                  className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                 }),
                 React.createElement('button', {
                   type: "button",
                   onClick: handleAddSection,
-                  className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                  className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                 }, "Add Section")
               )
             ),
@@ -604,18 +604,18 @@
             ),
             React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
                 React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Categories"),
-                React.createElement('div', { className: "flex items-center gap-2 mb-3" },
+                React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mb-3" },
                     React.createElement('input', {
                         type: "text",
                         value: newCategoryName,
                         onChange: e => setNewCategoryName(e.target.value),
                         placeholder: "e.g., Crust, Filling...",
-                        className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                        className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                     }),
                     React.createElement('button', {
                         type: "button",
                         onClick: handleAddCategory,
-                        className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                        className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                     }, "Add Category")
                 ),
                 categories.length > 0 && React.createElement('div', { className: "flex flex-wrap gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
@@ -630,18 +630,18 @@
             React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
               React.createElement('div', { className: "space-y-4" },
-                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 sm:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                ingredients.map((ing, index) => React.createElement('div', { key: ing.id, className: "grid grid-cols-1 md:grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
                   React.createElement('input', {
                     type: "text",
                     value: ing.quantity,
                     onChange: (e) => handleIngredientChange(index, 'quantity', e.target.value),
-                    className: "w-full sm:w-20 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
+                    className: "w-full md:w-20 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
                     placeholder: "Qty"
                   }),
                   React.createElement('select', {
                     value: ing.unit,
                     onChange: (e) => handleIngredientChange(index, 'unit', e.target.value),
-                    className: "w-full sm:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]"
+                    className: "w-full md:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]"
                   }, 
                     units.map(unit => React.createElement('option', { key: unit.id, value: unit.id }, unit.label)),
                     React.createElement('option', { value: ADD_NEW_UNIT_VALUE, className: "text-blue-400 font-bold" }, 'Add new...')
@@ -656,7 +656,7 @@
                    React.createElement('select', {
                     value: ing.categoryId || '',
                     onChange: (e) => handleIngredientChange(index, 'categoryId', e.target.value || undefined),
-                    className: `w-full sm:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] ${!ing.categoryId ? 'text-[var(--color-text-tertiary)]' : ''}`
+                    className: `w-full md:w-32 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] ${!ing.categoryId ? 'text-[var(--color-text-tertiary)]' : ''}`
                   }, 
                     React.createElement('option', { value: '' }, 'Uncategorized'),
                     categories.map(cat => React.createElement('option', { key: cat.id, value: cat.id }, cat.name))
@@ -1294,18 +1294,18 @@
                   ),
                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Recipe Sections"),
-                      React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+                      React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mb-4" },
                           React.createElement('input', {
                               type: "text",
                               value: newSectionName,
                               onChange: e => setNewSectionName(e.target.value),
                               placeholder: "New section name",
-                              className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                              className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                           }),
                           React.createElement('button', {
                               type: "button",
                               onClick: handleAddSection,
-                              className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                              className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Section")
                       ),
                       React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
@@ -1329,18 +1329,18 @@
                   ),
                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Measurement Units"),
-                      React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+                      React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mb-4" },
                           React.createElement('input', {
                               type: "text",
                               value: newUnitLabel,
                               onChange: e => setNewUnitLabel(e.target.value),
                               placeholder: "New unit name (e.g. Pinch)",
-                              className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                              className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                           }),
                           React.createElement('button', {
                               type: "button",
                               onClick: handleAddUnit,
-                              className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                              className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Unit")
                       ),
                       React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
@@ -1514,7 +1514,7 @@
                                         formatTime(timer.remainingTime)
                                     )
                                 ) : (
-                                    React.createElement('div', { className: "flex items-center justify-center gap-2" },
+                                    React.createElement('div', { className: "flex items-center justify-center gap-2 flex-wrap" },
                                         ['hours', 'minutes', 'seconds'].map((unit, index) =>
                                             React.createElement(React.Fragment, { key: unit },
                                                 index > 0 && React.createElement('span', { className: "text-3xl font-bold text-[var(--color-text-tertiary)]" }, ':'),
@@ -1608,17 +1608,17 @@
           ),
           React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
               React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Shopping List"),
-              React.createElement('form', { onSubmit: handleAdd, className: "flex items-center gap-2 mb-6" },
+              React.createElement('form', { onSubmit: handleAdd, className: "flex flex-col sm:flex-row items-center gap-2 mb-6" },
                   React.createElement('input', {
                       type: "text",
                       value: newItemText,
                       onChange: e => setNewItemText(e.target.value),
                       placeholder: "e.g., Flour, sugar...",
-                      className: "flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                      className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                   }),
                   React.createElement('button', {
                       type: "submit",
-                      className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                      className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                   }, "Add Item")
               ),
               React.createElement('div', { className: "space-y-3 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-[60vh] overflow-y-auto" },
