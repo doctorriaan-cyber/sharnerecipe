@@ -1803,28 +1803,6 @@
                     const text = formatAsText(isIngredientsOnly);
                     const title = isIngredientsOnly ? `${recipe.name} - Ingredients` : recipe.name;
                     await navigator.share({ title, text });
-                } else if (type === 'file') {
-                    const recipeSections = allSections.filter(s => recipe.sectionIds?.includes(s.id));
-                    const dataToExport = { 
-                        recipes: [recipe], 
-                        sections: recipeSections, 
-                        units: allUnits,
-                        shoppingList: [] 
-                    };
-                    const jsonString = JSON.stringify(dataToExport, null, 2);
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const fileName = `${recipe.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-                    const file = new File([blob], fileName, { type: 'application/json' });
-
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            files: [file],
-                            title: recipe.name,
-                            text: `Recipe file for ${recipe.name}`
-                        });
-                    } else {
-                        alert('Sharing files is not supported on this browser.');
-                    }
                 }
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -1846,9 +1824,8 @@
                     React.createElement('p', { className: "text-[var(--color-text-secondary)] mt-2 mb-6" }, `How would you like to share "${recipe.name}"?`)
                 ),
                 React.createElement('div', { className: "p-6 pt-0 flex flex-col gap-3" },
-                    React.createElement('button', { onClick: () => handleShare('full-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Full Recipe (as text)"),
-                    React.createElement('button', { onClick: () => handleShare('ingredients-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Ingredients Only (as text)"),
-                    React.createElement('button', { onClick: () => handleShare('file'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Share as Importable File")
+                    React.createElement('button', { onClick: () => handleShare('full-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Full Recipe"),
+                    React.createElement('button', { onClick: () => handleShare('ingredients-text'), className: "w-full text-left bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-primary)] font-semibold py-3 px-4 rounded-md transition-colors" }, "Ingredients Only")
                 )
             )
         );
