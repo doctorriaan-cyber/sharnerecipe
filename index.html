@@ -81,10 +81,6 @@
         '🥗', '🌮', '🌯', '🥘', '🍲', '🍛', '🍙', '🍤', '🍦', '🍫', '🍬',
         '☕', '🍵', '🍷', '🍺', '🍹', '🍴', '🥄', '🔪', '🧂'
       ].filter((v, i, a) => a.indexOf(v) === i);
-      
-      const ACCENT_COLORS = ['#64C7CC', '#F6AD55', '#A7C5EB', '#D6BCFA', '#FBB6CE', '#81E6D9', '#FBD38D', '#C3DAFE', '#FED7D7', '#BEE3F8'];
-      const DARK_BACKGROUND_COLORS = ['#111827', '#1F2937', '#1A202C', '#171923', '#222B45', '#1E2C33', '#2F1B25', '#1A2D27', '#32262B', '#182C3C'];
-      const LIGHT_BACKGROUND_COLORS = ['#F9FAFB', '#F7FAFC', '#EDF2F7', '#FEFBF6', '#FAF5FF', '#FFF5F5', '#F0FFF4', '#FFFFF0', '#F3F2EE', '#FAF7F2'];
 
       const DEFAULT_THEME = {
         mode: 'dark',
@@ -1160,7 +1156,7 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ theme, setTheme, textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection, ownerName, setOwnerName }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection, ownerName, setOwnerName }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
 
@@ -1221,36 +1217,6 @@
           );
         };
 
-        const handleThemeChange = (key, value) => {
-            setTheme(prev => ({...prev, [key]: value}));
-        };
-        
-        const handleModeToggle = () => {
-            const newMode = theme.mode === 'light' ? 'dark' : 'light';
-            setTheme(prev => ({
-                ...prev,
-                mode: newMode,
-                backgroundColor: newMode === 'light' ? '#f9fafb' : '#111827'
-            }));
-        };
-        
-        const ColorPalette = ({ colors, selectedValue, onChange }) => {
-            return React.createElement('div', { className: "flex flex-wrap gap-3" },
-                colors.map(color => {
-                    const isSelected = selectedValue.toLowerCase() === color.toLowerCase();
-                    return React.createElement('button', {
-                        key: color,
-                        type: 'button',
-                        onClick: () => onChange(color),
-                        className: `w-8 h-8 rounded-full transition-transform transform hover:scale-110 border border-[var(--color-border-primary)] ${isSelected ? 'ring-2 ring-offset-2 ring-offset-[var(--color-bg-primary)] ring-[var(--color-accent)]' : 'ring-2 ring-transparent'}`,
-                        style: { backgroundColor: color },
-                        'aria-label': `Select color ${color}`,
-                        'aria-pressed': isSelected
-                    });
-                })
-            );
-        };
-
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
           React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
               React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
@@ -1276,38 +1242,6 @@
                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Appearance"),
                       React.createElement('div', { className: "space-y-4" },
-                          React.createElement('div', { className: "flex items-center justify-between p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
-                              React.createElement('label', { htmlFor: "theme-mode", className: "font-medium text-[var(--color-text-primary)]" }, "Theme"),
-                              React.createElement('div', { className: "flex items-center gap-2" },
-                                React.createElement('span', { className: "text-sm text-[var(--color-text-tertiary)]" }, "Light"),
-                                React.createElement('button', {
-                                    id: "theme-mode",
-                                    onClick: handleModeToggle,
-                                    className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-[var(--color-bg-tertiary)]`
-                                  },
-                                  React.createElement('span', {
-                                    className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${theme.mode === 'dark' ? 'translate-x-6' : 'translate-x-1'}`
-                                  })
-                                ),
-                                React.createElement('span', { className: "text-sm text-[var(--color-text-tertiary)]" }, "Dark")
-                              )
-                          ),
-                          React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
-                              React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, "Accent Color"),
-                              React.createElement(ColorPalette, {
-                                  colors: ACCENT_COLORS,
-                                  selectedValue: theme.accentColor,
-                                  onChange: (color) => handleThemeChange('accentColor', color)
-                              })
-                          ),
-                          React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
-                              React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, "Background Color"),
-                              React.createElement(ColorPalette, {
-                                  colors: theme.mode === 'dark' ? DARK_BACKGROUND_COLORS : LIGHT_BACKGROUND_COLORS,
-                                  selectedValue: theme.backgroundColor,
-                                  onChange: (color) => handleThemeChange('backgroundColor', color)
-                              })
-                          ),
                           React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
                               React.createElement('label', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, `Text Size: ${Math.round(textSize * 100)}%`),
                               React.createElement('div', { className: "flex items-center gap-3" },
@@ -1886,7 +1820,6 @@
         const [sections, setSections] = useLocalStorage('sections', []);
         const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
-        const [theme, setTheme] = useLocalStorage('themeSettings', DEFAULT_THEME);
         const [textSize, setTextSize] = useLocalStorage('textSize', 1);
         const [ownerName, setOwnerName] = useLocalStorage('ownerName', 'Sharné');
         const [view, setView] = useState({ page: 'list' });
@@ -1895,32 +1828,23 @@
 
         useEffect(() => {
             const root = document.documentElement;
-            if (theme.mode === 'light') {
-                root.style.setProperty('--color-bg-primary', theme.backgroundColor || '#f9fafb');
-                root.style.setProperty('--color-bg-secondary', '#f3f4f6');
-                root.style.setProperty('--color-bg-tertiary', '#e5e7eb');
-                root.style.setProperty('--color-bg-input', '#ffffff');
-                root.style.setProperty('--color-text-primary', '#1f2937');
-                root.style.setProperty('--color-text-secondary', '#4b5563');
-                root.style.setProperty('--color-text-tertiary', '#6b7280');
-                root.style.setProperty('--color-border-primary', '#d1d5db');
-                root.style.setProperty('--color-border-secondary', '#e5e7eb');
-            } else { // dark
-                root.style.setProperty('--color-bg-primary', theme.backgroundColor || '#111827');
-                root.style.setProperty('--color-bg-secondary', '#1f2937');
-                root.style.setProperty('--color-bg-tertiary', '#374151');
-                root.style.setProperty('--color-bg-input', '#374151');
-                root.style.setProperty('--color-text-primary', '#f9fafb');
-                root.style.setProperty('--color-text-secondary', '#d1d5db');
-                root.style.setProperty('--color-text-tertiary', '#9ca3af');
-                root.style.setProperty('--color-border-primary', '#374151');
-                root.style.setProperty('--color-border-secondary', '#4b5563');
-            }
+            const theme = DEFAULT_THEME;
+            
+            root.style.setProperty('--color-bg-primary', theme.backgroundColor);
+            root.style.setProperty('--color-bg-secondary', '#1f2937');
+            root.style.setProperty('--color-bg-tertiary', '#374151');
+            root.style.setProperty('--color-bg-input', '#374151');
+            root.style.setProperty('--color-text-primary', '#f9fafb');
+            root.style.setProperty('--color-text-secondary', '#d1d5db');
+            root.style.setProperty('--color-text-tertiary', '#9ca3af');
+            root.style.setProperty('--color-border-primary', '#374151');
+            root.style.setProperty('--color-border-secondary', '#4b5563');
+            
             root.style.setProperty('--color-accent', theme.accentColor);
             root.style.setProperty('--color-accent-text', theme.accentColor);
             document.body.style.backgroundColor = 'var(--color-bg-primary)';
             document.body.style.color = 'var(--color-text-primary)';
-        }, [theme]);
+        }, []);
 
         useEffect(() => {
             // 16px is a common browser default base font size.
@@ -2171,8 +2095,6 @@
               });
             case 'settings':
               return React.createElement(Settings, {
-                theme: theme,
-                setTheme: setTheme,
                 textSize: textSize,
                 setTextSize: setTextSize,
                 units: units,
