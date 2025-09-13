@@ -825,6 +825,16 @@
                     "Back to Recipes"
                 ),
                 React.createElement('div', { className: "flex items-center gap-2" },
+                    React.createElement('button', { 
+                        onClick: () => onEdit(recipe.id), 
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
+                        'aria-label': "Edit recipe"
+                    }, React.createElement(PencilIcon, { className: "w-6 h-6" })),
+                    React.createElement('button', { 
+                        onClick: handleDelete, 
+                        className: "p-2 rounded-full text-red-500 hover:bg-red-900/50 hover:text-red-400 transition-colors",
+                        'aria-label': "Delete recipe"
+                    }, React.createElement(TrashIcon, { className: "w-6 h-6" })),
                     React.createElement('button', {
                         onClick: handleAddAllToShoppingList,
                         disabled: justAdded,
@@ -845,33 +855,21 @@
                 )
             ),
             React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
-                React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-[var(--color-border-primary)] pb-4" },
+                React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 pb-4" },
                     React.createElement('div', { className: "flex items-center gap-3 flex-grow" },
                         recipe.emojis && recipe.emojis.length > 0 && (
                             React.createElement('span', { className: "text-4xl", 'aria-hidden': "true" }, recipe.emojis.join(''))
                         ),
                         React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)]" }, recipe.name)
-                    ),
-                    React.createElement('div', { className: "flex gap-2 flex-shrink-0 pt-1" },
-                        React.createElement('button', { 
-                            onClick: () => onEdit(recipe.id), 
-                            className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                            'aria-label': "Edit recipe"
-                        }, React.createElement(PencilIcon, { className: "w-6 h-6" })),
-                        React.createElement('button', { 
-                            onClick: handleDelete, 
-                            className: "p-2 rounded-full text-red-500 hover:bg-red-900/50 hover:text-red-400 transition-colors",
-                            'aria-label': "Delete recipe"
-                        }, React.createElement(TrashIcon, { className: "w-6 h-6" }))
                     )
                 ),
                 recipe.description && (
-                  React.createElement('div', { className: "mb-8" },
+                  React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
                     React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Notes"),
-                    React.createElement('p', { className: "text-[var(--color-text-secondary)] whitespace-pre-wrap bg-[var(--color-bg-primary)] p-4 rounded-md border border-[var(--color-border-primary)]" }, recipe.description)
+                    React.createElement('p', { className: "text-[var(--color-text-secondary)] whitespace-pre-wrap" }, recipe.description)
                   )
                 ),
-                React.createElement('div', { className: "mb-8" },
+                React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
                     React.createElement('div', { className: "flex justify-between items-center mb-4" },
                         React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)]" }, "Ingredients"),
                         React.createElement('div', { className: "flex gap-2" },
@@ -900,7 +898,7 @@
                         ) :
                         React.createElement('ul', { className: "list-disc list-inside space-y-2 text-[var(--color-text-secondary)]" }, recipe.ingredients.map(renderIngredientItem))
                 ),
-                React.createElement('div', null,
+                React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
                     React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Steps"),
                      hasCategories ? 
                         React.createElement('div', { className: "space-y-6" },
