@@ -824,12 +824,25 @@
                     React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
                     "Back to Recipes"
                 ),
-                React.createElement('button', { 
-                    onClick: () => setIsShareDialogOpen(true), 
-                    className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                    'aria-label': "Share recipe",
-                    style: { display: navigator.share ? 'block' : 'none' }
-                }, React.createElement(ArrowUpTrayIcon, { className: "w-6 h-6" }))
+                React.createElement('div', { className: "flex items-center gap-2" },
+                    React.createElement('button', {
+                        onClick: handleAddAllToShoppingList,
+                        disabled: justAdded,
+                        title: justAdded ? "Added to shopping list" : "Add all ingredients to shopping list",
+                        'aria-label': justAdded ? "Added to shopping list" : "Add all ingredients to shopping list",
+                        className: `p-2 rounded-full transition-colors ${
+                            justAdded
+                            ? 'bg-green-600 text-white'
+                            : 'text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]'
+                        }`
+                    }, React.createElement(ShoppingBagIcon, { className: "w-6 h-6" })),
+                    React.createElement('button', { 
+                        onClick: () => setIsShareDialogOpen(true), 
+                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
+                        'aria-label': "Share recipe",
+                        style: { display: navigator.share ? 'block' : 'none' }
+                    }, React.createElement(ArrowUpTrayIcon, { className: "w-6 h-6" }))
+                )
             ),
             React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
                 React.createElement('div', { className: "flex justify-between items-start gap-4 mb-4 border-b border-[var(--color-border-primary)] pb-4" },
@@ -859,31 +872,16 @@
                   )
                 ),
                 React.createElement('div', { className: "mb-8" },
-                    React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Ingredients"),
-                    React.createElement('div', { className: "flex flex-wrap items-center gap-2 mb-4 p-2 bg-[var(--color-bg-tertiary)] rounded-md" },
-                        React.createElement('span', { className: "text-sm font-medium text-[var(--color-text-secondary)] mr-2" }, "Adjust serving:"),
-                        React.createElement('div', { className: "flex gap-2 flex-wrap" },
+                    React.createElement('div', { className: "flex justify-between items-center mb-4" },
+                        React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)]" }, "Ingredients"),
+                        React.createElement('div', { className: "flex gap-2" },
                             multipliers.map(m => (
                                  React.createElement('button', { 
                                     key: m.label, 
                                     onClick: () => setMultiplier(m.value),
-                                    className: `px-3 py-1 text-sm font-semibold rounded-full transition-colors ${multiplier === m.value ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)]'}`
+                                    className: `px-3 py-1 text-sm font-semibold rounded-full transition-colors ${multiplier === m.value ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'}`
                                 }, m.label)
                             ))
-                        )
-                    ),
-                    React.createElement('div', { className: "mt-4 mb-6" },
-                        React.createElement('button', {
-                            onClick: handleAddAllToShoppingList,
-                            disabled: justAdded,
-                            className: `w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md font-semibold transition-colors duration-300 ${
-                                justAdded
-                                ? 'bg-green-600 text-white cursor-default'
-                                : 'bg-[var(--color-accent)] hover:brightness-95 text-white'
-                            }`
-                        }, 
-                            React.createElement(ShoppingBagIcon, { className: "w-5 h-5" }),
-                            justAdded ? 'Added to List!' : 'Add Ingredients to Shopping List'
                         )
                     ),
                     hasCategories ?
