@@ -1889,6 +1889,16 @@
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
 
         useEffect(() => {
+            // This is a one-time cleanup for users who might have duplicates from a previous version.
+            setPreferredEmojis(currentEmojis => {
+                if (Array.isArray(currentEmojis)) {
+                    return [...new Set(currentEmojis)];
+                }
+                return currentEmojis; // Should not happen, but for safety
+            });
+        }, []); // Empty array ensures this runs only once on mount
+
+        useEffect(() => {
             const root = document.documentElement;
             const theme = DEFAULT_THEME;
             
@@ -1997,7 +2007,8 @@
             if (finalRecipeData.emojis && finalRecipeData.emojis.length > 0) {
                 setPreferredEmojis(prevEmojis => {
                     const currentEmojisSet = new Set(prevEmojis);
-                    const emojisToAdd = finalRecipeData.emojis.filter(emoji => !currentEmojisSet.has(emoji));
+                    const uniqueRecipeEmojis = [...new Set(finalRecipeData.emojis)];
+                    const emojisToAdd = uniqueRecipeEmojis.filter(emoji => !currentEmojisSet.has(emoji));
                     if (emojisToAdd.length > 0) {
                         return [...prevEmojis, ...emojisToAdd];
                     }
