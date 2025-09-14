@@ -186,6 +186,12 @@
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m4.5 15.75 7.5-7.5 7.5 7.5" })
           )
       );
+      
+      const CheckIcon = ({ className = "w-6 h-6" }) => (
+        React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
+            React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "m4.5 12.75 6 6 9-13.5" })
+        )
+      );
 
       const CloudUploadIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
@@ -349,7 +355,21 @@
         const [steps, setSteps] = useState([]);
         const [selectedSectionIds, setSelectedSectionIds] = useState(new Set());
         const [newSectionName, setNewSectionName] = useState('');
+        const [newSectionParentId, setNewSectionParentId] = useState('');
         const ADD_NEW_UNIT_VALUE = '__add_new__';
+        
+        const { topLevelSections, sectionsByParent } = useMemo(() => {
+            const sortedSections = [...sections].sort((a,b) => (a.order || 0) - (b.order || 0));
+            const topLevel = sortedSections.filter(s => !s.parentId);
+            const byParent = sortedSections.reduce((acc, section) => {
+                if (section.parentId) {
+                    if (!acc[section.parentId]) acc[section.parentId] = [];
+                    acc[section.parentId].push(section);
+                }
+                return acc;
+            }, {});
+            return { topLevelSections: topLevel, sectionsByParent: byParent };
+        }, [sections]);
 
         useEffect(() => {
           if (initialRecipe) {
@@ -384,10 +404,16 @@
             setSteps([{ id: `new_step_${Date.now()}`, text: '', categoryId: undefined }]);
             setSelectedSectionIds(new Set());
           }
-          setNewSectionName('');
-          setNewCategoryName('');
         }, [initialRecipe]);
         
+        useEffect(() => {
+            if (!initialRecipe) {
+                setNewSectionName('');
+                setNewSectionParentId('');
+                setNewCategoryName('');
+            }
+        }, [initialRecipe]);
+
         const addEmoji = (emoji) => {
           setEmojiString(prev => prev + emoji);
         };
@@ -487,7 +513,7 @@
         const handleAddSection = () => {
             const trimmedName = newSectionName.trim();
             if (!trimmedName) return;
-            const newSection = onAddSection(trimmedName);
+            const newSection = onAddSection(trimmedName, newSectionParentId || undefined);
             if (newSection) {
                 setSelectedSectionIds(prev => {
                     const newSet = new Set(prev);
@@ -495,6 +521,7 @@
                     return newSet;
                 });
                 setNewSectionName('');
+                setNewSectionParentId('');
             }
         };
         
@@ -524,6 +551,25 @@
 
           onSave(recipeData);
         };
+        
+        const renderSectionCheckboxes = (section, level) => {
+            const childSections = sectionsByParent[section.id] || [];
+            return React.createElement(React.Fragment, { key: section.id },
+                React.createElement('label', { 
+                    className: "flex items-center cursor-pointer p-2 rounded-md hover:bg-[var(--color-bg-tertiary)]",
+                    style: { paddingLeft: `${level * 1.25 + 0.5}rem` }
+                },
+                    React.createElement('input', {
+                        type: "checkbox",
+                        checked: selectedSectionIds.has(section.id),
+                        onChange: () => handleSectionToggle(section.id),
+                        className: "w-5 h-5 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                    }),
+                    React.createElement('span', { className: "ml-3 text-[var(--color-text-primary)]" }, section.name)
+                ),
+                childSections.map(child => renderSectionCheckboxes(child, level + 1))
+            );
+        };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
           React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
@@ -542,20 +588,12 @@
             ),
             React.createElement('div', { className: "mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('label', { className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Sections"),
-              React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-48 overflow-y-auto" },
+              React.createElement('div', { className: "space-y-1 p-2 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-60 overflow-y-auto" },
                 sections.length > 0 
-                  ? sections.map(section => React.createElement('label', { key: section.id, className: "flex items-center cursor-pointer" },
-                      React.createElement('input', {
-                        type: "checkbox",
-                        checked: selectedSectionIds.has(section.id),
-                        onChange: () => handleSectionToggle(section.id),
-                        className: "w-5 h-5 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
-                      }),
-                      React.createElement('span', { className: "ml-3 text-[var(--color-text-primary)]" }, section.name)
-                    ))
-                  : React.createElement('p', { className: "text-[var(--color-text-tertiary)]" }, "No sections created yet.")
+                  ? topLevelSections.map(section => renderSectionCheckboxes(section, 0))
+                  : React.createElement('p', { className: "text-[var(--color-text-tertiary)] p-2" }, "No sections created yet.")
               ),
-              React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mt-3" },
+              React.createElement('div', { className: "flex flex-col sm:flex-row items-stretch gap-2 mt-3" },
                 React.createElement('input', {
                   type: "text",
                   value: newSectionName,
@@ -563,6 +601,15 @@
                   placeholder: "Create a new section...",
                   className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                 }),
+                React.createElement('select', {
+                  value: newSectionParentId,
+                  onChange: e => setNewSectionParentId(e.target.value),
+                  className: "w-full sm:w-auto p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
+                  'aria-label': "Parent for new section"
+                },
+                  React.createElement('option', { value: '' }, 'As Top-level'),
+                  [...sections].sort((a, b) => a.name.localeCompare(b.name)).map(s => React.createElement('option', { key: s.id, value: s.id }, s.name))
+                ),
                 React.createElement('button', {
                   type: "button",
                   onClick: handleAddSection,
@@ -1002,17 +1049,21 @@
           importInputRef.current?.click();
         };
 
+        const sortedRecipes = useMemo(() => {
+            return [...recipes].sort((a, b) => a.name.localeCompare(b.name));
+        }, [recipes]);
+
         const filteredRecipes = useMemo(() => {
           const term = searchTerm.toLowerCase().trim();
-          if (!term) return recipes;
-          return recipes.filter(recipe =>
+          if (!term) return sortedRecipes;
+          return sortedRecipes.filter(recipe =>
             recipe.name.toLowerCase().includes(term) ||
             (recipe.description && recipe.description.toLowerCase().includes(term)) ||
             (recipe.emojis && recipe.emojis.join('').includes(term)) ||
             recipe.ingredients.some(ing => ing.name.toLowerCase().includes(term)) ||
             (Array.isArray(recipe.steps) && recipe.steps.some(step => (typeof step === 'string' ? step : step.text).toLowerCase().includes(term)))
           );
-        }, [searchTerm, recipes]);
+        }, [searchTerm, sortedRecipes]);
         
         const { recipesBySection, uncategorizedRecipes } = useMemo(() => {
             const sectionMap = new Map(sections.map(s => [s.id, s]));
@@ -1040,6 +1091,19 @@
             return { recipesBySection: bySection, uncategorizedRecipes: uncategorized };
         }, [filteredRecipes, sections]);
 
+        const { topLevelSections, sectionsByParent } = useMemo(() => {
+            const sortedSections = [...sections].sort((a,b) => (a.order || 0) - (b.order || 0));
+            const topLevel = sortedSections.filter(s => !s.parentId);
+            const byParent = sortedSections.reduce((acc, section) => {
+                if (section.parentId) {
+                    if (!acc[section.parentId]) acc[section.parentId] = [];
+                    acc[section.parentId].push(section);
+                }
+                return acc;
+            }, {});
+            return { topLevelSections: topLevel, sectionsByParent: byParent };
+        }, [sections]);
+
         useEffect(() => {
           if (searchTerm.trim()) {
             const newOpenSections = {};
@@ -1054,6 +1118,32 @@
           setOpenSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
         };
         
+        const renderSubSections = (parentId) => {
+            const childSections = sectionsByParent[parentId] || [];
+            return childSections.map(subSection => {
+                const subSectionRecipes = recipesBySection[subSection.id] || [];
+                if (subSectionRecipes.length === 0) return null;
+
+                return React.createElement('div', { key: subSection.id, className: "ml-4 bg-[var(--color-bg-primary)]/70 rounded-lg border border-[var(--color-border-secondary)] overflow-hidden mt-3" },
+                    React.createElement('button', {
+                        onClick: () => toggleSection(subSection.id),
+                        className: "w-full flex justify-between items-center p-3 text-left font-semibold text-lg text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]/50"
+                      },
+                      React.createElement('span', null, 
+                          `${subSection.name} `,
+                          React.createElement('span', { className: "text-sm font-normal text-[var(--color-text-tertiary)]" }, `(${subSectionRecipes.length})`)
+                      ),
+                      React.createElement(ChevronDownIcon, { className: `w-5 h-5 transition-transform ${openSections[subSection.id] ? 'rotate-180' : ''}` })
+                    ),
+                    openSections[subSection.id] && React.createElement('div', { className: "p-4 pt-0" },
+                        React.createElement('div', { className: "space-y-3 pt-4 border-t border-[var(--color-border-primary)]" },
+                            subSectionRecipes.map(recipe => React.createElement(RecipeCard, { key: recipe.id, recipe: recipe, onSelect: onSelectRecipe }))
+                        )
+                    )
+                );
+            });
+        };
+
         return (
           React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
             React.createElement('div', { className: "flex justify-between items-center mb-6" },
@@ -1114,9 +1204,14 @@
               )
             ) : (
               React.createElement('div', { className: "space-y-4" },
-                sections.map(section => {
-                  const sectionRecipes = recipesBySection[section.id];
-                  if (!sectionRecipes || sectionRecipes.length === 0) return null;
+                topLevelSections.map(section => {
+                  const sectionRecipes = recipesBySection[section.id] || [];
+                  const childSections = sectionsByParent[section.id] || [];
+                  
+                  let totalRecipeCount = sectionRecipes.length;
+                  childSections.forEach(cs => totalRecipeCount += (recipesBySection[cs.id] || []).length);
+                  
+                  if (totalRecipeCount === 0) return null;
 
                   return (
                     React.createElement('div', { key: section.id, className: "bg-[var(--color-bg-secondary)]/50 rounded-lg border border-[var(--color-border-primary)] overflow-hidden" },
@@ -1126,13 +1221,14 @@
                       },
                         React.createElement('span', null, 
                             `${section.name} `,
-                            React.createElement('span', { className: "text-sm font-normal text-[var(--color-text-tertiary)]" }, `(${sectionRecipes.length})`)
+                            React.createElement('span', { className: "text-sm font-normal text-[var(--color-text-tertiary)]" }, `(${totalRecipeCount})`)
                         ),
                         React.createElement(ChevronDownIcon, { className: `w-5 h-5 transition-transform ${openSections[section.id] ? 'rotate-180' : ''}` })
                       ),
                       openSections[section.id] && (
                         React.createElement('div', { className: "p-4 space-y-3" },
-                          sectionRecipes.map(recipe => React.createElement(RecipeCard, { key: recipe.id, recipe: recipe, onSelect: onSelectRecipe }))
+                          sectionRecipes.map(recipe => React.createElement(RecipeCard, { key: recipe.id, recipe: recipe, onSelect: onSelectRecipe })),
+                          renderSubSections(section.id)
                         )
                       )
                     )
@@ -1175,21 +1271,36 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onDeleteSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
+        const [newSectionParent, setNewSectionParent] = useState('');
         const [newEmoji, setNewEmoji] = useState('');
+        const [editingSection, setEditingSection] = useState({ id: null, name: '' });
 
         const MIN_TEXT_SIZE = 0.5;
         const MAX_TEXT_SIZE = 1.25;
         const STEP_TEXT_SIZE = 0.05;
 
         const handleTextSizeChange = (newSize) => {
-            // Round to avoid floating point inaccuracies with the step
             const roundedSize = Math.round(newSize / STEP_TEXT_SIZE) * STEP_TEXT_SIZE;
             const clampedSize = Math.max(MIN_TEXT_SIZE, Math.min(MAX_TEXT_SIZE, roundedSize));
             setTextSize(clampedSize);
         };
+        
+        const { topLevelSections, sectionsByParent, sectionMap } = useMemo(() => {
+            const sortedSections = [...sections].sort((a,b) => (a.order || 0) - (b.order || 0));
+            const topLevel = sortedSections.filter(s => !s.parentId);
+            const byParent = sortedSections.reduce((acc, section) => {
+                if (section.parentId) {
+                    if (!acc[section.parentId]) acc[section.parentId] = [];
+                    acc[section.parentId].push(section);
+                }
+                return acc;
+            }, {});
+            const map = new Map(sections.map(s => [s.id, s]));
+            return { topLevelSections: topLevel, sectionsByParent: byParent, sectionMap: map };
+        }, [sections]);
 
         const sectionUsageCount = useMemo(() => {
           const counts = {};
@@ -1224,8 +1335,9 @@
         const handleAddSection = () => {
           const trimmed = newSectionName.trim();
           if (trimmed) {
-            onAddSection(trimmed);
+            onAddSection(trimmed, newSectionParent || undefined);
             setNewSectionName('');
+            setNewSectionParent('');
           }
         };
 
@@ -1235,6 +1347,29 @@
             `Are you sure you want to delete the section "${section.name}"?`,
             () => onDeleteSection(section.id)
           );
+        };
+        
+        const handleSaveSectionName = () => {
+            const trimmedName = editingSection.name.trim();
+            if (trimmedName) {
+                onUpdateSectionName(editingSection.id, trimmedName);
+            }
+            setEditingSection({ id: null, name: '' });
+        };
+
+        const handleCancelEdit = () => {
+            setEditingSection({ id: null, name: '' });
+        };
+        
+        const isDescendant = (childId, parentId) => {
+            let currentId = childId;
+            while (currentId) {
+                const currentSection = sectionMap.get(currentId);
+                if (!currentSection || !currentSection.parentId) return false;
+                if (currentSection.parentId === parentId) return true;
+                currentId = currentSection.parentId;
+            }
+            return false;
         };
 
         const handleAddEmoji = () => {
@@ -1247,6 +1382,103 @@
         
         const handleRemoveEmoji = (emojiToRemove) => {
             setPreferredEmojis(prev => prev.filter(e => e !== emojiToRemove));
+        };
+        
+        const renderSectionRow = (section, level, siblings, index) => {
+            const inUseCount = sectionUsageCount[section.id] || 0;
+            const childCount = (sectionsByParent[section.id] || []).length;
+            const isInUse = inUseCount > 0;
+            const isParent = childCount > 0;
+            const canDelete = !isInUse && !isParent;
+            const canMoveUp = index > 0;
+            const canMoveDown = index < siblings.length - 1;
+            const isEditing = editingSection.id === section.id;
+
+            const parentCandidates = sections.filter(s => s.id !== section.id && !isDescendant(s.id, section.id));
+
+            return React.createElement('div', { key: section.id, style: { paddingLeft: `${level * 1.5}rem` }, className: "flex flex-col sm:flex-row justify-between items-center py-2 px-2 rounded-md hover:bg-[var(--color-bg-tertiary)] gap-2 border-b border-[var(--color-bg-tertiary)] last:border-b-0" },
+                React.createElement('div', { className: "flex items-center gap-2 flex-grow w-full sm:w-auto" },
+                    React.createElement('div', { className: "flex items-center gap-1" },
+                        React.createElement('button', {
+                            onClick: () => onReorderSection(section.id, 'up'),
+                            disabled: !canMoveUp,
+                            className: "p-2 rounded-md disabled:text-gray-600 disabled:cursor-not-allowed text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border-primary)]",
+                            'aria-label': "Move section up"
+                        }, React.createElement(ChevronUpIcon, { className: "w-5 h-5" })),
+                        React.createElement('button', {
+                            onClick: () => onReorderSection(section.id, 'down'),
+                            disabled: !canMoveDown,
+                            className: "p-2 rounded-md disabled:text-gray-600 disabled:cursor-not-allowed text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border-primary)]",
+                            'aria-label': "Move section down"
+                        }, React.createElement(ChevronDownIcon, { className: "w-5 h-5" }))
+                    ),
+                    isEditing ? 
+                        React.createElement('input', {
+                            type: 'text',
+                            value: editingSection.name,
+                            onChange: e => setEditingSection({ ...editingSection, name: e.target.value }),
+                            className: "p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)] w-full",
+                            autoFocus: true,
+                            onKeyDown: e => { if (e.key === 'Enter') handleSaveSectionName(); if (e.key === 'Escape') handleCancelEdit(); }
+                        }) :
+                        React.createElement('span', { className: "text-[var(--color-text-primary)] font-medium text-left" },
+                            section.name,
+                            React.createElement('span', { className: "text-xs text-[var(--color-text-tertiary)] ml-2" },
+                                `(${[
+                                    isInUse ? `${inUseCount} recipes` : null,
+                                    isParent ? `${childCount} sub` : null
+                                ].filter(Boolean).join(', ')})`
+                            )
+                        )
+                ),
+                React.createElement('div', { className: "flex items-center gap-2 w-full sm:w-auto flex-shrink-0" },
+                    React.createElement('select', {
+                        value: section.parentId || '',
+                        onChange: (e) => onUpdateSectionParent(section.id, e.target.value || undefined),
+                        disabled: isEditing,
+                        className: "w-full sm:w-40 p-2 text-sm bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] disabled:opacity-50"
+                    },
+                        React.createElement('option', { value: '' }, 'Top-level'),
+                        parentCandidates.map(p => React.createElement('option', { key: p.id, value: p.id }, p.name))
+                    ),
+                    isEditing ?
+                        React.createElement(React.Fragment, null,
+                            React.createElement('button', { 
+                                onClick: handleSaveSectionName, 
+                                className: "p-2 rounded-md text-green-500 hover:text-green-400 hover:bg-[var(--color-border-primary)]",
+                                'aria-label': "Save section name" 
+                            }, React.createElement(CheckIcon, { className: "w-5 h-5" })),
+                            React.createElement('button', { 
+                                onClick: handleCancelEdit, 
+                                className: "p-2 rounded-md text-red-500 hover:text-red-400 hover:bg-[var(--color-border-primary)]",
+                                'aria-label': "Cancel editing"
+                            }, React.createElement(XMarkIcon, { className: "w-5 h-5" }))
+                        ) :
+                        React.createElement(React.Fragment, null,
+                             React.createElement('button', {
+                                onClick: () => setEditingSection({ id: section.id, name: section.name }),
+                                className: "p-2 rounded-md text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border-primary)]",
+                                'aria-label': "Edit section name"
+                            }, React.createElement(PencilIcon, { className: "w-5 h-5" })),
+                            React.createElement('button', {
+                                onClick: () => handleDeleteSection(section),
+                                disabled: !canDelete,
+                                className: "p-2 rounded-md disabled:text-gray-600 disabled:cursor-not-allowed text-red-500 hover:text-red-400 hover:bg-[var(--color-border-primary)]",
+                                title: !canDelete ? (isInUse ? "Cannot delete a section that is in use." : "Cannot delete a section with sub-sections.") : "Delete section"
+                            }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
+                        )
+                )
+            );
+        };
+        
+        const renderSections = (sectionsToRender, level) => {
+            return sectionsToRender.map((section, index) => {
+                const children = sectionsByParent[section.id] || [];
+                return React.createElement(React.Fragment, { key: section.id },
+                    renderSectionRow(section, level, sectionsToRender, index),
+                    children.length > 0 && renderSections(children, level + 1)
+                );
+            });
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
@@ -1314,29 +1546,26 @@
                               placeholder: "New section name",
                               className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
                           }),
+                          React.createElement('select', {
+                                value: newSectionParent,
+                                onChange: (e) => setNewSectionParent(e.target.value),
+                                className: "w-full sm:w-auto p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]"
+                          },
+                            React.createElement('option', { value: '' }, 'As Top-level'),
+                            sections.map(s => React.createElement('option', { key: s.id, value: s.id }, s.name))
+                          ),
                           React.createElement('button', {
                               type: "button",
                               onClick: handleAddSection,
                               className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
                           }, "Add Section")
                       ),
-                      React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
-                          sections.length > 0 ? sections.map(section => {
-                              const inUseCount = sectionUsageCount[section.id] || 0;
-                              const isInUse = inUseCount > 0;
-                              return React.createElement('div', { key: section.id, className: "flex justify-between items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)]" },
-                                  React.createElement('span', { className: "text-[var(--color-text-primary)]" }, 
-                                      section.name,
-                                      isInUse && React.createElement('span', { className: "text-xs text-[var(--color-text-tertiary)] ml-2" }, `(${inUseCount} recipes)`)
-                                  ),
-                                  React.createElement('button', {
-                                      onClick: () => handleDeleteSection(section),
-                                      disabled: isInUse,
-                                      className: "p-1 disabled:text-gray-600 disabled:cursor-not-allowed text-red-500 hover:text-red-400",
-                                      title: isInUse ? "Cannot delete a section that is in use." : "Delete section"
-                                  }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
-                              )
-                          }) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No sections created.")
+                      React.createElement('div', { className: "flex justify-between items-center px-4 py-2 bg-[var(--color-bg-tertiary)] rounded-t-md border-b border-[var(--color-border-secondary)]" },
+                          React.createElement('h3', { className: "text-sm font-semibold text-[var(--color-text-secondary)]"}, "Section Name"),
+                          React.createElement('h3', { className: "text-sm font-semibold text-[var(--color-text-secondary)]"}, "Subsection of")
+                      ),
+                      React.createElement('div', { className: "bg-[var(--color-bg-primary)] rounded-b-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
+                          sections.length > 0 ? renderSections(topLevelSections, 0) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center p-4" }, "No sections created.")
                       )
                   ),
                    React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
@@ -1889,14 +2118,28 @@
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
 
         useEffect(() => {
-            // This is a one-time cleanup for users who might have duplicates from a previous version.
+            // One-time migration to add 'order' to sections.
+            setSections(currentSections => {
+                let needsUpdate = false;
+                const updatedSections = currentSections.map((section, index) => {
+                    if (typeof section.order === 'undefined') {
+                        needsUpdate = true;
+                        // Stagger to ensure uniqueness and maintain original order
+                        return { ...section, order: Date.now() + index }; 
+                    }
+                    return section;
+                });
+                return needsUpdate ? updatedSections : currentSections;
+            });
+
+            // One-time cleanup for users who might have duplicate emojis from a previous version.
             setPreferredEmojis(currentEmojis => {
                 if (Array.isArray(currentEmojis)) {
                     return [...new Set(currentEmojis)];
                 }
-                return currentEmojis; // Should not happen, but for safety
+                return currentEmojis;
             });
-        }, []); // Empty array ensures this runs only once on mount
+        }, []);
 
         useEffect(() => {
             const root = document.documentElement;
@@ -1978,7 +2221,7 @@
           setUnits(prev => prev.filter(u => u.id !== id));
         };
 
-        const handleAddSection = (name) => {
+        const handleAddSection = (name, parentId) => {
             const trimmedName = name.trim();
             if (!trimmedName) return undefined;
 
@@ -1988,13 +2231,67 @@
                 return existing;
             }
             
-            const newSection = { id: Date.now().toString(), name: trimmedName };
+            const newSection = { id: Date.now().toString(), name: trimmedName, parentId, order: Date.now() };
             setSections(prev => [...prev, newSection]);
             return newSection;
         };
         
+        const handleUpdateSectionName = (sectionId, newName) => {
+            const trimmedName = newName.trim();
+            if (!trimmedName) return;
+            
+            const existing = sections.find(s => s.name.trim().toLowerCase() === trimmedName.toLowerCase() && s.id !== sectionId);
+            if (existing) {
+                alert("Another section with this name already exists.");
+                return;
+            }
+            setSections(prev => prev.map(s => s.id === sectionId ? {...s, name: trimmedName } : s));
+        };
+
+        const handleUpdateSectionParent = (sectionId, parentId) => {
+            setSections(prev => prev.map(s => s.id === sectionId ? {...s, parentId } : s));
+        };
+        
         const handleDeleteSection = (id) => {
+            const childSections = sections.filter(s => s.parentId === id);
+            if (childSections.length > 0) {
+                alert("Cannot delete section with sub-sections. Reassign sub-sections first.");
+                return;
+            }
             setSections(prev => prev.filter(s => s.id !== id));
+        };
+        
+        const handleReorderSection = (sectionId, direction) => {
+            setSections(currentSections => {
+                const sectionsCopy = JSON.parse(JSON.stringify(currentSections));
+                const sectionToMove = sectionsCopy.find(s => s.id === sectionId);
+                if (!sectionToMove) return currentSections;
+
+                const siblings = sectionsCopy
+                    .filter(s => s.parentId === sectionToMove.parentId)
+                    .sort((a, b) => a.order - b.order);
+
+                const currentIndex = siblings.findIndex(s => s.id === sectionId);
+                let otherSection;
+
+                if (direction === 'up' && currentIndex > 0) {
+                    otherSection = siblings[currentIndex - 1];
+                } else if (direction === 'down' && currentIndex < siblings.length - 1) {
+                    otherSection = siblings[currentIndex + 1];
+                } else {
+                    return currentSections; // No move possible
+                }
+
+                const sectionToMoveInMainArray = sectionsCopy.find(s => s.id === sectionToMove.id);
+                const otherSectionInMainArray = sectionsCopy.find(s => s.id === otherSection.id);
+
+                // Swap order properties
+                const tempOrder = sectionToMoveInMainArray.order;
+                sectionToMoveInMainArray.order = otherSectionInMainArray.order;
+                otherSectionInMainArray.order = tempOrder;
+
+                return sectionsCopy;
+            });
         };
 
         const handleSaveRecipe = (recipeData) => {
@@ -2201,7 +2498,10 @@
                 sections: sections,
                 recipes: recipes,
                 onAddSection: handleAddSection,
+                onUpdateSectionParent: handleUpdateSectionParent,
+                onUpdateSectionName: handleUpdateSectionName,
                 onDeleteSection: handleDeleteSection,
+                onReorderSection: handleReorderSection,
                 onBack: () => setView({ page: 'list' }),
                 showConfirmDialog: showConfirmDialog,
                 ownerName: ownerName,
