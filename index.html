@@ -230,16 +230,22 @@
       );
 
       // --- Start of inlined components/ImportConfirmation.tsx ---
-      const ImportConfirmation = ({ data, onConfirm, onCancel }) => {
+      const ImportConfirmation = ({ data, onConfirm, onCancel, currentOwnerName }) => {
           const importedRecipes = useMemo(() => data.recipes || [], [data.recipes]);
           const importedSections = useMemo(() => data.sections || [], [data.sections]);
           const importedUnits = useMemo(() => data.units || [], [data.units]);
           const importedShoppingList = useMemo(() => data.shoppingList || [], [data.shoppingList]);
+          const importedTimers = useMemo(() => (data.timers || []).map(t => ({...t, id: t.id || `timer_${Math.random()}`})), [data.timers]);
+          const importedOwnerName = useMemo(() => data.ownerName || '', [data.ownerName]);
+          const importedPreferredEmojis = useMemo(() => (data.preferredEmojis || []).map(e => ({ id: e, label: e })), [data.preferredEmojis]);
 
           const [selectedRecipeIds, setSelectedRecipeIds] = useState(() => new Set(importedRecipes.map(r => r.id)));
           const [selectedSectionIds, setSelectedSectionIds] = useState(() => new Set(importedSections.map(s => s.id)));
           const [selectedUnitIds, setSelectedUnitIds] = useState(() => new Set(importedUnits.map(u => u.id)));
           const [selectedShoppingListIds, setSelectedShoppingListIds] = useState(() => new Set(importedShoppingList.map(i => i.id)));
+          const [selectedTimerIds, setSelectedTimerIds] = useState(() => new Set(importedTimers.map(t => t.id)));
+          const [selectedEmojiIds, setSelectedEmojiIds] = useState(() => new Set(importedPreferredEmojis.map(e => e.id)));
+          const [importOwnerName, setImportOwnerName] = useState(true);
 
           const createToggleHandler = (setter) => (id) => {
               setter(prev => {
@@ -258,25 +264,31 @@
           const handleSectionToggle = createToggleHandler(setSelectedSectionIds);
           const handleUnitToggle = createToggleHandler(setSelectedUnitIds);
           const handleShoppingListToggle = createToggleHandler(setSelectedShoppingListIds);
+          const handleTimerToggle = createToggleHandler(setSelectedTimerIds);
+          const handleEmojiToggle = createToggleHandler(setSelectedEmojiIds);
 
           const handleSelectAllRecipes = createSelectAllHandler(setSelectedRecipeIds, importedRecipes);
           const handleSelectAllSections = createSelectAllHandler(setSelectedSectionIds, importedSections);
           const handleSelectAllUnits = createSelectAllHandler(setSelectedUnitIds, importedUnits);
           const handleSelectAllShoppingList = createSelectAllHandler(setSelectedShoppingListIds, importedShoppingList);
+          const handleSelectAllTimers = createSelectAllHandler(setSelectedTimerIds, importedTimers);
+          const handleSelectAllEmojis = createSelectAllHandler(setSelectedEmojiIds, importedPreferredEmojis);
           
           const handleConfirm = () => {
               const selectedRecipes = importedRecipes.filter(r => selectedRecipeIds.has(r.id));
               const selectedSections = importedSections.filter(s => selectedSectionIds.has(s.id));
               const selectedUnits = importedUnits.filter(u => selectedUnitIds.has(u.id));
               const selectedShoppingList = importedShoppingList.filter(i => selectedShoppingListIds.has(i.id));
-              onConfirm(selectedRecipes, selectedSections, selectedUnits, selectedShoppingList);
+              const selectedTimers = importedTimers.filter(t => selectedTimerIds.has(t.id));
+              const selectedEmojis = importedPreferredEmojis.filter(e => selectedEmojiIds.has(e.id)).map(e => e.id);
+              onConfirm(selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, selectedTimers, importOwnerName, importedOwnerName, selectedEmojis);
           };
 
           const CheckboxList = ({ title, items, selectedIds, onToggle, onSelectAll, itemLabelProp, emptyText }) => (
               React.createElement('div', null,
                   React.createElement('div', { className: "flex justify-between items-center mb-4" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)]" }, `${title} (${selectedIds.size}/${items.length})`),
-                      React.createElement('div', { className: "flex gap-2 text-sm" },
+                      items.length > 0 && React.createElement('div', { className: "flex gap-2 text-sm" },
                           React.createElement('button', { type: "button", onClick: () => onSelectAll(true), className: "text-[var(--color-accent-text)] hover:underline" }, "All"),
                           React.createElement('button', { type: "button", onClick: () => onSelectAll(false), className: "text-[var(--color-accent-text)] hover:underline" }, "None")
                       )
@@ -299,7 +311,7 @@
 
           return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
               React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-6" }, "Confirm Import"),
-              React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)] space-y-8" },
+              React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)] space-y-8 max-h-[80vh] overflow-y-auto" },
                   React.createElement(CheckboxList, {
                       title: 'Recipes',
                       items: importedRecipes,
@@ -327,7 +339,7 @@
                       itemLabelProp: 'label',
                       emptyText: "No units found in file."
                   }),
-                   React.createElement(CheckboxList, {
+                  React.createElement(CheckboxList, {
                       title: 'Shopping List Items',
                       items: importedShoppingList,
                       selectedIds: selectedShoppingListIds,
@@ -336,6 +348,40 @@
                       itemLabelProp: 'text',
                       emptyText: "No shopping list items found."
                   }),
+                  React.createElement(CheckboxList, {
+                      title: 'Timers',
+                      items: importedTimers,
+                      selectedIds: selectedTimerIds,
+                      onToggle: handleTimerToggle,
+                      onSelectAll: handleSelectAllTimers,
+                      itemLabelProp: 'name',
+                      emptyText: "No timers found in file."
+                  }),
+                   React.createElement(CheckboxList, {
+                      title: 'Favorite Emojis',
+                      items: importedPreferredEmojis,
+                      selectedIds: selectedEmojiIds,
+                      onToggle: handleEmojiToggle,
+                      onSelectAll: handleSelectAllEmojis,
+                      itemLabelProp: 'label',
+                      emptyText: "No favorite emojis found in file."
+                  }),
+                  (importedOwnerName && currentOwnerName !== importedOwnerName) && React.createElement('div', null,
+                        React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Personalization"),
+                        React.createElement('div', { className: "p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                            React.createElement('label', { className: "flex items-center p-2 rounded-md hover:bg-[var(--color-bg-tertiary)] cursor-pointer" },
+                                React.createElement('input', {
+                                    type: "checkbox",
+                                    checked: importOwnerName,
+                                    onChange: () => setImportOwnerName(prev => !prev),
+                                    className: "w-5 h-5 rounded bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                                }),
+                                React.createElement('span', { className: "ml-3 text-[var(--color-text-primary)]" },
+                                    `Update owner name from "${currentOwnerName}" to "${importedOwnerName}"`
+                                )
+                            )
+                        )
+                    ),
                   React.createElement('div', { className: "flex justify-end gap-4 pt-4 border-t border-[var(--color-border-primary)]" },
                       React.createElement('button', { onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
                       React.createElement('button', { onClick: handleConfirm, className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-6 rounded-md" }, "Import Selected")
@@ -356,6 +402,7 @@
         const [selectedSectionIds, setSelectedSectionIds] = useState(new Set());
         const [newSectionName, setNewSectionName] = useState('');
         const [newSectionParentId, setNewSectionParentId] = useState('');
+        const [stepInsertionIndex, setStepInsertionIndex] = useState(1);
         const ADD_NEW_UNIT_VALUE = '__add_new__';
         
         const { topLevelSections, sectionsByParent } = useMemo(() => {
@@ -386,7 +433,9 @@
                 }
                 return step.id ? step : { ...step, id: `s_${Date.now()}_${index}` };
             });
-            setSteps(processedSteps.length > 0 ? processedSteps : [{ id: `s_new_${Date.now()}`, text: '', categoryId: undefined }]);
+            const finalSteps = processedSteps.length > 0 ? processedSteps : [{ id: `s_new_${Date.now()}`, text: '', categoryId: undefined }];
+            setSteps(finalSteps);
+            setStepInsertionIndex(finalSteps.length + 1);
 
             const currentSectionIds = new Set();
             if (initialRecipe.sectionIds) {
@@ -401,11 +450,13 @@
             setCategories([]);
             setEmojiString('');
             setIngredients([{ id: `new_ing_${Date.now()}`, name: '', quantity: '', unit: units[0]?.id || '', categoryId: undefined }]);
-            setSteps([{ id: `new_step_${Date.now()}`, text: '', categoryId: undefined }]);
+            const initialSteps = [{ id: `new_step_${Date.now()}`, text: '', categoryId: undefined }];
+            setSteps(initialSteps);
+            setStepInsertionIndex(initialSteps.length + 1);
             setSelectedSectionIds(new Set());
           }
         }, [initialRecipe]);
-        
+
         useEffect(() => {
             if (!initialRecipe) {
                 setNewSectionName('');
@@ -413,6 +464,10 @@
                 setNewCategoryName('');
             }
         }, [initialRecipe]);
+
+        useEffect(() => {
+            setStepInsertionIndex(steps.length + 1);
+        }, [steps.length]);
 
         const addEmoji = (emoji) => {
           setEmojiString(prev => prev + emoji);
@@ -477,8 +532,14 @@
         };
 
         const addStep = () => {
-          const lastCategoryId = steps.length > 0 ? steps[steps.length - 1].categoryId : undefined;
-          setSteps([...steps, { id: `new_step_${Date.now()}`, text: '', categoryId: lastCategoryId }]);
+          const insertionPoint = stepInsertionIndex - 1;
+          const previousStep = steps[insertionPoint - 1];
+          const categoryId = previousStep ? previousStep.categoryId : undefined;
+          const newStep = { id: `new_step_${Date.now()}`, text: '', categoryId: categoryId };
+          
+          const newSteps = [...steps];
+          newSteps.splice(insertionPoint, 0, newStep);
+          setSteps(newSteps);
         };
 
         const removeStep = (index) => {
@@ -572,8 +633,15 @@
         };
 
         return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-          React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
-          React.createElement('form', { onSubmit: handleSubmit, className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
+          React.createElement('div', { className: "flex justify-between items-center mb-8" },
+            React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)]" }, initialRecipe ? 'Edit Recipe' : 'Add New Recipe'),
+            React.createElement('button', { 
+                type: "submit", 
+                form: "recipe-form",
+                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-6 rounded-md" 
+            }, initialRecipe ? 'Save Changes' : 'Save Recipe')
+          ),
+          React.createElement('form', { id: "recipe-form", onSubmit: handleSubmit, className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
             React.createElement('div', null,
               React.createElement('label', { htmlFor: "recipe-name", className: "block text-lg font-medium text-[var(--color-text-secondary)] mb-2" }, "Recipe Name"),
               React.createElement('input', {
@@ -749,11 +817,23 @@
                   )
                 ))
               ),
-               React.createElement('button', {
-                type: "button",
-                onClick: addStep,
-                className: "mt-4 flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
-              }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add Step")
+              React.createElement('div', { className: "mt-4 flex items-center gap-4" },
+                  React.createElement('button', {
+                      type: "button",
+                      onClick: addStep,
+                      className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110"
+                  }, React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }), " Add step"),
+                  React.createElement('select', {
+                      value: stepInsertionIndex,
+                      onChange: (e) => setStepInsertionIndex(Number(e.target.value)),
+                      className: "p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)]",
+                      'aria-label': "Step insertion position"
+                  },
+                      Array.from({ length: steps.length + 1 }, (_, i) => i + 1).map(num => 
+                          React.createElement('option', { key: num, value: num }, `${num}`)
+                      )
+                  )
+              )
             ),
             React.createElement('div', { className: "flex justify-end gap-4 mt-8 pt-4 border-t border-[var(--color-border-primary)]" },
               React.createElement('button', { type: "button", onClick: onCancel, className: "bg-gray-600 hover:bg-gray-500 text-gray-200 font-bold py-2 px-6 rounded-md" }, "Cancel"),
@@ -1562,7 +1642,7 @@
                       ),
                       React.createElement('div', { className: "flex justify-between items-center px-4 py-2 bg-[var(--color-bg-tertiary)] rounded-t-md border-b border-[var(--color-border-secondary)]" },
                           React.createElement('h3', { className: "text-sm font-semibold text-[var(--color-text-secondary)]"}, "Section Name"),
-                          React.createElement('h3', { className: "text-sm font-semibold text-[var(--color-text-secondary)]"}, "Subsection of")
+                          React.createElement('h3', { className: "text-sm font-semibold text-[var(--color-text-tertiary)]"}, "Subsection of")
                       ),
                       React.createElement('div', { className: "bg-[var(--color-bg-primary)] rounded-b-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
                           sections.length > 0 ? renderSections(topLevelSections, 0) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center p-4" }, "No sections created.")
@@ -2110,6 +2190,7 @@
         const [sections, setSections] = useLocalStorage('sections', []);
         const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
+        const [timers, setTimers] = useLocalStorage('timers', []);
         const [textSize, setTextSize] = useLocalStorage('textSize', 1);
         const [ownerName, setOwnerName] = useLocalStorage('ownerName', 'Sharné');
         const [preferredEmojis, setPreferredEmojis] = useLocalStorage('preferredEmojis', FOOD_EMOJIS);
@@ -2358,7 +2439,12 @@
         };
 
         const handleExport = () => {
-          const dataToExport = { recipes, sections, units, shoppingList, preferredEmojis };
+          const timersToExport = timers.map(t => ({ // Don't export runtime state
+            id: t.id,
+            name: t.name,
+            duration: t.duration,
+          }));
+          const dataToExport = { version: 2, recipes, sections, units, shoppingList, preferredEmojis, timers: timersToExport, ownerName };
           const jsonString = JSON.stringify(dataToExport, null, 2);
           const blob = new Blob([jsonString], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
@@ -2380,10 +2466,10 @@
               try {
                   const text = e.target?.result;
                   const data = JSON.parse(text);
-                  if (data.recipes || data.sections || data.units || data.shoppingList) {
+                  if (data.recipes || data.sections || data.units || data.shoppingList || data.timers || data.ownerName || data.preferredEmojis) {
                       setView({ page: 'import_confirm', data });
                   } else {
-                      alert('Invalid file format. The file must contain at least one of: recipes, sections, units, or shoppingList.');
+                      alert('Invalid file format. The file does not appear to contain any valid recipe data.');
                   }
               } catch (error) {
                   alert('Error reading or parsing file.');
@@ -2394,7 +2480,7 @@
           event.target.value = '';
         };
 
-        const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList) => {
+        const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, selectedTimers, shouldImportOwnerName, importedOwnerName, selectedEmojis) => {
             // Merge Sections
             const newSections = [...sections];
             const sectionIdMap = new Map();
@@ -2438,8 +2524,33 @@
             
             // Merge Shopping List
             const existingShoppingListText = new Set(shoppingList.map(i => i.text.trim().toLowerCase()));
-            const shoppingListItemsToAdd = selectedShoppingList.filter(i => !existingShoppingListText.has(i.text.trim().toLowerCase()));
+            const shoppingListItemsToAdd = selectedShoppingList
+                .filter(i => !existingShoppingListText.has(i.text.trim().toLowerCase()))
+                .map(i => ({...i, id: `item_${Date.now()}_${Math.random()}`}));
             setShoppingList(prev => [...prev, ...shoppingListItemsToAdd]);
+
+            // Merge Timers
+            const existingTimerNames = new Set(timers.map(t => t.name.trim().toLowerCase()));
+            const timersToAdd = selectedTimers
+                .filter(t => !existingTimerNames.has(t.name.trim().toLowerCase()))
+                .map(t => ({
+                    ...t,
+                    id: Date.now() + Math.random(), // new ID
+                    remainingTime: 0,
+                    isRunning: false,
+                    isFinished: false,
+                }));
+            setTimers(prev => [...prev, ...timersToAdd]);
+
+            // Merge Preferred Emojis
+            const existingEmojis = new Set(preferredEmojis);
+            const emojisToAdd = selectedEmojis.filter(e => !existingEmojis.has(e));
+            setPreferredEmojis(prev => [...prev, ...emojisToAdd]);
+
+            // Import Owner Name
+            if (shouldImportOwnerName && importedOwnerName) {
+                setOwnerName(importedOwnerName);
+            }
 
             setView({ page: 'list' });
         };
@@ -2523,12 +2634,15 @@
                 return React.createElement(Timers, {
                     onBack: () => setView({ page: 'list' }),
                     showConfirmDialog: showConfirmDialog,
+                    timers: timers,
+                    setTimers: setTimers,
                 });
             case 'import_confirm':
               return React.createElement(ImportConfirmation, {
                 data: view.data,
                 onConfirm: handleConfirmImport,
-                onCancel: () => setView({ page: 'list' })
+                onCancel: () => setView({ page: 'list' }),
+                currentOwnerName: ownerName,
               });
             default:
               return React.createElement('div', null, 'Unknown view');
