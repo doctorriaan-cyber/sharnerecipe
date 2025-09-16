@@ -1112,10 +1112,9 @@
         );
       };
 
-      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onExport, onFileSelect, onGoToSettings, onGoToShoppingList, onGoToTimers, ownerName }) => {
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onGoToSettings, onGoToShoppingList, onGoToTimers, ownerName }) => {
         const [searchTerm, setSearchTerm] = useState('');
         const [openSections, setOpenSections] = useState({});
-        const importInputRef = useRef(null);
         const [isSearchVisible, setIsSearchVisible] = useState(false);
         const searchInputRef = useRef(null);
 
@@ -1124,10 +1123,6 @@
                 searchInputRef.current?.focus();
             }
         }, [isSearchVisible]);
-
-        const handleImportClick = () => {
-          importInputRef.current?.click();
-        };
 
         const sortedRecipes = useMemo(() => {
             return [...recipes].sort((a, b) => a.name.localeCompare(b.name));
@@ -1321,46 +1316,27 @@
                   )
                 )
               )
-            ),
-
-            React.createElement('div', { className: "mt-12 pt-8 border-t border-[var(--color-border-primary)] flex flex-col sm:flex-row justify-center items-center gap-4" },
-              React.createElement('input', { 
-                  type: "file", 
-                  ref: importInputRef, 
-                  onChange: onFileSelect,
-                  className: "hidden",
-                  accept: ".json"
-              }),
-              React.createElement('button', { 
-                  onClick: handleImportClick,
-                  className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
-              },
-                  React.createElement(CloudUploadIcon, { className: "w-5 h-5 mr-2" }),
-                  "Import"
-              ),
-              React.createElement('button', {
-                  onClick: onExport,
-                  className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
-              },
-                  React.createElement(CloudDownloadIcon, { className: "w-5 h-5 mr-2" }),
-                  "Export"
-              )
             )
           )
         );
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
         const [newSectionParent, setNewSectionParent] = useState('');
         const [newEmoji, setNewEmoji] = useState('');
         const [editingSection, setEditingSection] = useState({ id: null, name: '' });
+        const importInputRef = useRef(null);
 
         const MIN_TEXT_SIZE = 0.5;
         const MAX_TEXT_SIZE = 1.25;
         const STEP_TEXT_SIZE = 0.05;
+
+        const handleImportClick = () => {
+          importInputRef.current?.click();
+        };
 
         const handleTextSizeChange = (newSize) => {
             const roundedSize = Math.round(newSize / STEP_TEXT_SIZE) * STEP_TEXT_SIZE;
@@ -1703,6 +1679,32 @@
                                   }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
                               )
                           ) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No units defined.")
+                      )
+                  ),
+                  React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Data Management"),
+                      React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-col sm:flex-row justify-start items-center gap-4" },
+                          React.createElement('input', {
+                              type: "file",
+                              ref: importInputRef,
+                              onChange: onFileSelect,
+                              className: "hidden",
+                              accept: ".json"
+                          }),
+                          React.createElement('button', {
+                              onClick: handleImportClick,
+                              className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+                          },
+                              React.createElement(CloudUploadIcon, { className: "w-5 h-5 mr-2" }),
+                              "Import Data"
+                          ),
+                          React.createElement('button', {
+                              onClick: onExport,
+                              className: "bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+                          },
+                              React.createElement(CloudDownloadIcon, { className: "w-5 h-5 mr-2" }),
+                              "Export Data"
+                          )
                       )
                   )
               )
@@ -2481,30 +2483,54 @@
         };
 
         const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, selectedTimers, shouldImportOwnerName, importedOwnerName, selectedEmojis) => {
-            // Merge Sections
-            const newSections = [...sections];
-            const sectionIdMap = new Map();
-            const existingSectionNames = new Set(sections.map(s => s.name.trim().toLowerCase()));
-            
+            // --- SECTION MERGE ---
+            const finalSections = [...sections];
+            const sectionIdMap = new Map(); // Maps old imported ID -> new/existing ID
+            const existingSectionNames = new Map(sections.map(s => [s.name.trim().toLowerCase(), s.id]));
+            const newSectionsData = []; // To hold { originalSection, newSectionObject }
+
+            // Pass 1: Create sections and map IDs.
             selectedSections.forEach(importedSection => {
-                if (!existingSectionNames.has(importedSection.name.trim().toLowerCase())) {
-                    const newSection = { ...importedSection, id: `${Date.now()}-s-${importedSection.name}` };
-                    newSections.push(newSection);
-                    sectionIdMap.set(importedSection.id, newSection.id);
-                    existingSectionNames.add(newSection.name.trim().toLowerCase());
+                const importedNameLower = importedSection.name.trim().toLowerCase();
+                if (existingSectionNames.has(importedNameLower)) {
+                    // Section with same name exists, map old ID to existing ID.
+                    sectionIdMap.set(importedSection.id, existingSectionNames.get(importedNameLower));
                 } else {
-                    const existingSection = sections.find(s => s.name.trim().toLowerCase() === importedSection.name.trim().toLowerCase());
-                    sectionIdMap.set(importedSection.id, existingSection.id);
+                    // Section doesn't exist, create a new one and map IDs.
+                    const newId = `${Date.now()}-${Math.random()}-s`;
+                    const newSection = { ...importedSection, id: newId };
+                    newSectionsData.push({ originalSection: importedSection, newSectionObject: newSection });
+                    sectionIdMap.set(importedSection.id, newId);
+                    // Add to existing names map to handle duplicates within the import file itself.
+                    existingSectionNames.set(importedNameLower, newId);
                 }
             });
-            setSections(newSections);
 
-            // Merge Recipes
+            // Pass 2: Remap parent IDs on the newly created sections and add them to the final list.
+            newSectionsData.forEach(({ originalSection, newSectionObject }) => {
+                if (originalSection.parentId) {
+                    const newParentId = sectionIdMap.get(originalSection.parentId);
+                    if (newParentId) {
+                        newSectionObject.parentId = newParentId;
+                    } else {
+                        // Parent was not selected for import, or doesn't exist. Make it top-level.
+                        delete newSectionObject.parentId;
+                    }
+                }
+                finalSections.push(newSectionObject);
+            });
+            setSections(finalSections);
+            
+            // --- RECIPE MERGE ---
             const recipesToAdd = selectedRecipes.map(importedRecipe => {
-                const newId = `${Date.now()}-r-${importedRecipe.name}`;
-                const newIngredients = importedRecipe.ingredients.map(ing => ({ ...ing, id: `${newId}-i-${ing.name}-${Math.random()}` }));
+                const newId = `${Date.now()}-${Math.random()}-r`;
+                const newIngredients = (importedRecipe.ingredients || []).map(ing => ({ ...ing, id: `${newId}-i-${Math.random()}` }));
+                
                 const targetSectionIds = new Set(importedRecipe.sectionIds || (importedRecipe.sectionId ? [importedRecipe.sectionId] : []));
-                const mappedSectionIds = Array.from(targetSectionIds).map(id => sectionIdMap.get(id)).filter(Boolean);
+                
+                const mappedSectionIds = Array.from(targetSectionIds)
+                    .map(oldId => sectionIdMap.get(oldId)) // Map old ID to new ID
+                    .filter(Boolean); // Remove any that couldn't be mapped
 
                 const finalRecipe = {
                     ...importedRecipe,
@@ -2512,42 +2538,38 @@
                     ingredients: newIngredients,
                     sectionIds: mappedSectionIds,
                 };
-                delete finalRecipe.sectionId;
+                delete finalRecipe.sectionId; // Clean up old property if it exists
                 return finalRecipe;
             });
             setRecipes(prev => [...prev, ...recipesToAdd]);
             
-            // Merge Units
+            // --- OTHER DATA MERGE ---
             const existingUnitLabels = new Set(units.map(u => u.label.trim().toLowerCase()));
             const unitsToAdd = selectedUnits.filter(u => !existingUnitLabels.has(u.label.trim().toLowerCase()));
             setUnits(prev => [...prev, ...unitsToAdd]);
             
-            // Merge Shopping List
             const existingShoppingListText = new Set(shoppingList.map(i => i.text.trim().toLowerCase()));
             const shoppingListItemsToAdd = selectedShoppingList
                 .filter(i => !existingShoppingListText.has(i.text.trim().toLowerCase()))
                 .map(i => ({...i, id: `item_${Date.now()}_${Math.random()}`}));
             setShoppingList(prev => [...prev, ...shoppingListItemsToAdd]);
 
-            // Merge Timers
             const existingTimerNames = new Set(timers.map(t => t.name.trim().toLowerCase()));
             const timersToAdd = selectedTimers
                 .filter(t => !existingTimerNames.has(t.name.trim().toLowerCase()))
                 .map(t => ({
                     ...t,
-                    id: Date.now() + Math.random(), // new ID
+                    id: Date.now() + Math.random(),
                     remainingTime: 0,
                     isRunning: false,
                     isFinished: false,
                 }));
             setTimers(prev => [...prev, ...timersToAdd]);
 
-            // Merge Preferred Emojis
             const existingEmojis = new Set(preferredEmojis);
             const emojisToAdd = selectedEmojis.filter(e => !existingEmojis.has(e));
             setPreferredEmojis(prev => [...prev, ...emojisToAdd]);
 
-            // Import Owner Name
             if (shouldImportOwnerName && importedOwnerName) {
                 setOwnerName(importedOwnerName);
             }
@@ -2566,8 +2588,6 @@
                 onGoToSettings: () => setView({ page: 'settings' }),
                 onGoToShoppingList: () => setView({ page: 'shopping_list' }),
                 onGoToTimers: () => setView({ page: 'timers' }),
-                onExport: handleExport,
-                onFileSelect: handleFileSelect,
                 ownerName: ownerName
               });
             case 'detail':
@@ -2619,6 +2639,8 @@
                 setOwnerName: setOwnerName,
                 preferredEmojis: preferredEmojis,
                 setPreferredEmojis: setPreferredEmojis,
+                onExport: handleExport,
+                onFileSelect: handleFileSelect,
               });
             case 'shopping_list':
               return React.createElement(ShoppingList, {
