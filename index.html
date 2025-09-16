@@ -1322,7 +1322,7 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect, onResetApp }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
         const [newSectionParent, setNewSectionParent] = useState('');
@@ -1336,6 +1336,22 @@
 
         const handleImportClick = () => {
           importInputRef.current?.click();
+        };
+
+        const handleInitiateReset = () => {
+            const showSecondConfirmation = () => {
+                showConfirmDialog(
+                    'Final Confirmation',
+                    'This is your final warning. Are you certain you want to erase all data and reset the application to its default state?',
+                    onResetApp
+                );
+            };
+
+            showConfirmDialog(
+                'Reset Application',
+                'Are you absolutely sure you want to reset the app? All your recipes, sections, and settings will be permanently deleted. This action cannot be undone.',
+                showSecondConfirmation
+            );
         };
 
         const handleTextSizeChange = (newSize) => {
@@ -1683,7 +1699,7 @@
                   ),
                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Data Management"),
-                      React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-col sm:flex-row justify-start items-center gap-4" },
+                      React.createElement('div', { className: "p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] flex flex-col sm:flex-row justify-start items-center gap-4 flex-wrap" },
                           React.createElement('input', {
                               type: "file",
                               ref: importInputRef,
@@ -1704,6 +1720,13 @@
                           },
                               React.createElement(CloudDownloadIcon, { className: "w-5 h-5 mr-2" }),
                               "Export Data"
+                          ),
+                          React.createElement('button', {
+                              onClick: handleInitiateReset,
+                              className: "bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center"
+                          },
+                              React.createElement(TrashIcon, { className: "w-5 h-5 mr-2" }),
+                              "Reset App"
                           )
                       )
                   )
@@ -2267,8 +2290,11 @@
         };
 
         const handleConfirmAction = () => {
-            confirmState.onConfirm();
+            const callback = confirmState.onConfirm;
             setConfirmState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+            if (callback) {
+                callback();
+            }
         };
 
         const handleCancelAction = () => {
@@ -2577,6 +2603,24 @@
             setView({ page: 'list' });
         };
 
+        const handleResetApp = () => {
+            const keysToRemove = [
+                'recipes', 
+                'sections', 
+                'units', 
+                'shoppingList', 
+                'timers', 
+                'textSize', 
+                'ownerName', 
+                'preferredEmojis'
+            ];
+            
+            keysToRemove.forEach(key => {
+                window.localStorage.removeItem(key);
+            });
+            window.location.reload();
+        };
+
         const renderContent = () => {
           switch (view.page) {
             case 'list':
@@ -2641,6 +2685,7 @@
                 setPreferredEmojis: setPreferredEmojis,
                 onExport: handleExport,
                 onFileSelect: handleFileSelect,
+                onResetApp: handleResetApp,
               });
             case 'shopping_list':
               return React.createElement(ShoppingList, {
