@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2hhcm7DqSdzIFJlY2lwZXMiLCJzaG9ydF9uYW1lIjoiUmVjaXBlcyIsImRlc2NyaXB0aW9uIjoiQSBwZXJzb25hbCByZWNpcGUgZGF0YWJhc2UgYXBwbGljYXRpb24uIExvZyB5b3VyIGZhdm9yaXRlIHJlY2lwZXMgZnJvbSBwYXBlciB0byBhIGRpZ2l0YWwgZm9ybWF0LCB2aWV3IHRoZW0sIGFuZCBhZGp1c3QgaW5ncmVkaWVudCBxdWFudGl0aWVzIG9uIHRoZSBmbHkuIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiM2NEM3Q0MiLCJpY29ucyI6W3sic3JjIjoiY3JvcHBlZC5wbmciLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=" />
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2hhcm7DqSdzIFJlY2lwZXMiLCJzaG9ydF9uYW1lIjoiUmVjaXBlcyIsImRlc2NyaXB0aW9uIjoiQSBwZXJzb25hbCByZWNpcGUgZGF0YWJhc2UgYXBwbGljYXRpb24uIExvZyB5b3VyIGZhdm9yaXRlIHJlY2lwZXMgZnJvbSBwYXBlciB0byBhIGRpZ2l0YWwgZm9ybWF0LCB2aWV3IHRoZW0sIGFuZCBhZGp1c3QgaW5ncmVkaWVudCBxdWFudGl0aWVzIG9uIHRoZSBmbHkuIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxNjFmMjgiLCJ0aGVtZV9jb2xvciI6IiM2NEM3Q0MiLCJpY29ucyI6W3sic3JjIjoiY3JvcHBlZC5wbmciLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=" />
     <meta name="theme-color" content="#64C7CC" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -21,7 +21,7 @@
       }
       /* Initial theme variables */
       :root {
-        --color-bg-primary: #111827;
+        --color-bg-primary: #161f28;
         --color-bg-secondary: #1f2937;
         --color-bg-tertiary: #374151;
         --color-bg-input: #374151;
@@ -105,8 +105,21 @@
       const DEFAULT_THEME = {
         mode: 'dark',
         accentColor: '#64C7CC',
-        backgroundColor: '#111827',
+        backgroundColor: '#161f28',
       };
+
+      const DEFAULT_QUOTES = [
+        { id: 'q_1', text: "People who love to eat are always the best people.", author: "Julia Child" },
+        { id: 'q_2', text: "There is no sincerer love than the love of food.", author: "George Bernard Shaw" },
+        { id: 'q_3', text: "One cannot think well, love well, sleep well, if one has not dined well.", author: "Virginia Woolf" },
+        { id: 'q_4', text: "First, we eat. Then, we do everything else.", author: "M.F.K. Fisher" },
+        { id: 'q_5', text: "I cook with wine, sometimes I even add it to the food.", author: "W.C. Fields" },
+        { id: 'q_6', text: "Food is our common ground, a universal experience.", author: "James Beard" },
+        { id: 'q_7', text: "Let food be thy medicine and medicine be thy food.", author: "Hippocrates" },
+        { id: 'q_8', text: "All you need is love. But a little chocolate now and then doesn't hurt.", author: "Charles M. Schulz" },
+        { id: 'q_9', text: "Cooking is like love. It should be entered into with abandon or not at all.", author: "Harriet Van Horne" },
+        { id: 'q_10', text: "The only time to eat diet food is while you're waiting for the steak to cook.", author: "Julia Child" }
+      ];
 
       // --- Start of inlined hooks/useLocalStorage.ts ---
       function useLocalStorage(key, initialValue) {
@@ -217,12 +230,6 @@
           )
       );
 
-      const ClockIcon = ({ className = "w-6 h-6" }) => (
-          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
-              React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" })
-          )
-      );
-      
       const ArrowUpTrayIcon = ({ className = "w-6 h-6" }) => (
           React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: className },
               React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" })
@@ -235,7 +242,7 @@
           const importedSections = useMemo(() => data.sections || [], [data.sections]);
           const importedUnits = useMemo(() => data.units || [], [data.units]);
           const importedShoppingList = useMemo(() => data.shoppingList || [], [data.shoppingList]);
-          const importedTimers = useMemo(() => (data.timers || []).map(t => ({...t, id: t.id || `timer_${Math.random()}`})), [data.timers]);
+          const importedQuotes = useMemo(() => data.quotes || [], [data.quotes]);
           const importedOwnerName = useMemo(() => data.ownerName || '', [data.ownerName]);
           const importedPreferredEmojis = useMemo(() => (data.preferredEmojis || []).map(e => ({ id: e, label: e })), [data.preferredEmojis]);
 
@@ -243,7 +250,7 @@
           const [selectedSectionIds, setSelectedSectionIds] = useState(() => new Set(importedSections.map(s => s.id)));
           const [selectedUnitIds, setSelectedUnitIds] = useState(() => new Set(importedUnits.map(u => u.id)));
           const [selectedShoppingListIds, setSelectedShoppingListIds] = useState(() => new Set(importedShoppingList.map(i => i.id)));
-          const [selectedTimerIds, setSelectedTimerIds] = useState(() => new Set(importedTimers.map(t => t.id)));
+          const [selectedQuoteIds, setSelectedQuoteIds] = useState(() => new Set(importedQuotes.map(q => q.id)));
           const [selectedEmojiIds, setSelectedEmojiIds] = useState(() => new Set(importedPreferredEmojis.map(e => e.id)));
           const [importOwnerName, setImportOwnerName] = useState(true);
 
@@ -264,14 +271,14 @@
           const handleSectionToggle = createToggleHandler(setSelectedSectionIds);
           const handleUnitToggle = createToggleHandler(setSelectedUnitIds);
           const handleShoppingListToggle = createToggleHandler(setSelectedShoppingListIds);
-          const handleTimerToggle = createToggleHandler(setSelectedTimerIds);
+          const handleQuoteToggle = createToggleHandler(setSelectedQuoteIds);
           const handleEmojiToggle = createToggleHandler(setSelectedEmojiIds);
 
           const handleSelectAllRecipes = createSelectAllHandler(setSelectedRecipeIds, importedRecipes);
           const handleSelectAllSections = createSelectAllHandler(setSelectedSectionIds, importedSections);
           const handleSelectAllUnits = createSelectAllHandler(setSelectedUnitIds, importedUnits);
           const handleSelectAllShoppingList = createSelectAllHandler(setSelectedShoppingListIds, importedShoppingList);
-          const handleSelectAllTimers = createSelectAllHandler(setSelectedTimerIds, importedTimers);
+          const handleSelectAllQuotes = createSelectAllHandler(setSelectedQuoteIds, importedQuotes);
           const handleSelectAllEmojis = createSelectAllHandler(setSelectedEmojiIds, importedPreferredEmojis);
           
           const handleConfirm = () => {
@@ -279,9 +286,9 @@
               const selectedSections = importedSections.filter(s => selectedSectionIds.has(s.id));
               const selectedUnits = importedUnits.filter(u => selectedUnitIds.has(u.id));
               const selectedShoppingList = importedShoppingList.filter(i => selectedShoppingListIds.has(i.id));
-              const selectedTimers = importedTimers.filter(t => selectedTimerIds.has(t.id));
+              const selectedQuotes = importedQuotes.filter(q => selectedQuoteIds.has(q.id));
               const selectedEmojis = importedPreferredEmojis.filter(e => selectedEmojiIds.has(e.id)).map(e => e.id);
-              onConfirm(selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, selectedTimers, importOwnerName, importedOwnerName, selectedEmojis);
+              onConfirm(selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, importOwnerName, importedOwnerName, selectedEmojis, selectedQuotes);
           };
 
           const CheckboxList = ({ title, items, selectedIds, onToggle, onSelectAll, itemLabelProp, emptyText }) => (
@@ -349,13 +356,13 @@
                       emptyText: "No shopping list items found."
                   }),
                   React.createElement(CheckboxList, {
-                      title: 'Timers',
-                      items: importedTimers,
-                      selectedIds: selectedTimerIds,
-                      onToggle: handleTimerToggle,
-                      onSelectAll: handleSelectAllTimers,
-                      itemLabelProp: 'name',
-                      emptyText: "No timers found in file."
+                      title: 'Quotes',
+                      items: importedQuotes,
+                      selectedIds: selectedQuoteIds,
+                      onToggle: handleQuoteToggle,
+                      onSelectAll: handleSelectAllQuotes,
+                      itemLabelProp: 'text',
+                      emptyText: "No quotes found in file."
                   }),
                    React.createElement(CheckboxList, {
                       title: 'Favorite Emojis',
@@ -1112,17 +1119,8 @@
         );
       };
 
-      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onGoToSettings, onGoToShoppingList, onGoToTimers, ownerName }) => {
+      const RecipeList = ({ recipes, sections, onSelectRecipe, onAddRecipe, onGoToSettings, onGoToShoppingList, ownerName, openSections, setOpenSections, dailyQuote }) => {
         const [searchTerm, setSearchTerm] = useState('');
-        const [openSections, setOpenSections] = useState({});
-        const [isSearchVisible, setIsSearchVisible] = useState(false);
-        const searchInputRef = useRef(null);
-
-        useEffect(() => {
-            if (isSearchVisible) {
-                searchInputRef.current?.focus();
-            }
-        }, [isSearchVisible]);
 
         const sortedRecipes = useMemo(() => {
             return [...recipes].sort((a, b) => a.name.localeCompare(b.name));
@@ -1221,50 +1219,25 @@
 
         return (
           React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-            React.createElement('div', { className: "flex justify-between items-center mb-6" },
-                React.createElement('div', { className: "flex items-center gap-2", style: { flex: '1 1 0%' } },
+            React.createElement('div', { className: "mb-6" },
+                React.createElement('div', { className: "w-2/3 mx-auto" },
                     React.createElement('button', {
                         onClick: onGoToSettings,
-                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                        'aria-label': "Settings"
-                    }, React.createElement(BurgerMenuIcon, { className: "w-7 h-7" })),
-                    React.createElement('button', {
-                        onClick: onGoToShoppingList,
-                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                        'aria-label': "Shopping List"
-                    }, React.createElement(ShoppingBagIcon, { className: "w-7 h-7" }))
-                ),
-                React.createElement('h1', { className: "font-fancy text-4xl sm:text-5xl font-bold text-[var(--color-accent-text)] text-center px-2 flex-shrink min-w-0" }, `${ownerName}'s recipes`),
-                React.createElement('div', { className: "flex items-center gap-2 justify-end", style: { flex: '1 1 0%' } },
-                    React.createElement('button', {
-                        onClick: onGoToTimers,
-                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                        'aria-label': "Timers"
-                    }, React.createElement(ClockIcon, { className: "w-7 h-7" })),
-                    React.createElement('button', {
-                        onClick: () => setIsSearchVisible(prev => !prev),
-                        className: "p-2 rounded-full text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)] transition-colors",
-                        'aria-label': "Toggle Search"
-                    }, React.createElement(SearchIcon, { className: "w-7 h-7" }))
+                        'aria-label': "Open Settings",
+                        className: "w-full rounded-2xl transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-bg-primary)] focus:ring-[var(--color-accent)]"
+                    },
+                        React.createElement('img', {
+                            src: "cropped.png",
+                            alt: `${ownerName}'s Recipes Logo`,
+                            className: "w-full aspect-square object-contain"
+                        })
+                    )
                 )
             ),
-            React.createElement('div', { className: "flex flex-col sm:flex-row justify-end items-center gap-4 mb-8" },
-              React.createElement('div', {
-                className: `relative sm:flex-grow w-full sm:w-auto transition-all duration-300 ease-in-out ${isSearchVisible ? 'max-w-full sm:max-w-md' : 'max-w-0 opacity-0'}`
-              },
-                React.createElement(SearchIcon, { className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-tertiary)] pointer-events-none" }),
-                React.createElement('input', {
-                  ref: searchInputRef,
-                  type: "text",
-                  placeholder: "Search recipes...",
-                  value: searchTerm,
-                  onChange: e => setSearchTerm(e.target.value),
-                  className: "w-full bg-[var(--color-bg-secondary)] border border-[var(--color-border-primary)] rounded-full py-2 pl-10 pr-4 text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
-                })
-              ),
+            React.createElement('div', { className: "mb-8" },
               React.createElement('button', {
                 onClick: onAddRecipe,
-                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full sm:w-auto justify-center flex-shrink-0",
+                className: "bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 w-full justify-center",
                 'aria-label': "Add a new recipe"
               },
                 React.createElement(PlusIcon, { className: "w-5 h-5 mr-2" }),
@@ -1316,17 +1289,29 @@
                   )
                 )
               )
+            ),
+             dailyQuote && React.createElement('div', { className: "mt-12 pt-8 border-t-2 border-dashed border-[var(--color-border-primary)]" },
+                React.createElement('figure', { className: "text-center" },
+                    React.createElement('blockquote', null,
+                        React.createElement('p', { className: "text-xl italic text-[var(--color-text-secondary)]" }, `“${dailyQuote.text}”`)
+                    ),
+                    dailyQuote.author && React.createElement('figcaption', { className: "mt-4 text-[var(--color-text-tertiary)]" },
+                        `— ${dailyQuote.author}`
+                    )
+                )
             )
           )
         );
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect, onResetApp }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect, onResetApp, quotes, onAddQuote, onDeleteQuote }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
         const [newSectionParent, setNewSectionParent] = useState('');
         const [newEmoji, setNewEmoji] = useState('');
+        const [newQuoteText, setNewQuoteText] = useState('');
+        const [newQuoteAuthor, setNewQuoteAuthor] = useState('');
         const [editingSection, setEditingSection] = useState({ id: null, name: '' });
         const importInputRef = useRef(null);
 
@@ -1456,6 +1441,20 @@
             setPreferredEmojis(prev => prev.filter(e => e !== emojiToRemove));
         };
         
+        const handleAddQuote = () => {
+            onAddQuote(newQuoteText, newQuoteAuthor);
+            setNewQuoteText('');
+            setNewQuoteAuthor('');
+        };
+        
+        const handleDeleteQuote = (quote) => {
+            showConfirmDialog(
+                'Delete Quote',
+                `Are you sure you want to delete the quote by ${quote.author || 'Unknown'}?`,
+                () => onDeleteQuote(quote.id)
+            );
+        };
+
         const renderSectionRow = (section, level, siblings, index) => {
             const inUseCount = sectionUsageCount[section.id] || 0;
             const childCount = (sectionsByParent[section.id] || []).length;
@@ -1669,6 +1668,46 @@
                           ) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center w-full" }, "No favorite emojis defined.")
                       )
                   ),
+                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
+                      React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Quote Collection"),
+                      React.createElement('div', { className: "flex flex-col gap-2 mb-4 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
+                           React.createElement('input', {
+                              type: "text",
+                              value: newQuoteText,
+                              onChange: e => setNewQuoteText(e.target.value),
+                              placeholder: "New quote...",
+                              className: "w-full p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                          }),
+                          React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2"},
+                              React.createElement('input', {
+                                  type: "text",
+                                  value: newQuoteAuthor,
+                                  onChange: e => setNewQuoteAuthor(e.target.value),
+                                  placeholder: "Author (optional)",
+                                  className: "w-full sm:flex-grow p-3 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-[var(--color-text-primary)] focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
+                              }),
+                              React.createElement('button', {
+                                  type: "button",
+                                  onClick: handleAddQuote,
+                                  className: "w-full sm:w-auto bg-[var(--color-accent)] hover:brightness-95 text-white font-bold py-3 px-4 rounded-md flex-shrink-0"
+                              }, "Add Quote")
+                          )
+                      ),
+                      React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
+                          quotes.length > 0 ? quotes.map(quote =>
+                              React.createElement('div', { key: quote.id, className: "flex justify-between items-start p-2 rounded-md hover:bg-[var(--color-bg-tertiary)] gap-4" },
+                                  React.createElement('div', { className: "flex-grow" },
+                                      React.createElement('p', { className: "text-[var(--color-text-primary)] italic" }, `“${quote.text}”`),
+                                      quote.author && React.createElement('p', { className: "text-sm text-right text-[var(--color-text-tertiary)] mt-1" }, `- ${quote.author}`)
+                                  ),
+                                  React.createElement('button', {
+                                      onClick: () => handleDeleteQuote(quote),
+                                      className: "text-red-500 hover:text-red-400 p-1 flex-shrink-0"
+                                  }, React.createElement(TrashIcon, { className: "w-5 h-5" }))
+                              )
+                          ) : React.createElement('p', { className: "text-[var(--color-text-tertiary)] text-center" }, "No quotes defined.")
+                      )
+                  ),
                   React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Measurement Units"),
                       React.createElement('div', { className: "flex flex-col sm:flex-row items-center gap-2 mb-4" },
@@ -1732,218 +1771,6 @@
                   )
               )
           )
-        );
-      };
-      
-      // --- Start of inlined components/Timers.tsx ---
-      const Timers = ({ onBack, showConfirmDialog }) => {
-        const DEFAULT_TIMER = {
-            id: Date.now(),
-            name: 'Default',
-            duration: { hours: 0, minutes: 0, seconds: 0 },
-            remainingTime: 0,
-            isRunning: false,
-            isFinished: false,
-        };
-        const [timers, setTimers] = useLocalStorage('timers', [DEFAULT_TIMER]);
-        const audioRef = useRef(null);
-
-        useEffect(() => {
-            const interval = setInterval(() => {
-                setTimers(prev =>
-                    prev.map(t => {
-                        if (!t.isRunning || t.remainingTime <= 0) {
-                            return t;
-                        }
-                        const newRemainingTime = t.remainingTime - 1;
-                        if (newRemainingTime <= 0) {
-                            if (audioRef.current) {
-                                audioRef.current.play().catch(e => console.error("Audio play failed:", e));
-                            }
-                            return { ...t, remainingTime: 0, isRunning: false, isFinished: true };
-                        }
-                        return { ...t, remainingTime: newRemainingTime };
-                    })
-                );
-            }, 1000);
-            return () => clearInterval(interval);
-        }, []);
-
-        const formatTime = (totalSeconds) => {
-            const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-            const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
-        };
-
-        const handleAddTimer = () => {
-            setTimers(prev => [...prev, { ...DEFAULT_TIMER, id: Date.now(), name: `Timer ${prev.length + 1}` }]);
-        };
-
-        const handleDeleteTimer = (id) => {
-            const timerToDelete = timers.find(t => t.id === id);
-            showConfirmDialog(
-                'Delete Timer',
-                `Are you sure you want to delete the timer "${timerToDelete.name}"?`,
-                () => setTimers(prev => prev.filter(t => t.id !== id))
-            );
-        };
-        
-        const handleUpdate = (id, field, value) => {
-            setTimers(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
-        };
-
-        const handleDurationChange = (id, unit, value) => {
-            let numericValue = parseInt(value, 10);
-            if (isNaN(numericValue) || numericValue < 0) {
-                numericValue = 0;
-            }
-
-            if (unit === 'minutes' || unit === 'seconds') {
-                if (numericValue > 59) numericValue = 59;
-            } else if (unit === 'hours') {
-                if (numericValue > 99) numericValue = 99;
-            }
-
-            setTimers(prev => prev.map(t => {
-                if (t.id === id) {
-                    const newDuration = { ...t.duration, [unit]: numericValue };
-                    return { ...t, duration: newDuration, isFinished: false };
-                }
-                return t;
-            }));
-        };
-        
-        const handleDurationIncrement = (id, unit, delta) => {
-            setTimers(prev => prev.map(t => {
-                if (t.id === id) {
-                    let currentValue = t.duration[unit];
-                    let newValue = currentValue + delta;
-                    const max = unit === 'hours' ? 99 : 59;
-                    const min = 0;
-                    if (newValue > max) newValue = max;
-                    if (newValue < min) newValue = min;
-                    const newDuration = { ...t.duration, [unit]: newValue };
-                    return { ...t, duration: newDuration, isFinished: false };
-                }
-                return t;
-            }));
-        };
-
-        const handleToggleTimer = (id) => {
-            setTimers(prev => prev.map(t => {
-                if (t.id === id) {
-                    if (t.isRunning) {
-                        return { ...t, isRunning: false };
-                    }
-                    const newRemainingTime = (t.duration.hours * 3600) + (t.duration.minutes * 60) + t.duration.seconds;
-                    if (newRemainingTime <= 0) {
-                        return t;
-                    }
-                    return { ...t, isRunning: true, remainingTime: newRemainingTime, isFinished: false };
-                }
-                return t;
-            }));
-        };
-
-        const handleResetTimer = (id) => {
-            setTimers(prev => prev.map(t => {
-                if (t.id === id) {
-                    return { ...t, isRunning: false, remainingTime: 0, isFinished: false };
-                }
-                return t;
-            }));
-        };
-
-        return React.createElement('div', { className: "w-full max-w-3xl mx-auto p-4 md:p-8" },
-            React.createElement('audio', { ref: audioRef, src: "https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg", preload: "auto" }),
-            React.createElement('button', { onClick: onBack, className: "flex items-center text-[var(--color-accent-text)] font-semibold hover:brightness-110 mb-6" },
-                React.createElement(ChevronLeftIcon, { className: "w-5 h-5 mr-1" }),
-                "Back to Recipes"
-            ),
-            React.createElement('div', { className: "bg-[var(--color-bg-secondary)] p-8 rounded-lg shadow-lg border border-[var(--color-border-primary)]" },
-                React.createElement('h1', { className: "text-4xl font-bold text-[var(--color-text-primary)] mb-8" }, "Timers"),
-                React.createElement('div', { className: "space-y-6" },
-                    timers.map(timer => {
-                        const isFinished = timer.isFinished && !timer.isRunning;
-                        const cardBg = isFinished ? 'bg-green-500/10' : 'bg-[var(--color-bg-primary)]';
-                        const cardBorder = isFinished ? 'border-green-500' : 'border-[var(--color-border-secondary)]';
-
-                        return React.createElement('div', { key: timer.id, className: `p-4 rounded-lg border ${cardBorder} ${cardBg} transition-colors` },
-                            React.createElement('div', { className: "flex justify-between items-center mb-4" },
-                                React.createElement('input', {
-                                    type: "text",
-                                    value: timer.name,
-                                    onChange: (e) => handleUpdate(timer.id, 'name', e.target.value),
-                                    placeholder: "Timer Name",
-                                    className: "flex-grow p-2 bg-transparent border-none text-xl font-semibold text-[var(--color-text-primary)] focus:ring-0",
-                                    disabled: timer.isRunning
-                                }),
-                                React.createElement('button', { onClick: () => handleDeleteTimer(timer.id), className: "text-red-500 hover:text-red-400 p-1" },
-                                    React.createElement(TrashIcon, { className: "w-5 h-5" })
-                                )
-                            ),
-                            React.createElement('div', { className: "flex items-center justify-center text-center my-4" },
-                                timer.isRunning || (timer.remainingTime > 0 && !timer.isRunning && !isFinished) ? (
-                                    React.createElement('div', { className: `text-6xl font-mono tracking-wider ${isFinished ? 'text-green-400' : 'text-[var(--color-text-primary)]'}` },
-                                        formatTime(timer.remainingTime)
-                                    )
-                                ) : (
-                                    React.createElement('div', { className: "flex items-center justify-center gap-2 flex-wrap" },
-                                        ['hours', 'minutes', 'seconds'].map((unit, index) =>
-                                            React.createElement(React.Fragment, { key: unit },
-                                                index > 0 && React.createElement('span', { className: "text-3xl font-bold text-[var(--color-text-tertiary)]" }, ':'),
-                                                React.createElement('div', { className: "flex items-center" },
-                                                    React.createElement('input', {
-                                                        type: "number",
-                                                        min: "0",
-                                                        max: unit === 'hours' ? 99 : 59,
-                                                        value: timer.duration[unit],
-                                                        onChange: (e) => handleDurationChange(timer.id, unit, e.target.value),
-                                                        className: "w-24 p-2 bg-[var(--color-bg-input)] border border-[var(--color-border-secondary)] rounded-md text-4xl text-center text-[var(--color-text-primary)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                                                        'aria-label': unit
-                                                    }),
-                                                    React.createElement('div', { className: "flex flex-col ml-2" },
-                                                        React.createElement('button', {
-                                                            type: "button",
-                                                            onClick: () => handleDurationIncrement(timer.id, unit, 1),
-                                                            className: "p-1 rounded-md bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-secondary)]",
-                                                            'aria-label': `Increase ${unit}`
-                                                        }, React.createElement(ChevronUpIcon, { className: "w-5 h-5" })),
-                                                        React.createElement('button', {
-                                                            type: "button",
-                                                            onClick: () => handleDurationIncrement(timer.id, unit, -1),
-                                                            className: "p-1 mt-1 rounded-md bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border-primary)] text-[var(--color-text-secondary)]",
-                                                            'aria-label': `Decrease ${unit}`
-                                                        }, React.createElement(ChevronDownIcon, { className: "w-5 h-5" }))
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            ),
-                            isFinished && React.createElement('div', { className: "text-center text-green-400 font-bold mb-4" }, "Timer Finished!"),
-                            React.createElement('div', { className: "flex justify-center gap-4" },
-                                React.createElement('button', {
-                                    onClick: () => handleToggleTimer(timer.id),
-                                    className: `px-6 py-2 rounded-md font-semibold text-white ${timer.isRunning ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-[var(--color-accent)] hover:brightness-95'}`
-                                }, timer.isRunning ? 'Pause' : 'Start'),
-                                React.createElement('button', {
-                                    onClick: () => handleResetTimer(timer.id),
-                                    className: "px-6 py-2 rounded-md font-semibold bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:brightness-110"
-                                }, "Reset")
-                            )
-                        );
-                    })
-                ),
-                React.createElement('div', { className: "mt-8 pt-6 border-t border-[var(--color-border-primary)]" },
-                    React.createElement('button', {
-                        onClick: handleAddTimer,
-                        className: "w-full flex items-center justify-center gap-2 bg-[var(--color-bg-tertiary)] hover:brightness-110 text-[var(--color-text-secondary)] font-bold py-3 px-4 rounded-md"
-                    }, React.createElement(PlusIcon, { className: "w-5 h-5" }), "Add Timer")
-                )
-            )
         );
       };
 
@@ -2215,13 +2042,16 @@
         const [sections, setSections] = useLocalStorage('sections', []);
         const [units, setUnits] = useLocalStorage('units', DEFAULT_UNITS);
         const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
-        const [timers, setTimers] = useLocalStorage('timers', []);
+        const [quotes, setQuotes] = useLocalStorage('quotes', DEFAULT_QUOTES);
         const [textSize, setTextSize] = useLocalStorage('textSize', 1);
         const [ownerName, setOwnerName] = useLocalStorage('ownerName', 'Sharné');
         const [preferredEmojis, setPreferredEmojis] = useLocalStorage('preferredEmojis', FOOD_EMOJIS);
         const [view, setView] = useState({ page: 'list' });
         const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {} });
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
+        const [openSections, setOpenSections] = useState({});
+        const [dailyQuote, setDailyQuote] = useState(null);
+        const listScrollPositionRef = useRef(0);
 
         useEffect(() => {
             // One-time migration to add 'order' to sections.
@@ -2245,6 +2075,13 @@
                 }
                 return currentEmojis;
             });
+        }, []);
+        
+        useEffect(() => {
+            if (quotes && quotes.length > 0) {
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                setDailyQuote(quotes[randomIndex]);
+            }
         }, []);
 
         useEffect(() => {
@@ -2272,6 +2109,17 @@
             // Multiplying it scales all rem-based units in the app.
             document.documentElement.style.fontSize = `${16 * textSize}px`;
         }, [textSize]);
+        
+        useEffect(() => {
+          if (view.page === 'list') {
+            // Restore scroll position when returning to the list.
+            // A timeout ensures the content has rendered before scrolling.
+            setTimeout(() => window.scrollTo(0, listScrollPositionRef.current), 0);
+          } else {
+            // Scroll to top for all other pages.
+            window.scrollTo(0, 0);
+          }
+        }, [view.page]);
 
         const sortedPreferredEmojis = useMemo(() => {
             const counts = new Map();
@@ -2402,6 +2250,26 @@
                 return sectionsCopy;
             });
         };
+        
+        const handleAddQuote = (text, author) => {
+            const trimmedText = text.trim();
+            const trimmedAuthor = author.trim();
+            if (!trimmedText) {
+                alert('Quote text cannot be empty.');
+                return;
+            }
+            const newQuote = { id: `quote_${Date.now()}`, text: trimmedText, author: trimmedAuthor };
+            setQuotes(prev => [...prev, newQuote]);
+        };
+
+        const handleDeleteQuote = (id) => {
+            setQuotes(prev => prev.filter(q => q.id !== id));
+        };
+
+        const handleSelectRecipe = (id) => {
+            listScrollPositionRef.current = window.scrollY;
+            setView({ page: 'detail', id });
+        };
 
         const handleSaveRecipe = (recipeData) => {
             const finalRecipeData = { ...recipeData };
@@ -2467,12 +2335,7 @@
         };
 
         const handleExport = () => {
-          const timersToExport = timers.map(t => ({ // Don't export runtime state
-            id: t.id,
-            name: t.name,
-            duration: t.duration,
-          }));
-          const dataToExport = { version: 2, recipes, sections, units, shoppingList, preferredEmojis, timers: timersToExport, ownerName };
+          const dataToExport = { version: 2, recipes, sections, units, shoppingList, preferredEmojis, ownerName, quotes };
           const jsonString = JSON.stringify(dataToExport, null, 2);
           const blob = new Blob([jsonString], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
@@ -2494,7 +2357,7 @@
               try {
                   const text = e.target?.result;
                   const data = JSON.parse(text);
-                  if (data.recipes || data.sections || data.units || data.shoppingList || data.timers || data.ownerName || data.preferredEmojis) {
+                  if (data.recipes || data.sections || data.units || data.shoppingList || data.timers || data.ownerName || data.preferredEmojis || data.quotes) {
                       setView({ page: 'import_confirm', data });
                   } else {
                       alert('Invalid file format. The file does not appear to contain any valid recipe data.');
@@ -2508,7 +2371,7 @@
           event.target.value = '';
         };
 
-        const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, selectedTimers, shouldImportOwnerName, importedOwnerName, selectedEmojis) => {
+        const handleConfirmImport = (selectedRecipes, selectedSections, selectedUnits, selectedShoppingList, shouldImportOwnerName, importedOwnerName, selectedEmojis, selectedQuotes) => {
             // --- SECTION MERGE ---
             const finalSections = [...sections];
             const sectionIdMap = new Map(); // Maps old imported ID -> new/existing ID
@@ -2580,17 +2443,9 @@
                 .map(i => ({...i, id: `item_${Date.now()}_${Math.random()}`}));
             setShoppingList(prev => [...prev, ...shoppingListItemsToAdd]);
 
-            const existingTimerNames = new Set(timers.map(t => t.name.trim().toLowerCase()));
-            const timersToAdd = selectedTimers
-                .filter(t => !existingTimerNames.has(t.name.trim().toLowerCase()))
-                .map(t => ({
-                    ...t,
-                    id: Date.now() + Math.random(),
-                    remainingTime: 0,
-                    isRunning: false,
-                    isFinished: false,
-                }));
-            setTimers(prev => [...prev, ...timersToAdd]);
+            const existingQuotes = new Set(quotes.map(q => `${q.text.trim().toLowerCase()}|||${q.author.trim().toLowerCase()}`));
+            const quotesToAdd = selectedQuotes.filter(q => !existingQuotes.has(`${q.text.trim().toLowerCase()}|||${q.author.trim().toLowerCase()}`));
+            setQuotes(prev => [...prev, ...quotesToAdd]);
 
             const existingEmojis = new Set(preferredEmojis);
             const emojisToAdd = selectedEmojis.filter(e => !existingEmojis.has(e));
@@ -2612,7 +2467,8 @@
                 'timers', 
                 'textSize', 
                 'ownerName', 
-                'preferredEmojis'
+                'preferredEmojis',
+                'quotes'
             ];
             
             keysToRemove.forEach(key => {
@@ -2627,12 +2483,14 @@
               return React.createElement(RecipeList, {
                 recipes: recipes,
                 sections: sections,
-                onSelectRecipe: (id) => setView({ page: 'detail', id }),
+                onSelectRecipe: handleSelectRecipe,
                 onAddRecipe: () => setView({ page: 'form' }),
                 onGoToSettings: () => setView({ page: 'settings' }),
                 onGoToShoppingList: () => setView({ page: 'shopping_list' }),
-                onGoToTimers: () => setView({ page: 'timers' }),
-                ownerName: ownerName
+                ownerName: ownerName,
+                openSections: openSections,
+                setOpenSections: setOpenSections,
+                dailyQuote: dailyQuote
               });
             case 'detail':
               const selectedRecipe = recipes.find(r => r.id === view.id);
@@ -2686,6 +2544,9 @@
                 onExport: handleExport,
                 onFileSelect: handleFileSelect,
                 onResetApp: handleResetApp,
+                quotes: quotes,
+                onAddQuote: handleAddQuote,
+                onDeleteQuote: handleDeleteQuote,
               });
             case 'shopping_list':
               return React.createElement(ShoppingList, {
@@ -2697,13 +2558,6 @@
                 onBack: () => setView({ page: 'list' }),
                 showConfirmDialog: showConfirmDialog,
               });
-            case 'timers':
-                return React.createElement(Timers, {
-                    onBack: () => setView({ page: 'list' }),
-                    showConfirmDialog: showConfirmDialog,
-                    timers: timers,
-                    setTimers: setTimers,
-                });
             case 'import_confirm':
               return React.createElement(ImportConfirmation, {
                 data: view.data,
