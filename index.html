@@ -118,7 +118,32 @@
         { id: 'q_7', text: "Let food be thy medicine and medicine be thy food.", author: "Hippocrates" },
         { id: 'q_8', text: "All you need is love. But a little chocolate now and then doesn't hurt.", author: "Charles M. Schulz" },
         { id: 'q_9', text: "Cooking is like love. It should be entered into with abandon or not at all.", author: "Harriet Van Horne" },
-        { id: 'q_10', text: "The only time to eat diet food is while you're waiting for the steak to cook.", author: "Julia Child" }
+        { id: 'q_10', text: "The only time to eat diet food is while you're waiting for the steak to cook.", author: "Julia Child" },
+        { id: 'q_11', text: "A recipe has no soul. You, as the cook, must bring soul to the recipe.", author: "Thomas Keller" },
+        { id: 'q_12', text: "Life is uncertain. Eat dessert first.", author: "Ernestine Ulmer" },
+        { id: 'q_13', text: "Tell me what you eat, and I will tell you what you are.", author: "Jean Anthelme Brillat-Savarin" },
+        { id: 'q_14', text: "Good food is the foundation of genuine happiness.", author: "Auguste Escoffier" },
+        { id: 'q_15', text: "My weaknesses have always been food and men—in that order.", author: "Dolly Parton" },
+        { id: 'q_16', text: "Laughter is brightest in the place where the food is.", author: "Irish Proverb" },
+        { id: 'q_17', text: "You don't need a silver fork to eat good food.", author: "Paul Prudhomme" },
+        { id: 'q_18', text: "A party without cake is just a meeting.", author: "Julia Child" },
+        { id: 'q_19', text: "The secret of success in life is to eat what you like and let the food fight it out inside.", author: "Mark Twain" },
+        { id: 'q_20', text: "Food is symbolic of love when words are inadequate.", author: "Alan D. Wolfelt" },
+        { id: 'q_21', text: "Ask not what you can do for your country. Ask what's for lunch.", author: "Orson Welles" },
+        { id: 'q_22', text: "To eat is a necessity, but to eat intelligently is an art.", author: "François de La Rochefoucauld" },
+        { id: 'q_23', text: "If more of us valued food and cheer and song above hoarded gold, it would be a merrier world.", author: "J.R.R. Tolkien" },
+        { id: 'q_24', text: "Cooking is like painting or writing a song. Just as there are only so many notes or colors, there are only so many flavors – it's how you combine them that sets you apart.", author: "Wolfgang Puck" },
+        { id: 'q_25', text: "After a good dinner one can forgive anybody, even one's own relations.", author: "Oscar Wilde" },
+        { id: 'q_26', text: "All we have to decide is what to do with the time that is given us.", author: "Gandalf" },
+        { id: 'q_27', text: "Not all those who wander are lost.", author: "Bilbo Baggins" },
+        { id: 'q_28', text: "Courage is found in unlikely places.", author: "Gildor Inglorion" },
+        { id: 'q_29', text: "Even the smallest person can change the course of the future.", author: "Galadriel" },
+        { id: 'q_30', text: "I will not say: do not weep; for not all tears are an evil.", author: "Gandalf" },
+        { id: 'q_31', text: "Short cuts make long delays.", author: "Pippin Took" },
+        { id: 'q_32', text: "A wizard is never late, Frodo Baggins. Nor is he early. He arrives precisely when he means to.", author: "Gandalf" },
+        { id: 'q_33', text: "The wide world is all about you: you can fence yourselves in, but you cannot for ever fence it out.", author: "Gildor Inglorion" },
+        { id: 'q_34', text: "Faithless is he that says farewell when the road darkens.", author: "Gimlo" },
+        { id: 'q_35', text: "Where there's life there's hope.", author: "Sam Gamgee" }
       ];
 
       // --- Start of inlined hooks/useLocalStorage.ts ---
@@ -1305,7 +1330,7 @@
       };
       
       // --- Start of inlined components/Settings.tsx ---
-      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect, onResetApp, quotes, onAddQuote, onDeleteQuote }) => {
+      const Settings = ({ textSize, setTextSize, units, onAddUnit, onDeleteUnit, onBack, showConfirmDialog, sections, recipes, onAddSection, onUpdateSectionParent, onUpdateSectionName, onDeleteSection, onReorderSection, ownerName, setOwnerName, preferredEmojis, setPreferredEmojis, onExport, onFileSelect, onResetApp, quotes, onAddQuote, onDeleteQuote, quoteSettings, setQuoteSettings }) => {
         const [newUnitLabel, setNewUnitLabel] = useState('');
         const [newSectionName, setNewSectionName] = useState('');
         const [newSectionParent, setNewSectionParent] = useState('');
@@ -1670,6 +1695,44 @@
                   ),
                    React.createElement('div', { className: "pt-8 mt-8 border-t border-[var(--color-border-primary)]" },
                       React.createElement('h2', { className: "text-2xl font-semibold text-[var(--color-text-secondary)] mb-4" }, "Quote Collection"),
+                      React.createElement('div', { className: "p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] mb-4" },
+                          React.createElement('h3', { className: "block font-medium text-[var(--color-text-primary)] mb-3" }, "Display on Home Screen"),
+                          React.createElement('div', { className: "flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-2" },
+                              React.createElement('label', { className: "flex items-center cursor-pointer" },
+                                  React.createElement('input', {
+                                      type: "radio",
+                                      name: "quoteMode",
+                                      value: "random",
+                                      checked: quoteSettings.mode === 'random',
+                                      onChange: (e) => setQuoteSettings(prev => ({ ...prev, mode: e.target.value })),
+                                      className: "w-5 h-5 bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                                  }),
+                                  React.createElement('span', { className: "ml-2 text-[var(--color-text-primary)]" }, "Random Quote")
+                              ),
+                              React.createElement('label', { className: "flex items-center cursor-pointer" },
+                                  React.createElement('input', {
+                                      type: "radio",
+                                      name: "quoteMode",
+                                      value: "single",
+                                      checked: quoteSettings.mode === 'single',
+                                      onChange: (e) => setQuoteSettings(prev => ({ ...prev, mode: e.target.value })),
+                                      className: "w-5 h-5 bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                                  }),
+                                  React.createElement('span', { className: "ml-2 text-[var(--color-text-primary)]" }, "Select a Single Quote")
+                              ),
+                              React.createElement('label', { className: "flex items-center cursor-pointer" },
+                                  React.createElement('input', {
+                                      type: "radio",
+                                      name: "quoteMode",
+                                      value: "none",
+                                      checked: quoteSettings.mode === 'none',
+                                      onChange: (e) => setQuoteSettings(prev => ({ ...prev, mode: e.target.value })),
+                                      className: "w-5 h-5 bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                                  }),
+                                  React.createElement('span', { className: "ml-2 text-[var(--color-text-primary)]" }, "None")
+                              )
+                          )
+                      ),
                       React.createElement('div', { className: "flex flex-col gap-2 mb-4 p-3 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)]" },
                            React.createElement('input', {
                               type: "text",
@@ -1693,12 +1756,22 @@
                               }, "Add Quote")
                           )
                       ),
-                      React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
+                      quoteSettings.mode !== 'none' && React.createElement('div', { className: "space-y-2 p-4 bg-[var(--color-bg-primary)] rounded-md border border-[var(--color-border-primary)] max-h-96 overflow-y-auto" },
                           quotes.length > 0 ? quotes.map(quote =>
                               React.createElement('div', { key: quote.id, className: "flex justify-between items-start p-2 rounded-md hover:bg-[var(--color-bg-tertiary)] gap-4" },
-                                  React.createElement('div', { className: "flex-grow" },
-                                      React.createElement('p', { className: "text-[var(--color-text-primary)] italic" }, `“${quote.text}”`),
-                                      quote.author && React.createElement('p', { className: "text-sm text-right text-[var(--color-text-tertiary)] mt-1" }, `- ${quote.author}`)
+                                  React.createElement('label', { className: `flex items-start gap-3 flex-grow w-full ${quoteSettings.mode === 'single' ? 'cursor-pointer' : ''}` },
+                                      quoteSettings.mode === 'single' && React.createElement('input', {
+                                          type: "radio",
+                                          name: "selectedQuote",
+                                          value: quote.id,
+                                          checked: quoteSettings.selectedQuoteId === quote.id,
+                                          onChange: (e) => setQuoteSettings(prev => ({...prev, selectedQuoteId: e.target.value})),
+                                          className: "flex-shrink-0 mt-1.5 w-5 h-5 bg-[var(--color-bg-tertiary)] border-[var(--color-border-secondary)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                                      }),
+                                      React.createElement('div', { className: `flex-grow ${quoteSettings.mode !== 'single' ? 'pl-8' : ''}` },
+                                          React.createElement('p', { className: "text-[var(--color-text-primary)] italic" }, `“${quote.text}”`),
+                                          quote.author && React.createElement('p', { className: "text-sm text-right text-[var(--color-text-tertiary)] mt-1" }, `- ${quote.author}`)
+                                      )
                                   ),
                                   React.createElement('button', {
                                       onClick: () => handleDeleteQuote(quote),
@@ -2051,6 +2124,7 @@
         const [addUnitState, setAddUnitState] = useState({ isOpen: false, onSave: (newUnit) => {} });
         const [openSections, setOpenSections] = useState({});
         const [dailyQuote, setDailyQuote] = useState(null);
+        const [quoteSettings, setQuoteSettings] = useLocalStorage('quoteSettings', { mode: 'random', selectedQuoteId: null });
         const listScrollPositionRef = useRef(0);
 
         useEffect(() => {
@@ -2078,11 +2152,25 @@
         }, []);
         
         useEffect(() => {
-            if (quotes && quotes.length > 0) {
-                const randomIndex = Math.floor(Math.random() * quotes.length);
-                setDailyQuote(quotes[randomIndex]);
+            if (!quotes || quotes.length === 0) {
+                setDailyQuote(null);
+                return;
             }
-        }, []);
+            switch (quoteSettings.mode) {
+                case 'none':
+                    setDailyQuote(null);
+                    break;
+                case 'single':
+                    const selectedQuote = quotes.find(q => q.id === quoteSettings.selectedQuoteId);
+                    setDailyQuote(selectedQuote || null); // Show nothing if not found
+                    break;
+                case 'random':
+                default:
+                    const randomIndex = Math.floor(Math.random() * quotes.length);
+                    setDailyQuote(quotes[randomIndex]);
+                    break;
+            }
+        }, [quotes, quoteSettings]);
 
         useEffect(() => {
             const root = document.documentElement;
@@ -2264,6 +2352,9 @@
 
         const handleDeleteQuote = (id) => {
             setQuotes(prev => prev.filter(q => q.id !== id));
+            if (quoteSettings.selectedQuoteId === id) {
+                setQuoteSettings(prev => ({...prev, selectedQuoteId: null}));
+            }
         };
 
         const handleSelectRecipe = (id) => {
@@ -2468,7 +2559,8 @@
                 'textSize', 
                 'ownerName', 
                 'preferredEmojis',
-                'quotes'
+                'quotes',
+                'quoteSettings'
             ];
             
             keysToRemove.forEach(key => {
@@ -2547,6 +2639,8 @@
                 quotes: quotes,
                 onAddQuote: handleAddQuote,
                 onDeleteQuote: handleDeleteQuote,
+                quoteSettings: quoteSettings,
+                setQuoteSettings: setQuoteSettings,
               });
             case 'shopping_list':
               return React.createElement(ShoppingList, {
